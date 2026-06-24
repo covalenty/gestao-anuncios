@@ -1,0 +1,12 @@
+{
+  "description": "Card Open Graph para anúncios e novidades",
+  "size": "og-image",
+  "format": "png",
+  "scale": 1,
+  "defaults": {
+    "eyebrow": "NOVIDADE",
+    "title": "O fim das cotações manuais",
+    "subtitle": "Tudo isso, de forma 100% gratuita.",
+    "accent": "#dc36c0"
+  }
+}

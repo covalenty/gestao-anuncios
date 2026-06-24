@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="card" style="--accent: {{default accent '#dc36c0'}}">
+    <span class="mark">“</span>
+    <blockquote class="quote">{{quote}}</blockquote>
+    {{#if author}}<p class="author">{{author}}</p>{{/if}}
+    <div class="ticks">
+      <span></span><span></span><span></span>
+    </div>
+  </main>
+</body>
+</html>

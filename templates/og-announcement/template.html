@@ -1,0 +1,23 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="card" style="--accent: {{default accent '#dc36c0'}}">
+    <div class="content">
+      {{#if eyebrow}}<span class="eyebrow">{{upper eyebrow}}</span>{{/if}}
+      <h1 class="title">{{title}}</h1>
+      {{#if subtitle}}<p class="subtitle">{{subtitle}}</p>{{/if}}
+    </div>
+    <div class="squares">
+      <span class="sq sq-a"></span>
+      <span class="sq sq-b"></span>
+    </div>
+  </main>
+</body>
+</html>

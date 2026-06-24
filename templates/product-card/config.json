@@ -1,0 +1,13 @@
+{
+  "description": "Card de produto com preço e oferta",
+  "size": "ig-post",
+  "format": "png",
+  "scale": 1,
+  "defaults": {
+    "name": "Plano Cienty",
+    "tagline": "Gestão de anúncios sem cotação manual",
+    "price": "Grátis",
+    "oldPrice": "",
+    "accent": "#dc36c0"
+  }
+}

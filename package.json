@@ -1,0 +1,22 @@
+{
+  "name": "image-forge",
+  "version": "0.1.0",
+  "description": "HTML-based image generator for social media, marketing, and ads",
+  "type": "module",
+  "bin": {
+    "image-forge": "./src/cli.js"
+  },
+  "scripts": {
+    "render": "node src/cli.js render",
+    "preview": "node src/cli.js preview",
+    "list": "node src/cli.js list",
+    "new": "node src/cli.js new"
+  },
+  "dependencies": {
+    "chokidar": "^4.0.0",
+    "handlebars": "^4.7.8",
+    "puppeteer": "^23.0.0",
+    "sharp": "^0.33.5",
+    "ws": "^8.18.0"
+  }
+}

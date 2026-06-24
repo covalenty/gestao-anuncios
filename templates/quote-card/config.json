@@ -1,0 +1,11 @@
+{
+  "description": "Card de citação em destaque para Instagram",
+  "size": "ig-post",
+  "format": "png",
+  "scale": 1,
+  "defaults": {
+    "quote": "A Cienty acelerou todo esse trabalho.",
+    "author": "Jéssica — Drogaria Legítima",
+    "accent": "#dc36c0"
+  }
+}
