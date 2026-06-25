@@ -402,15 +402,21 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
 .plat-name{font-size:13px;font-weight:600;color:var(--tx);line-height:1.3}
 .plat-sub{font-size:11px;color:var(--mx);margin-top:1px}
 
-/* Step 2 — formats */
+/* Step 2 — formats (multi-select) */
 .fmt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:680px}
-.fmt-card{border:2px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:border-color .15s,box-shadow .15s;padding:14px 12px;background:var(--cd);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.fmt-card{position:relative;border:2px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:border-color .15s,box-shadow .15s;padding:14px 12px;background:var(--cd);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
 .fmt-card:hover{border-color:rgba(220,54,192,.35)}
-.fmt-card.sel{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10)}
+.fmt-card.sel{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10);background:rgba(220,54,192,.02)}
+.fmt-check{position:absolute;top:6px;right:6px;width:17px;height:17px;border-radius:50%;background:var(--mg);color:#fff;display:none;align-items:center;justify-content:center}
+.fmt-check svg{width:9px;height:9px}
+.fmt-card.sel .fmt-check{display:flex}
 .fmt-preview{background:var(--bg);border:1.5px solid var(--bd);border-radius:2px}
 .fmt-name{font-size:12px;font-weight:700;color:var(--tx)}
 .fmt-ratio{font-size:10px;color:var(--mg);font-weight:600}
 .fmt-dims{font-size:10px;color:var(--mx)}
+.fmt-sel-bar{display:flex;align-items:center;gap:10px;margin-top:16px;max-width:680px}
+.fmt-sel-count{font-size:12px;color:var(--mx);font-weight:600}
+.fmt-sel-count strong{color:var(--mg)}
 
 /* Step 3 — content */
 .cont-layout{display:grid;grid-template-columns:1fr 270px;gap:24px;max-width:860px}
@@ -435,17 +441,16 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
 .swatch:hover{transform:scale(1.12)}
 .swatch.sel{border-color:var(--tx)}
 
-/* Step 4 — preview */
-.prev-layout{display:grid;grid-template-columns:1fr 240px;gap:24px;max-width:860px}
-.prev-frame{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);display:flex;align-items:center;justify-content:center;padding:28px;min-height:280px}
-.prev-canvas{border-radius:2px;box-shadow:0 4px 24px rgba(0,0,0,.14);max-width:100%;max-height:400px}
-.prev-sidebar{}
-.prev-dl-btn{width:100%;justify-content:center;margin-bottom:8px}
-.prev-meta{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:12px;margin-top:12px}
-.prev-meta-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);font-size:12px}
-.prev-meta-row:last-child{border-bottom:none;padding-bottom:0}
-.prev-meta-k{color:var(--mx);font-weight:600}
-.prev-meta-v{color:var(--tx);font-weight:700;font-variant-numeric:tabular-nums}
+/* Step 4 — preview grid */
+.prev-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:16px;max-width:900px}
+.prev-card{border:1px solid var(--bd);border-radius:var(--r);background:var(--cd);overflow:hidden;display:flex;flex-direction:column}
+.prev-card-frame{background:var(--bg);padding:18px;display:flex;align-items:center;justify-content:center;min-height:150px;flex:1}
+.prev-card-canvas{border-radius:2px;box-shadow:0 3px 14px rgba(0,0,0,.13);max-width:100%;max-height:200px}
+.prev-card-meta{padding:10px 12px;border-top:1px solid var(--bd)}
+.prev-card-name{font-size:12px;font-weight:700;color:var(--tx)}
+.prev-card-dims{font-size:11px;color:var(--mx);margin-top:1px}
+.prev-card-dl{margin-top:8px;width:100%;justify-content:center;font-size:11px;padding:6px 10px}
+.prev-actions-bar{display:flex;align-items:center;gap:12px;margin-top:20px;max-width:900px}
 
 /* Chat mode inside criativos */
 .criat-chat-mode{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
@@ -1203,11 +1208,15 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
             </div>
           </div>
 
-          <!-- Step 2: Formato -->
+          <!-- Step 2: Formato (multi-select) -->
           <div class="step-panel" id="panel-2">
-            <div class="section-ttl" id="fmt-ttl">Escolha o formato</div>
-            <div class="section-sub" id="fmt-sub">Selecione as dimensões ideais para o seu criativo</div>
+            <div class="section-ttl" id="fmt-ttl">Escolha os formatos</div>
+            <div class="section-sub" id="fmt-sub">Selecione um ou mais formatos — o criativo será gerado para cada um</div>
             <div class="fmt-grid" id="fmt-grid"></div>
+            <div class="fmt-sel-bar" id="fmt-sel-bar" style="display:none">
+              <span class="fmt-sel-count" id="fmt-sel-count"></span>
+              <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="clearFmtSel()">Limpar seleção</button>
+            </div>
           </div>
 
           <!-- Step 3: Conteúdo -->
@@ -1264,22 +1273,16 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
 
           <!-- Step 4: Finalizar -->
           <div class="step-panel" id="panel-4">
-            <div class="section-ttl">Pré-visualização do criativo</div>
-            <div class="section-sub">Verifique o resultado e faça o download</div>
-            <div class="prev-layout">
-              <div class="prev-frame" id="prev-frame">
-                <canvas id="criat-canvas" class="prev-canvas"></canvas>
-              </div>
-              <div class="prev-sidebar">
-                <button class="btn btn-primary prev-dl-btn" onclick="downloadCreative()">
-                  <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M8 1v10M4 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
-                  Baixar PNG
-                </button>
-                <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="criatGoStep(3)">
-                  Editar conteúdo
-                </button>
-                <div class="prev-meta" id="prev-meta"></div>
-              </div>
+            <div class="section-ttl" id="prev-ttl">Pré-visualização dos criativos</div>
+            <div class="section-sub" id="prev-sub">Verifique cada formato e faça o download</div>
+            <div class="prev-grid" id="prev-grid"></div>
+            <div class="prev-actions-bar">
+              <button class="btn btn-primary" id="dl-all-btn" onclick="downloadAll()">
+                <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M8 1v10M4 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                Baixar todos
+              </button>
+              <button class="btn btn-ghost" onclick="criatGoStep(3)">Editar conteúdo</button>
+              <span id="dl-all-lbl" style="font-size:12px;color:var(--mx)"></span>
             </div>
           </div>
 
@@ -1778,7 +1781,7 @@ const CRIAT_AI_COPY = {
 
 const PLAT_NAMES = {'ig-feed':'Instagram Feed','ig-stories':'Instagram Stories','fb-feed':'Facebook Feed','fb-stories':'Facebook Stories','whatsapp':'WhatsApp','google':'Google Display'};
 
-const criatState = { step:1, platform:null, format:null, bgColor:'#dc36c0', bgImg:null };
+const criatState = { step:1, platform:null, formats:[], bgColor:'#dc36c0', bgImg:null };
 
 function setCriatMode(mode) {
   document.getElementById('tab-manual').classList.toggle('active', mode === 'manual');
@@ -1789,7 +1792,7 @@ function setCriatMode(mode) {
 
 function selectPlatform(id) {
   criatState.platform = id;
-  criatState.format = null;
+  criatState.formats = [];
   document.querySelectorAll('.plat-card').forEach(c => c.classList.remove('sel'));
   const card = document.getElementById('plat-' + id);
   if (card) card.classList.add('sel');
@@ -1801,6 +1804,8 @@ function buildFmtGrid() {
   const sub = document.getElementById('fmt-sub');
   sub.textContent = 'Formatos disponíveis para ' + (PLAT_NAMES[criatState.platform] || 'a plataforma selecionada');
   grid.innerHTML = '';
+  criatState.formats = [];
+  _updateFmtSelBar();
   fmts.forEach(f => {
     const ar = f.w / f.h;
     const MAX = 54;
@@ -1808,18 +1813,35 @@ function buildFmtGrid() {
     const ph = ar >= 1 ? Math.round(MAX / ar) : MAX;
     const card = document.createElement('div');
     card.className = 'fmt-card';
+    card.dataset.fmtId = f.id;
     card.onclick = () => {
-      criatState.format = f;
-      grid.querySelectorAll('.fmt-card').forEach(c => c.classList.remove('sel'));
-      card.classList.add('sel');
+      const idx = criatState.formats.findIndex(x => x.id === f.id);
+      if (idx === -1) { criatState.formats.push(f); card.classList.add('sel'); }
+      else            { criatState.formats.splice(idx, 1); card.classList.remove('sel'); }
+      _updateFmtSelBar();
     };
-    card.innerHTML = `<div class="fmt-preview" style="width:${pw}px;height:${ph}px"></div>
+    card.innerHTML = `<div class="fmt-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+      <div class="fmt-preview" style="width:${pw}px;height:${ph}px"></div>
       <div class="fmt-name">${f.name}</div>
       <div class="fmt-ratio">${f.ratio}</div>
       <div class="fmt-dims">${f.w}×${f.h} px</div>
       <div class="fmt-dims" style="color:var(--mg);margin-top:1px">${f.desc}</div>`;
     grid.appendChild(card);
   });
+}
+
+function _updateFmtSelBar() {
+  const n = criatState.formats.length;
+  const bar = document.getElementById('fmt-sel-bar');
+  const lbl = document.getElementById('fmt-sel-count');
+  bar.style.display = n > 0 ? 'flex' : 'none';
+  lbl.innerHTML = `<strong>${n}</strong> formato${n !== 1 ? 's' : ''} selecionado${n !== 1 ? 's' : ''}`;
+}
+
+function clearFmtSel() {
+  criatState.formats = [];
+  document.querySelectorAll('.fmt-card').forEach(c => c.classList.remove('sel'));
+  _updateFmtSelBar();
 }
 
 function selectBg(el) {
@@ -1928,29 +1950,60 @@ function _drawCreative(canvas, W, H) {
 }
 
 function drawPreview() {
-  const fmt = criatState.format; if (!fmt) return;
-  const frame = document.getElementById('prev-frame');
-  const canvas = document.getElementById('criat-canvas');
-  const ar = fmt.w / fmt.h;
-  const maxW = Math.min(frame.clientWidth - 56, 360);
-  const maxH = 420;
-  let dW = maxW, dH = Math.round(maxW / ar);
-  if (dH > maxH) { dH = maxH; dW = Math.round(maxH * ar); }
-  _drawCreative(canvas, dW, dH);
-  document.getElementById('prev-meta').innerHTML = `
-    <div class="prev-meta-row"><span class="prev-meta-k">Plataforma</span><span class="prev-meta-v">${PLAT_NAMES[criatState.platform]||''}</span></div>
-    <div class="prev-meta-row"><span class="prev-meta-k">Formato</span><span class="prev-meta-v">${fmt.name} (${fmt.ratio})</span></div>
-    <div class="prev-meta-row"><span class="prev-meta-k">Dimensões</span><span class="prev-meta-v">${fmt.w}×${fmt.h} px</span></div>`;
+  const fmts = criatState.formats;
+  if (!fmts.length) return;
+  const grid = document.getElementById('prev-grid');
+  grid.innerHTML = '';
+  const n = fmts.length;
+  document.getElementById('prev-ttl').textContent = n === 1 ? 'Pré-visualização do criativo' : `Pré-visualização — ${n} formatos`;
+  document.getElementById('prev-sub').textContent = n === 1 ? 'Verifique o resultado e faça o download' : 'Cada criativo foi adaptado para as dimensões do seu formato';
+  document.getElementById('dl-all-btn').textContent = n === 1 ? 'Baixar PNG' : `Baixar todos (${n})`;
+  document.getElementById('dl-all-lbl').textContent = n === 1 ? '' : `${n} arquivos PNG`;
+  fmts.forEach(fmt => {
+    const card = document.createElement('div');
+    card.className = 'prev-card';
+    const canvasId = 'prev-cv-' + fmt.id;
+    card.innerHTML = `
+      <div class="prev-card-frame">
+        <canvas id="${canvasId}" class="prev-card-canvas"></canvas>
+      </div>
+      <div class="prev-card-meta">
+        <div class="prev-card-name">${fmt.name} — ${fmt.ratio}</div>
+        <div class="prev-card-dims">${fmt.w}×${fmt.h} px</div>
+        <button class="btn btn-ghost prev-card-dl" onclick="downloadOne('${fmt.id}')">
+          <svg viewBox="0 0 16 16" fill="none" style="width:11px;height:11px"><path d="M8 1v10M4 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Baixar PNG
+        </button>
+      </div>`;
+    grid.appendChild(card);
+    // draw after element is in DOM so getBoundingClientRect works
+    requestAnimationFrame(() => {
+      const frame = card.querySelector('.prev-card-frame');
+      const canvas = document.getElementById(canvasId);
+      const ar = fmt.w / fmt.h;
+      const maxW = Math.min(frame.clientWidth - 36, 240);
+      const maxH = 200;
+      let dW = maxW, dH = Math.round(maxW / ar);
+      if (dH > maxH) { dH = maxH; dW = Math.round(maxH * ar); }
+      _drawCreative(canvas, dW, dH);
+    });
+  });
 }
 
-function downloadCreative() {
-  const fmt = criatState.format; if (!fmt) return;
+function downloadOne(fmtId) {
+  const fmt = criatState.formats.find(f => f.id === fmtId);
+  if (!fmt) return;
   const offscreen = document.createElement('canvas');
-  const scale = Math.min(1, 1080 / Math.max(fmt.w, fmt.h));
-  _drawCreative(offscreen, fmt.w * scale, fmt.h * scale);
+  _drawCreative(offscreen, fmt.w, fmt.h);
   const link = document.createElement('a');
   link.download = `${criatState.platform||'criativo'}-${fmt.id}-cienty.png`;
   link.href = offscreen.toDataURL('image/png'); link.click();
+}
+
+function downloadAll() {
+  criatState.formats.forEach((fmt, i) => {
+    setTimeout(() => downloadOne(fmt.id), i * 300);
+  });
 }
 
 function criatGoStep(n) { criatState.step = n; _updateCriatUI(); }
@@ -1958,8 +2011,8 @@ function criatGoStep(n) { criatState.step = n; _updateCriatUI(); }
 function criatStep(dir) {
   const cur = criatState.step;
   if (dir === 1) {
-    if (cur === 1 && !criatState.platform) { alert('Selecione uma plataforma para continuar.'); return; }
-    if (cur === 2 && !criatState.format)   { alert('Selecione um formato para continuar.');    return; }
+    if (cur === 1 && !criatState.platform)      { alert('Selecione uma plataforma para continuar.'); return; }
+    if (cur === 2 && !criatState.formats.length) { alert('Selecione pelo menos um formato para continuar.'); return; }
   }
   criatState.step = Math.max(1, Math.min(4, cur + dir));
   _updateCriatUI();
@@ -1983,8 +2036,9 @@ function _updateCriatUI() {
     nxt.innerHTML = 'Próximo <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
     nxt.onclick = () => criatStep(1);
   } else {
-    nxt.innerHTML = '<svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M8 1v10M4 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Baixar PNG';
-    nxt.onclick = downloadCreative;
+    const n = criatState.formats.length;
+    nxt.innerHTML = `<svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M8 1v10M4 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Baixar${n > 1 ? ' todos (' + n + ')' : ' PNG'}`;
+    nxt.onclick = downloadAll;
   }
   document.getElementById('criat-step-lbl').textContent = `Passo ${s} de 4`;
 }
