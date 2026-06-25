@@ -1,0 +1,926 @@
+<title>Relatório de Performance · Meta Ads · CA01 Cienty</title>
+<style>
+  :root {
+    --ground: #FBF9FB;
+    --surface: #FFFFFF;
+    --ink: #1B1419;
+    --ink-soft: #5E5660;
+    --ink-faint: #8A828D;
+    --line: #ECE5EC;
+    --line-soft: #F3EEF3;
+    --accent: #DC36C0;
+    --accent-deep: #A0218A;
+    --accent-wash: #FBEAF7;
+    --gold: #FFB92A;
+    --gold-deep: #9A6A00;
+    --gold-wash: #FFF4DC;
+    --good: #1C8F62;
+    --good-wash: #E4F4EC;
+    --warn: #B9700F;
+    --warn-wash: #FBEEDB;
+    --crit: #CC3A33;
+    --crit-wash: #FBE7E5;
+    --serif: "Iowan Old Style", "Palatino Linotype", Palatino, "Book Antiqua", Georgia, serif;
+    --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+
+  * { box-sizing: border-box; }
+
+  body {
+    margin: 0;
+    background: var(--ground);
+    color: var(--ink);
+    font-family: var(--sans);
+    font-size: 16px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  .wrap {
+    max-width: 880px;
+    margin: 0 auto;
+    padding: 0 24px 96px;
+  }
+
+  /* ---- Masthead ---- */
+  .masthead {
+    padding: 56px 0 28px;
+    border-bottom: 2px solid var(--ink);
+    margin-bottom: 44px;
+  }
+  .eyebrow {
+    font-size: 12px;
+    font-weight: 700;
+    letter-spacing: 0.16em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .eyebrow::before {
+    content: "";
+    width: 22px; height: 3px;
+    background: var(--accent);
+    display: inline-block;
+  }
+  .masthead h1 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: clamp(30px, 5vw, 44px);
+    line-height: 1.08;
+    text-wrap: balance;
+    margin: 18px 0 14px;
+    letter-spacing: -0.01em;
+  }
+  .masthead .meta-line {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px 22px;
+    font-size: 14px;
+    color: var(--ink-soft);
+  }
+  .masthead .meta-line b { color: var(--ink); font-weight: 600; }
+
+  /* ---- Section scaffolding ---- */
+  section { margin-bottom: 60px; }
+  .sec-head {
+    display: flex;
+    align-items: baseline;
+    gap: 14px;
+    margin-bottom: 22px;
+    padding-bottom: 12px;
+    border-bottom: 1px solid var(--line);
+  }
+  .sec-num {
+    font-family: var(--serif);
+    font-size: 20px;
+    color: var(--accent);
+    font-weight: 700;
+    line-height: 1;
+  }
+  .sec-head h2 {
+    font-family: var(--serif);
+    font-weight: 600;
+    font-size: 25px;
+    margin: 0;
+    letter-spacing: -0.01em;
+  }
+
+  .lead {
+    font-size: 17px;
+    color: var(--ink-soft);
+    max-width: 64ch;
+    margin: 0 0 26px;
+  }
+  .lead strong { color: var(--ink); font-weight: 600; }
+
+  /* ---- KPI grid ---- */
+  .kpis {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 1px;
+    background: var(--line);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    overflow: hidden;
+  }
+  .kpi {
+    background: var(--surface);
+    padding: 18px 18px 16px;
+  }
+  .kpi .k-label {
+    font-size: 11px;
+    font-weight: 700;
+    letter-spacing: 0.09em;
+    text-transform: uppercase;
+    color: var(--ink-faint);
+  }
+  .kpi .k-val {
+    font-size: 27px;
+    font-weight: 700;
+    margin-top: 6px;
+    letter-spacing: -0.02em;
+    font-variant-numeric: tabular-nums;
+  }
+  .kpi .k-sub { font-size: 12.5px; color: var(--ink-soft); margin-top: 2px; }
+  .kpi .k-val.accent { color: var(--accent-deep); }
+
+  /* ---- Campaign card ---- */
+  .camp {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 14px;
+    overflow: hidden;
+    margin-bottom: 26px;
+  }
+  .camp-bar { height: 5px; }
+  .camp-bar.win { background: linear-gradient(90deg, var(--accent), #F06AD6); }
+  .camp-bar.mid { background: linear-gradient(90deg, var(--gold), #FFD37A); }
+  .camp-bar.off { background: var(--line); }
+  .camp-body { padding: 24px 26px 26px; }
+  .camp-id {
+    font-family: var(--serif);
+    font-size: 13px;
+    color: var(--accent);
+    font-weight: 700;
+  }
+  .camp h3 {
+    font-family: var(--serif);
+    font-size: 22px;
+    font-weight: 600;
+    margin: 4px 0 12px;
+    line-height: 1.2;
+    letter-spacing: -0.01em;
+  }
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin-bottom: 16px; }
+  .pill {
+    font-size: 11.5px;
+    font-weight: 700;
+    letter-spacing: 0.04em;
+    padding: 4px 11px;
+    border-radius: 999px;
+    text-transform: uppercase;
+  }
+  .pill.ativa { background: var(--good-wash); color: var(--good); }
+  .pill.pausada { background: var(--line); color: var(--ink-soft); }
+  .pill.publico { background: var(--accent-wash); color: var(--accent-deep); text-transform: none; letter-spacing: 0; font-weight: 600; }
+
+  .camp-lead { font-size: 15.5px; color: var(--ink-soft); margin: 0 0 20px; }
+  .camp-lead strong { color: var(--ink); }
+
+  /* metric list */
+  .mlist { list-style: none; padding: 0; margin: 0 0 22px; display: grid; gap: 1px; background: var(--line-soft); border-radius: 10px; overflow: hidden; }
+  .mlist li {
+    background: var(--surface);
+    display: grid;
+    grid-template-columns: 150px auto 1fr;
+    gap: 14px;
+    align-items: baseline;
+    padding: 10px 16px;
+    font-size: 14.5px;
+  }
+  .mlist .m-key { color: var(--ink-soft); font-weight: 600; }
+  .mlist .m-val { font-weight: 700; font-variant-numeric: tabular-nums; letter-spacing: -0.01em; }
+  .mlist .m-note { color: var(--ink-faint); font-size: 13px; }
+  .mlist .m-note.good { color: var(--good); }
+  .mlist .m-note.warn { color: var(--warn); }
+  .mlist .m-note.crit { color: var(--crit); }
+
+  /* CPL bar */
+  .cpl-bar { margin: 0 0 22px; }
+  .cpl-bar .cb-label { font-size: 12px; color: var(--ink-faint); font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase; margin-bottom: 8px; }
+  .track { position: relative; height: 30px; background: var(--line-soft); border-radius: 7px; overflow: hidden; }
+  .track .fill { position: absolute; top: 0; left: 0; height: 100%; border-radius: 7px; display: flex; align-items: center; padding-left: 10px; font-size: 12.5px; font-weight: 700; color: #fff; font-variant-numeric: tabular-nums; }
+  .track .fill.win { background: var(--good); }
+  .track .fill.mid { background: var(--gold-deep); }
+  .track .fill.crit { background: var(--crit); }
+  .avg-mark { position: absolute; top: -4px; bottom: -4px; width: 2px; background: var(--ink); }
+  .avg-tip { font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; }
+  .avg-tip b { color: var(--ink); }
+
+  .analysis {
+    background: var(--ground);
+    border-left: 3px solid var(--accent);
+    border-radius: 0 8px 8px 0;
+    padding: 16px 18px;
+    font-size: 14.5px;
+    color: var(--ink-soft);
+  }
+  .analysis b { color: var(--ink); }
+  .analysis .a-tag { font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase; color: var(--accent-deep); display: block; margin-bottom: 6px; }
+  .analysis ul { margin: 10px 0 0; padding-left: 18px; }
+  .analysis li { margin-bottom: 6px; }
+  .analysis.creative { border-left-color: var(--gold); background: #FFFCF4; margin-top: 14px; }
+  .analysis.creative .a-tag { color: var(--gold-deep); }
+
+  /* ---- Creative briefings ---- */
+  .cunit { margin-top: 18px; }
+  .cunit + .cunit { border-top: 1px dashed #E6DEC6; padding-top: 18px; }
+  .cunit-h { font-size: 15px; font-weight: 700; margin: 0 0 6px; letter-spacing: -0.01em; line-height: 1.3; display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+  .cunit-tag { font-size: 10px; font-weight: 800; letter-spacing: 0.06em; text-transform: uppercase; padding: 3px 7px; border-radius: 5px; }
+  .cunit-tag.video { background: var(--accent-wash); color: var(--accent-deep); }
+  .cunit-tag.img { background: var(--gold-wash); color: var(--gold-deep); }
+  .what { font-size: 14px; color: var(--ink-soft); margin: 0 0 12px; }
+  .what b { color: var(--ink); }
+  .brief { background: #fff; border: 1px solid var(--line); border-radius: 10px; padding: 14px 16px; }
+  .brief-h { font-size: 12.5px; font-weight: 700; letter-spacing: 0.02em; color: var(--ink); margin-bottom: 13px; }
+  .bspec { display: grid; grid-template-columns: 152px 1fr; gap: 9px 16px; margin: 0 0 12px; font-size: 13.5px; }
+  .bspec dt { color: var(--ink-faint); font-weight: 700; font-size: 10.5px; letter-spacing: 0.05em; text-transform: uppercase; padding-top: 3px; }
+  .bspec dd { margin: 0; color: var(--ink-soft); }
+  .brief code { font-family: ui-monospace, "SF Mono", Menlo, Consolas, monospace; font-size: 12.5px; background: var(--accent-wash); color: var(--accent-deep); padding: 2px 7px; border-radius: 5px; }
+  .copybox { background: var(--ground); border-left: 2px solid var(--gold); border-radius: 0 6px 6px 0; padding: 9px 12px; color: var(--ink); font-size: 13.5px; line-height: 1.55; }
+  .roteiro-label { font-size: 10.5px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); margin: 4px 0 8px; }
+  .brief .table-wrap { margin-top: 0; }
+  .brief table { min-width: 540px; font-size: 13px; }
+  .brief table td { vertical-align: top; }
+  .brief table td b { color: var(--ink); }
+  .palette { display: flex; flex-wrap: wrap; gap: 8px 16px; align-items: center; font-size: 12.5px; color: var(--ink-soft); margin-top: 12px; padding-top: 11px; border-top: 1px solid var(--line-soft); }
+  .palette .pl-label { font-weight: 700; color: var(--ink); }
+  .sw { display: inline-block; width: 13px; height: 13px; border-radius: 4px; background: var(--c); border: 1px solid rgba(0,0,0,.14); vertical-align: -2px; margin-right: 5px; }
+  @media (max-width: 640px) { .bspec { grid-template-columns: 1fr; gap: 2px 0; } .bspec dt { padding-top: 9px; } }
+
+  /* ---- Projection chart ---- */
+  .proj {
+    border: 1px solid var(--line);
+    border-radius: 10px;
+    padding: 13px 15px 9px;
+    margin: 0 0 20px;
+    background: linear-gradient(180deg, #fff, var(--ground));
+  }
+  .proj-head { display: flex; justify-content: space-between; align-items: baseline; gap: 12px; flex-wrap: wrap; margin-bottom: 6px; }
+  .proj-title { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); }
+  .proj-total { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
+  .proj-total b { color: var(--accent-deep); font-size: 15px; }
+  .proj canvas { width: 100%; height: 150px; display: block; }
+  .proj-legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; }
+  .proj-legend span { display: inline-flex; align-items: center; gap: 6px; }
+  .lg { width: 16px; height: 0; border-top: 2px solid var(--chart, var(--accent)); }
+  .lg.dash { border-top-style: dashed; opacity: 0.75; }
+  .lg.today { width: 0; height: 13px; border-top: 0; border-left: 2px dotted var(--ink); opacity: 0.55; }
+
+  /* ---- Action plan ---- */
+  .act-group-label {
+    font-size: 12px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+    color: var(--ink-faint); margin: 26px 0 12px; display: flex; align-items: center; gap: 10px;
+  }
+  .act-group-label::after { content:""; flex:1; height:1px; background: var(--line); }
+
+  .action {
+    background: var(--surface);
+    border: 1px solid var(--line);
+    border-radius: 12px;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 16px;
+  }
+  .prio {
+    font-size: 11px; font-weight: 800; letter-spacing: 0.05em; text-transform: uppercase;
+    padding: 5px 10px; border-radius: 7px; height: fit-content; white-space: nowrap;
+  }
+  .prio.alta { background: var(--crit-wash); color: var(--crit); }
+  .prio.media { background: var(--gold-wash); color: var(--gold-deep); }
+  .prio.baixa { background: var(--line); color: var(--ink-soft); }
+  .action h4 { margin: 0 0 6px; font-size: 16px; font-weight: 700; letter-spacing: -0.01em; }
+  .action .do { margin: 0 0 10px; font-size: 14.5px; color: var(--ink); }
+  .action .do b { color: var(--accent-deep); }
+  .action .why {
+    font-size: 13.5px; color: var(--ink-soft);
+    background: var(--ground); border-radius: 8px; padding: 9px 12px; margin: 0;
+  }
+  .action .why::before { content: "Hipótese · "; font-weight: 700; color: var(--ink); }
+
+  /* ---- Summary table ---- */
+  .table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 12px; margin-top: 28px; }
+  table { border-collapse: collapse; width: 100%; min-width: 620px; font-size: 14px; }
+  thead th { background: var(--ink); color: #fff; text-align: left; padding: 12px 14px; font-size: 12px; letter-spacing: 0.04em; text-transform: uppercase; font-weight: 600; }
+  tbody td { padding: 11px 14px; border-top: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+  tbody tr:nth-child(even) { background: var(--ground); }
+  td.num { text-align: right; }
+  .delta-up { color: var(--good); font-weight: 700; }
+  .delta-down { color: var(--crit); font-weight: 700; }
+
+  footer {
+    margin-top: 60px; padding-top: 22px; border-top: 1px solid var(--line);
+    font-size: 12.5px; color: var(--ink-faint); line-height: 1.7;
+  }
+  footer b { color: var(--ink-soft); }
+
+  @media (max-width: 640px) {
+    .kpis { grid-template-columns: repeat(2, 1fr); }
+    .mlist li { grid-template-columns: 130px auto; }
+    .mlist .m-note { grid-column: 1 / -1; }
+    .action { grid-template-columns: 1fr; }
+  }
+</style>
+
+<div class="wrap">
+
+  <header class="masthead">
+    <div class="eyebrow">Relatório de Performance · Meta Ads</div>
+    <h1>Captação de leads da Cienty — leitura dos últimos 30 dias e plano de otimização</h1>
+    <div class="meta-line">
+      <span><b>Conta:</b> CA01 — CIENTY (act_1319493516659359)</span>
+      <span><b>Período:</b> últimos 30 dias · até 25/jun/2026</span>
+      <span><b>Moeda:</b> BRL</span>
+      <span><b>Objetivo:</b> OUTCOME_LEADS</span>
+    </div>
+  </header>
+
+  <!-- ============ 1. RESUMO ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">1</span><h2>Resumo executivo</h2></div>
+
+    <p class="lead">
+      A conta vai bem na captação: <strong>495 leads a R$ 11,65 cada</strong>, com CTR de 3,61% e
+      frequência saudável (1,98). O gargalo <strong>não é fadiga de criativo nem audiência queimada</strong> —
+      é <strong>alocação de verba</strong> e <strong>diferença de conversão entre landing pages</strong>.
+      Há leads mais baratos disponíveis só remanejando orçamento do que já roda.
+    </p>
+
+    <div class="kpis">
+      <div class="kpi"><div class="k-label">Investimento</div><div class="k-val">R$ 5.766</div><div class="k-sub">30 dias</div></div>
+      <div class="kpi"><div class="k-label">Leads</div><div class="k-val">495</div><div class="k-sub">16,5 / dia</div></div>
+      <div class="kpi"><div class="k-label">CPL médio</div><div class="k-val accent">R$ 11,65</div><div class="k-sub">custo por lead</div></div>
+      <div class="kpi"><div class="k-label">CTR (todos)</div><div class="k-val">3,61%</div><div class="k-sub">link: 2,63%</div></div>
+      <div class="kpi"><div class="k-label">CPC · CPM</div><div class="k-val">R$ 0,82</div><div class="k-sub">CPM R$ 29,74</div></div>
+      <div class="kpi"><div class="k-label">Frequência</div><div class="k-val">1,98</div><div class="k-sub">alcance 97.740</div></div>
+    </div>
+
+    <div class="analysis" style="margin-top:24px">
+      <span class="a-tag">Os 3 movimentos desta semana</span>
+      <ul>
+        <li><b>Cortar o desperdício:</b> o adset "PLANILHA Miriam" (buscapreco) roda o mesmo criativo a CPL R$ 17 — 66% acima dos irmãos. Realocar verba.</li>
+        <li><b>Escalar o que ganha:</b> dois adsets do buscapreco entregam leads a ~R$ 10 com frequência baixa — há folga clara para subir orçamento.</li>
+        <li><b>Proteger o melhor CPL:</b> Representantes (R$ 7,56) tem público sobreposto e só 2 criativos. Consolidar e renovar antes de escalar.</li>
+      </ul>
+    </div>
+  </section>
+
+  <!-- ============ 2. POR CAMPANHA ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">2</span><h2>Análise por campanha</h2></div>
+    <p class="lead">Três campanhas ativas no período (uma já pausada), todas com objetivo de leads. Ordenadas por volume de investimento.</p>
+
+    <!-- 2.1 buscapreco -->
+    <article class="camp">
+      <div class="camp-bar win"></div>
+      <div class="camp-body">
+        <div class="camp-id">2.1</div>
+        <h3>[LEADS][FREEMIUM] Captação de Leads (buscapreco.cienty.com.br)</h3>
+        <div class="tags">
+          <span class="pill ativa">Ativa</span>
+          <span class="pill publico">Público: LAL 1% + Interesses/Cargos farmácia · SP</span>
+        </div>
+        <div class="proj" style="--chart:#DC36C0">
+          <div class="proj-head">
+            <span class="proj-title">Leads por dia · junho/2026</span>
+            <span class="proj-total" data-total>Projeção…</span>
+          </div>
+          <canvas data-camp="buscapreco"></canvas>
+          <div class="proj-legend">
+            <span><i class="lg"></i> Realizado</span>
+            <span><i class="lg dash"></i> Projeção</span>
+            <span><i class="lg today"></i> Hoje (25/jun)</span>
+          </div>
+        </div>
+
+        <p class="camp-lead">
+          O <strong>motor de volume da conta</strong> — concentra 70% dos leads. CPL na média e CTR forte,
+          mas com <strong>forte dependência de um único criativo</strong> e um adset claramente abaixo dos demais.
+        </p>
+
+        <ul class="mlist">
+          <li><span class="m-key">Valor usado</span><span class="m-val">R$ 4.153,39</span><span class="m-note">72% do total</span></li>
+          <li><span class="m-key">Leads</span><span class="m-val">349</span><span class="m-note">70% do total</span></li>
+          <li><span class="m-key">Custo por lead</span><span class="m-val">R$ 11,90</span><span class="m-note">na média da conta</span></li>
+          <li><span class="m-key">CTR (todos)</span><span class="m-val">3,80%</span><span class="m-note good">bom · link 2,84%</span></li>
+          <li><span class="m-key">CPC</span><span class="m-val">R$ 0,83</span><span class="m-note">—</span></li>
+          <li><span class="m-key">Frequência</span><span class="m-val">1,78</span><span class="m-note good">saudável, há folga para escalar</span></li>
+        </ul>
+
+        <div class="cpl-bar">
+          <div class="cb-label">CPL vs. média da conta</div>
+          <div class="track">
+            <div class="fill win" style="width:51%">R$ 11,90</div>
+            <div class="avg-mark" style="left:50%"></div>
+          </div>
+          <div class="avg-tip">Linha preta = média da conta (<b>R$ 11,65</b>).</div>
+        </div>
+
+        <div class="analysis">
+          <span class="a-tag">Análise — nível ad set</span>
+          São 4 conjuntos com desempenhos bem diferentes:
+          <ul>
+            <li><b>Interesses e Cargos</b> (R$ 95/dia) → <b>CPL R$ 10,28</b>, CTR 4,18%, freq 1,45 — o melhor.</li>
+            <li><b>Visitantes site 180D</b> (R$ 95/dia) → <b>CPL R$ 10,54</b>, CTR 4,16%, freq 1,32 — folga grande.</li>
+            <li><b>PLANILHA ZMC (Miriam)</b> (R$ 35/dia) → <b>CPL R$ 17,10</b> rodando o <em>mesmo</em> criativo Luiza 03 que entrega R$ 10,32 nos outros. A diferença é a qualidade do público (LAL da planilha).</li>
+            <li><b>Teste de criativos</b> — já pausado, corretamente: o bloco de anúncios "— Cópia" gastou R$ 120 e gerou <b>1 lead</b> (CPL R$ 120).</li>
+          </ul>
+          <b>Criativo:</b> o vídeo <b>"Luiza 03"</b> sozinho carrega ~226 dos 349 leads. O <b>"Luiza 04"</b> (AD013) é um challenger forte — CTR 4,51% e CPL R$ 7,51, mas com só R$ 97 investidos.
+        </div>
+
+        <div class="analysis creative">
+          <span class="a-tag">Sugestões de criativo</span>
+          <b>O criativo é uma alavanca clara aqui</b> — há um vencedor subaproveitado, um erro de copy e dependência de um único vídeo.
+          <!-- C1 -->
+          <div class="cunit">
+            <h5 class="cunit-h">1 · Escalar o "Luiza 04" + 1 variação <span class="cunit-tag video">vídeo</span></h5>
+            <p class="what"><b>O quê:</b> o criativo mais eficiente da conta (CTR 4,51%, CPL R$ 7,51) teve só R$ 98 de verba. Produzir 1 variação no mesmo ângulo vencedor (economia de tempo na compra) para escalar sem depender de um único vídeo.</p>
+            <div class="brief">
+              <div class="brief-h">📋 Briefing — Vídeo / buscapreço / "O tempo que volta pro caixa"</div>
+              <dl class="bspec">
+                <dt>Formato/specs</dt><dd>9:16 vertical · 1080×1920 · 15–18s · MP4 1080p · legendas embutidas (assistível sem som) · música royalty-free ritmada</dd>
+                <dt>Público</dt><dd>donos e compradores de farmácia (SP)</dd>
+                <dt>Headline (título)</dt><dd><code>Farmácia, simplifique sua rotina de compras</code></dd>
+                <dt>CTA (botão)</dt><dd><code>Cadastre-se</code> (SIGN_UP)</dd>
+                <dt>Texto principal</dt><dd><div class="copybox">Cotar preço com vários distribuidores toma horas — e o tempo que some não volta no caixa. No buscapreço você compara tudo numa tela só e fecha o melhor preço em minutos. Grátis para sua farmácia. 👉 Cadastre-se e compre melhor hoje.</div></dd>
+              </dl>
+              <div class="roteiro-label">Roteiro cena a cena</div>
+              <div class="table-wrap"><table>
+                <thead><tr><th>Tempo</th><th>Imagem / B-roll</th><th>Texto na tela (caption grande)</th><th>Locução (VO)</th></tr></thead>
+                <tbody>
+                  <tr><td><b>0–3s</b> (gancho)</td><td>Dono de farmácia no balcão cercado de telefone e papéis, plano dinâmico</td><td><b>"Cotar toma 3 horas do seu dia?"</b></td><td>"Quanto tempo você perde cotando preço?"</td></tr>
+                  <tr><td>3–7s</td><td>Relógio girando, abas de WhatsApp e planilhas se acumulando</td><td>"Distribuidor por distribuidor…"</td><td>"Ligar pra cada distribuidor, comparar na mão…"</td></tr>
+                  <tr><td>7–12s</td><td>Mockup do buscapreço mostrando vários preços do mesmo item numa tela</td><td>"Tudo numa tela só"</td><td>"No buscapreço você vê todos os preços de uma vez."</td></tr>
+                  <tr><td>12–15s</td><td>Dedo toca o menor preço, selo verde de "melhor preço"</td><td>"Melhor preço em minutos"</td><td>"E fecha o melhor preço em minutos."</td></tr>
+                  <tr><td><b>15–18s</b> (CTA)</td><td>Tela final magenta com logo Cienty + botão</td><td>"Cadastre-se — é grátis" + logo</td><td>"Cadastre-se. É grátis pra sua farmácia."</td></tr>
+                </tbody>
+              </table></div>
+              <div class="palette"><span class="pl-label">Tom/cor:</span> <span><span class="sw" style="--c:#DC36C0"></span>magenta #DC36C0 (principal)</span> <span><span class="sw" style="--c:#FFB92A"></span>amarelo #FFB92A (números/CTA)</span> · fundo claro · gancho com texto GRANDE nos 3 primeiros segundos.</div>
+            </div>
+          </div>
+
+          <!-- C2 -->
+          <div class="cunit">
+            <h5 class="cunit-h">2 · Substituir os anúncios "— Cópia" (corrigir o ângulo) <span class="cunit-tag img">imagem estática</span></h5>
+            <p class="what"><b>O quê:</b> os anúncios "— Cópia" rodam a copy de <em>representante</em> dentro de uma campanha de <em>farmácia</em> (daí o CTR de 1–2% e ~0 leads). Substituir por uma estática com a dor certa do dono de farmácia.</p>
+            <div class="brief">
+              <div class="brief-h">📋 Briefing — Imagem estática / buscapreço / "Cotar não pode comer 3h do seu dia"</div>
+              <dl class="bspec">
+                <dt>Formato/specs</dt><dd>feed 4:5 · <b>1080×1350</b> px (+ versão story 9:16 · 1080×1920) · PNG · margem segura de 10% nas bordas · texto ocupando &lt; 20% para não penalizar entrega</dd>
+                <dt>Cor de fundo</dt><dd><span class="sw" style="--c:#11101A"></span><b>grafite #11101A</b> (alto contraste para o feed); faixa inferior <span class="sw" style="--c:#DC36C0"></span>magenta #DC36C0 (~28% da altura) com o CTA</dd>
+                <dt>Público</dt><dd>donos e compradores de farmácia (SP)</dd>
+                <dt>Headline (título)</dt><dd><code>Cotar não pode comer 3 horas do seu dia</code></dd>
+                <dt>CTA (botão)</dt><dd><code>Cadastre-se</code></dd>
+                <dt>Copy na imagem</dt><dd><b>Título (grande, topo):</b> "3 horas cotando preço. Toda semana." — com o "<b>3h</b>" em amarelo, maior.<br><b>Subtítulo (médio):</b> "Compare todos os distribuidores numa tela só. De graça."<br><b>Selo:</b> "Grátis para farmácias"</dd>
+                <dt>Texto principal</dt><dd><div class="copybox">Cada hora cotando preço é uma hora longe do balcão. O buscapreço junta os preços de todos os distribuidores numa tela só, de graça. 👉 Cadastre-se e compre melhor.</div></dd>
+                <dt>Layout / composição</dt><dd>Fundo grafite nos 70% superiores; headline em branco, peso bold, alinhada à esquerda no terço superior, com o número "3h" em amarelo e maior. Mockup do app buscapreço (lista de preços) flutuando à direita com leve sombra. Logo Cienty no canto superior esquerdo; selo "Grátis" arredondado em amarelo no canto superior direito. Faixa magenta inferior com o CTA em branco. Hierarquia visual: número &gt; headline &gt; subtítulo &gt; CTA.</dd>
+              </dl>
+              <div class="palette"><span class="pl-label">Tom/cor:</span> <span><span class="sw" style="--c:#11101A"></span>grafite #11101A</span> <span><span class="sw" style="--c:#DC36C0"></span>magenta #DC36C0</span> <span><span class="sw" style="--c:#FFB92A"></span>amarelo #FFB92A</span> <span><span class="sw" style="--c:#FFFFFF"></span>branco #FFFFFF</span></div>
+            </div>
+          </div>
+
+          <!-- C3 -->
+          <div class="cunit">
+            <h5 class="cunit-h">3 · Renovar o herói "Luiza 03" antes da fadiga <span class="cunit-tag video">vídeo</span></h5>
+            <p class="what"><b>O quê:</b> o Luiza 03 sozinho carrega ~45% dos leads da conta. Manter o ângulo que ganha e abrir com um <em>número concreto</em> de economia para diversificar antes que ele sature.</p>
+            <div class="brief">
+              <div class="brief-h">📋 Briefing — Vídeo / buscapreço / "A economia em número"</div>
+              <dl class="bspec">
+                <dt>Formato/specs</dt><dd>9:16 vertical · 1080×1920 · 12–16s · MP4 1080p · legendas embutidas · música</dd>
+                <dt>Público</dt><dd>donos e compradores de farmácia (SP)</dd>
+                <dt>Headline (título)</dt><dd><code>Sua farmácia pode economizar comparando preço</code></dd>
+                <dt>CTA (botão)</dt><dd><code>Cadastre-se</code></dd>
+                <dt>Texto principal</dt><dd><div class="copybox">Pequenas diferenças de preço viram margem no fim do mês. Veja quanto sua farmácia economiza comparando todos os distribuidores no buscapreço — de graça. 👉 Cadastre-se.</div></dd>
+              </dl>
+              <div class="roteiro-label">Roteiro cena a cena</div>
+              <div class="table-wrap"><table>
+                <thead><tr><th>Tempo</th><th>Imagem / B-roll</th><th>Texto na tela (caption grande)</th><th>Locução (VO)</th></tr></thead>
+                <tbody>
+                  <tr><td><b>0–3s</b> (gancho)</td><td>Número grande surgindo com animação de contador</td><td><b>"Sua farmácia economiza até X%"</b></td><td>"E se você economizasse até X% nas compras?"</td></tr>
+                  <tr><td>3–7s</td><td>Split: o mesmo produto com 3 preços de distribuidores diferentes</td><td>"O mesmo item, 3 preços"</td><td>"O mesmo item custa diferente em cada distribuidor."</td></tr>
+                  <tr><td>7–11s</td><td>Mockup do buscapreço destacando o menor preço</td><td>"O buscapreço acha o menor"</td><td>"O buscapreço mostra o menor preço na hora."</td></tr>
+                  <tr><td><b>11–16s</b> (CTA)</td><td>Tela magenta com logo Cienty + botão</td><td>"Cadastre-se — grátis" + logo</td><td>"Cadastre-se. É grátis pra sua farmácia."</td></tr>
+                </tbody>
+              </table></div>
+              <div class="palette"><span class="pl-label">Tom/cor:</span> <span><span class="sw" style="--c:#DC36C0"></span>magenta #DC36C0</span> <span><span class="sw" style="--c:#FFB92A"></span>amarelo #FFB92A (no número/%)</span> · o número da economia é o herói visual.</div>
+            </div>
+          </div>
+
+          <p class="what" style="margin-top:16px"><b>Higiene (sem briefing):</b> aposentar o "Feira Abrafad 02" (CTR 2,05%, CPL R$ 15,63) — só sair de circulação — e arquivar de vez o bloco "— Cópia". Concentrar a verba no trio Luiza 03 / Luiza 04 / Jessica.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2.2 Representantes -->
+    <article class="camp">
+      <div class="camp-bar win"></div>
+      <div class="camp-body">
+        <div class="camp-id">2.2</div>
+        <h3>[LEADS][SITE] Campanha de Representantes</h3>
+        <div class="tags">
+          <span class="pill ativa">Ativa</span>
+          <span class="pill publico">Público: Representantes (Vendas + Cargos farmácia) · SP</span>
+        </div>
+        <div class="proj" style="--chart:#DC36C0">
+          <div class="proj-head">
+            <span class="proj-title">Leads por dia · junho/2026</span>
+            <span class="proj-total" data-total>Projeção…</span>
+          </div>
+          <canvas data-camp="representantes"></canvas>
+          <div class="proj-legend">
+            <span><i class="lg"></i> Realizado</span>
+            <span><i class="lg dash"></i> Projeção</span>
+            <span><i class="lg today"></i> Hoje (25/jun)</span>
+          </div>
+        </div>
+
+        <p class="camp-lead">
+          Campanha com o <strong>CPL mais baixo da conta</strong>, demonstrando excelente aceitação da
+          proposta de valor por parte dos representantes. Subfinanciada para o resultado que entrega.
+        </p>
+
+        <ul class="mlist">
+          <li><span class="m-key">Valor usado</span><span class="m-val">R$ 869,94</span><span class="m-note">15% do total</span></li>
+          <li><span class="m-key">Leads</span><span class="m-val">115</span><span class="m-note">23% do total</span></li>
+          <li><span class="m-key">Custo por lead</span><span class="m-val">R$ 7,56</span><span class="m-note good">o menor da conta</span></li>
+          <li><span class="m-key">CTR (todos)</span><span class="m-val">3,52%</span><span class="m-note good">muito bom</span></li>
+          <li><span class="m-key">Frequência</span><span class="m-val">2,36</span><span class="m-note warn">começando a subir — monitorar saturação</span></li>
+        </ul>
+
+        <div class="cpl-bar">
+          <div class="cb-label">CPL vs. média da conta</div>
+          <div class="track">
+            <div class="fill win" style="width:32%">R$ 7,56</div>
+            <div class="avg-mark" style="left:50%"></div>
+          </div>
+          <div class="avg-tip">35% abaixo da média — o melhor retorno por real da conta.</div>
+        </div>
+
+        <div class="analysis">
+          <span class="a-tag">Análise — nível ad set</span>
+          Ambos os conjuntos (<em>Interesses - Vendas + Farmácia</em> e <em>Cargos - Farmácia</em>) estão
+          performando de forma quase idêntica (<b>CPL R$ 7,30 e R$ 7,86</b>, R$ 15/dia cada). A frequência
+          da <b>campanha (2,36) está bem acima da frequência de cada ad set (~1,80)</b> — sinal clássico de
+          <b>sobreposição de público</b>: os dois conjuntos disputam as mesmas pessoas no leilão. Há
+          recomendação do Meta para unificá-los. Além disso, só <b>2 criativos</b> rodam (REPS DVD 01 e 02),
+          ambos vídeo — pool raso, com risco de fadiga assim que o orçamento subir.
+        </div>
+
+        <div class="analysis creative">
+          <span class="a-tag">Sugestões de criativo</span>
+          <b>Performa bem, mas o estoque de criativo é raso e a frequência está subindo (2,36)</b> — melhorar aqui é prevenir fadiga, não corrigir falha.
+          <p class="what" style="margin-top:4px"><b>Contexto:</b> os 2 vídeos (REPS DVD 01 e 02) usam exatamente a <em>mesma</em> copy — repetir o mesmo recado à mesma pessoa é o que sobe a frequência. Os criativos abaixo diversificam os ângulos.</p>
+
+          <!-- C1 -->
+          <div class="cunit">
+            <h5 class="cunit-h">1 · Número concreto — a comissão com cifra <span class="cunit-tag video">vídeo · urgente</span></h5>
+            <p class="what"><b>O quê:</b> vídeo 9:16, ângulo <em>comissão recorrente</em> com número concreto, para dar variedade ao público pequeno e segurar o CPL de ~R$ 7,50 ao escalar. (A copy atual promete "dinheiro no bolso" sem cifra.)</p>
+            <div class="brief">
+              <div class="brief-h">📋 Briefing — Vídeo / Representantes / "A conta da comissão"</div>
+              <dl class="bspec">
+                <dt>Formato/specs</dt><dd>9:16 vertical · 1080×1920 · 15–18s · MP4 1080p · legendas embutidas (assistível sem som) · música royalty-free ritmada</dd>
+                <dt>Público</dt><dd>representantes e consultores de farmácia (SP)</dd>
+                <dt>Headline (título)</dt><dd><code>Indique a Cienty e ganhe comissão recorrente</code></dd>
+                <dt>CTA (botão)</dt><dd><code>Cadastre-se</code> (SIGN_UP) — testar contra o LEARN_MORE atual</dd>
+                <dt>Texto principal</dt><dd><div class="copybox">Você visita farmácias toda semana. E se cada visita virasse renda recorrente? Indique a Cienty: suas farmácias economizam nas compras e você ganha comissão a cada uma que entra. Sem custo pra elas, ganho recorrente pra você. 👉 Cadastre-se e comece a indicar.</div></dd>
+              </dl>
+              <div class="roteiro-label">Roteiro cena a cena</div>
+              <div class="table-wrap"><table>
+                <thead><tr><th>Tempo</th><th>Imagem / B-roll</th><th>Texto na tela (caption grande)</th><th>Locução (VO)</th></tr></thead>
+                <tbody>
+                  <tr><td><b>0–3s</b> (gancho)</td><td>Representante entrando numa farmácia, plano dinâmico</td><td><b>"Quantas farmácias você visita por semana?"</b></td><td>"Quantas farmácias você visita por semana?"</td></tr>
+                  <tr><td>3–7s</td><td>Mesmo rep, ícone de $ aparecendo a cada porta</td><td>"E se cada uma virasse comissão?"</td><td>"E se cada uma dessas visitas virasse comissão recorrente?"</td></tr>
+                  <tr><td>7–12s</td><td>Mockup do app Cienty comparando preços de distribuidores</td><td>"A farmácia economiza. Você ganha."</td><td>"Você indica a Cienty, a farmácia economiza…"</td></tr>
+                  <tr><td>12–15s</td><td>Animação de comissão recorrente (gráfico subindo)</td><td>"Comissão. Todo mês."</td><td>"…e você ganha comissão. Todo mês."</td></tr>
+                  <tr><td><b>15–18s</b> (CTA)</td><td>Tela final magenta com logo Cienty + botão</td><td>"Cadastre-se e comece a indicar" + logo</td><td>"Cadastre-se agora e comece a indicar."</td></tr>
+                </tbody>
+              </table></div>
+              <div class="palette"><span class="pl-label">Tom/cor:</span> <span><span class="sw" style="--c:#DC36C0"></span>magenta #DC36C0 (principal)</span> <span><span class="sw" style="--c:#FFB92A"></span>amarelo #FFB92A (números e no $)</span> · gancho com texto bem grande nos 3 primeiros segundos.</div>
+            </div>
+          </div>
+
+          <!-- C2 -->
+          <div class="cunit">
+            <h5 class="cunit-h">2 · Prova social — depoimento real <span class="cunit-tag video">vídeo</span></h5>
+            <p class="what"><b>O quê:</b> depoimento real (UGC, gravado em celular) de um representante que <em>já</em> ganha com a Cienty — quebra a desconfiança natural da promessa de renda.</p>
+            <div class="brief">
+              <div class="brief-h">📋 Briefing — Vídeo / Representantes / "Quem já indica conta"</div>
+              <dl class="bspec">
+                <dt>Formato/specs</dt><dd>9:16 vertical · 1080×1920 · 20–30s · MP4 1080p · estética autêntica (celular na mão) · legendas embutidas · sem música ou música baixa</dd>
+                <dt>Público</dt><dd>representantes e consultores de farmácia (SP)</dd>
+                <dt>Headline (título)</dt><dd><code>Veja quanto um representante ganha indicando a Cienty</code></dd>
+                <dt>CTA (botão)</dt><dd><code>Cadastre-se</code></dd>
+                <dt>Texto principal</dt><dd><div class="copybox">"Eu já indicava produtos pras farmácias. Agora indico a Cienty e ganho comissão recorrente em cima disso." Veja o depoimento de quem já está faturando. 👉 Cadastre-se e comece a indicar.</div></dd>
+              </dl>
+              <div class="roteiro-label">Roteiro cena a cena</div>
+              <div class="table-wrap"><table>
+                <thead><tr><th>Tempo</th><th>Imagem / B-roll</th><th>Texto na tela (caption grande)</th><th>Locução (fala real)</th></tr></thead>
+                <tbody>
+                  <tr><td><b>0–3s</b> (gancho)</td><td>Representante real falando direto pra câmera (selfie)</td><td><b>"Eu ganho comissão indicando a Cienty"</b></td><td>"Deixa eu te contar como eu ganho com a Cienty."</td></tr>
+                  <tr><td>3–12s</td><td>Rep mostrando o celular/app, ambiente de farmácia ao fundo</td><td>"As farmácias que eu atendo já usam"</td><td>"As farmácias que eu visito economizam, e eu ganho por cada uma."</td></tr>
+                  <tr><td>12–22s</td><td>Close no rosto, tom de confiança</td><td>"Renda recorrente, sem custo pra elas"</td><td>"É renda todo mês, e não custa nada pra farmácia."</td></tr>
+                  <tr><td><b>22–30s</b> (CTA)</td><td>Tela final magenta com logo Cienty + botão</td><td>"Cadastre-se e comece a indicar" + logo</td><td>"Se você é representante, cadastre-se e comece a indicar."</td></tr>
+                </tbody>
+              </table></div>
+              <div class="palette"><span class="pl-label">Tom/cor:</span> autêntico/UGC, pouca pós — só as legendas e a tela final na paleta Cienty (<span><span class="sw" style="--c:#DC36C0"></span>#DC36C0</span> / <span><span class="sw" style="--c:#FFB92A"></span>#FFB92A</span>).</div>
+            </div>
+          </div>
+
+          <!-- C3 -->
+          <div class="cunit">
+            <h5 class="cunit-h">3 · Quebra de objeção — "leva 1 minuto" <span class="cunit-tag video">vídeo · screen-rec</span></h5>
+            <p class="what"><b>O quê:</b> vídeo curto de gravação de tela mostrando como é simples se cadastrar e indicar — remove a objeção de "dá trabalho".</p>
+            <div class="brief">
+              <div class="brief-h">📋 Briefing — Vídeo / Representantes / "Cadastrar leva 1 minuto"</div>
+              <dl class="bspec">
+                <dt>Formato/specs</dt><dd>9:16 vertical · 1080×1920 · 10–15s · screen-recording do fluxo real + legendas · música leve</dd>
+                <dt>Público</dt><dd>representantes e consultores de farmácia (SP)</dd>
+                <dt>Headline (título)</dt><dd><code>Cadastrar e indicar leva 1 minuto</code></dd>
+                <dt>CTA (botão)</dt><dd><code>Cadastre-se</code></dd>
+                <dt>Texto principal</dt><dd><div class="copybox">Sem burocracia: você se cadastra em 1 minuto e já começa a indicar. 👉 Cadastre-se.</div></dd>
+                <dt>Fluxo (3 telas)</dt><dd><b>(1)</b> tela de cadastro preenchendo → caption "Preencha em 1 minuto"; <b>(2)</b> tela de indicar farmácia → "Indique sua primeira farmácia"; <b>(3)</b> painel de comissão → "Acompanhe sua comissão". Fechar na tela final magenta com logo + CTA.</dd>
+              </dl>
+              <div class="palette"><span class="pl-label">Tom/cor:</span> <span><span class="sw" style="--c:#DC36C0"></span>magenta #DC36C0</span> <span><span class="sw" style="--c:#FFB92A"></span>amarelo #FFB92A</span> · ritmo rápido, cada tela ~3–4s.</div>
+            </div>
+          </div>
+
+          <p class="what" style="margin-top:16px"><b>Sem briefing (operacional):</b> testar o CTA "Quero Ganhar Indicando" contra o atual "Quero Me Cadastrar e Indicar"; e <b>não mexer no que ganha</b> — manter os DVD 01/02 no ar (CTR 3,3–3,7%) e apenas <em>somar</em> os novos, para segurar a frequência abaixo de 2 ao escalar.</p>
+        </div>
+      </div>
+    </article>
+
+    <!-- 2.3 comofunciona -->
+    <article class="camp">
+      <div class="camp-bar off"></div>
+      <div class="camp-body">
+        <div class="camp-id">2.3</div>
+        <h3>[LEADS] Captação de Leads (comofunciona.cienty.com.br)</h3>
+        <div class="tags">
+          <span class="pill pausada">Pausada</span>
+          <span class="pill publico">Público: LAL 1% + Interesses/Cargos farmácia · SP</span>
+        </div>
+        <div class="proj" style="--chart:#8A828D">
+          <div class="proj-head">
+            <span class="proj-title">Leads por dia · junho/2026</span>
+            <span class="proj-total" data-total>Projeção…</span>
+          </div>
+          <canvas data-camp="comofunciona"></canvas>
+          <div class="proj-legend">
+            <span><i class="lg"></i> Realizado</span>
+            <span><i class="lg today"></i> Pausada ~dia 14</span>
+          </div>
+        </div>
+
+        <p class="camp-lead">
+          Pausada — e a decisão foi correta: era a <strong>de pior eficiência</strong>. Mas o diagnóstico
+          revela algo valioso sobre <strong>onde está o gargalo</strong> (e não é o criativo).
+        </p>
+
+        <ul class="mlist">
+          <li><span class="m-key">Valor usado</span><span class="m-val">R$ 743,30</span><span class="m-note">13% do total</span></li>
+          <li><span class="m-key">Leads</span><span class="m-val">31</span><span class="m-note">6% do total</span></li>
+          <li><span class="m-key">Custo por lead</span><span class="m-val">R$ 23,98</span><span class="m-note crit">2x a média — o pior da conta</span></li>
+          <li><span class="m-key">CTR (todos)</span><span class="m-val">2,72%</span><span class="m-note crit">o mais baixo</span></li>
+          <li><span class="m-key">Frequência</span><span class="m-val">1,44</span><span class="m-note">baixa</span></li>
+        </ul>
+
+        <div class="cpl-bar">
+          <div class="cb-label">CPL vs. média da conta</div>
+          <div class="track">
+            <div class="fill crit" style="width:100%">R$ 23,98</div>
+            <div class="avg-mark" style="left:50%"></div>
+          </div>
+          <div class="avg-tip">Mais que o dobro da média. Estourou a escala.</div>
+        </div>
+
+        <div class="analysis">
+          <span class="a-tag">Análise — a landing page é o gargalo</span>
+          95% do gasto e dos leads vieram de um único anúncio: <b>"Luiza 03 — comofunciona"</b>
+          (R$ 677,54 → 30 leads, CPL R$ 22,58). O detalhe decisivo: <b>esse é o mesmo vídeo Luiza 03 que
+          entrega CPL ~R$ 10 no buscapreco</b>. Mesmo criativo, mesmo público (SP/farmácia), resultado 2x pior.
+          A única variável que muda é a <b>página de destino</b> (comofunciona.cienty.com.br) — que converte
+          cerca de metade. <b>O problema não é o anúncio; é a página.</b>
+        </div>
+      </div>
+    </article>
+  </section>
+
+  <!-- ============ 3. PLANO DE AÇÃO ============ -->
+  <section>
+    <div class="sec-head"><span class="sec-num">3</span><h2>Plano de ação — o que fazer e por quê</h2></div>
+    <p class="lead">
+      Cada item traz a <strong>ação específica (com valores)</strong> e a <strong>hipótese de resultado</strong>.
+      Priorizado por impacto e esforço.
+    </p>
+
+    <div class="act-group-label">Prioridade alta · esta semana</div>
+
+    <div class="action">
+      <span class="prio alta">Alta</span>
+      <div>
+        <h4>1. Cortar o adset lastro do buscapreco</h4>
+        <p class="do">Reduzir o ad set <b>"PLANILHA ZMC (Miriam)"</b> de <b>R$ 35 → R$ 15/dia</b> (ou pausar) e remanejar os ~R$ 20/dia liberados para os dois adsets vencedores.</p>
+        <p class="why">esse conjunto roda o mesmo criativo a <b>CPL R$ 17,10 (+66%)</b>. Migrar a verba para públicos que entregam R$ 10,3 derruba o CPL médio do buscapreco de R$ 11,90 para ~R$ 10,8 e gera ~5–6 leads extras/mês com o mesmo gasto.</p>
+      </div>
+    </div>
+
+    <div class="action">
+      <span class="prio alta">Alta</span>
+      <div>
+        <h4>2. Escalar os dois adsets vencedores do buscapreco</h4>
+        <p class="do">Aumentar <b>"Interesses e Cargos"</b> e <b>"Visitantes 180D"</b> de <b>R$ 95 → R$ 115/dia cada</b> (+21%, +R$ 40/dia somados ≈ <b>+R$ 1.200/mês</b>).</p>
+        <p class="why">ambos entregam leads a R$ 10,3–10,5 com frequência de apenas 1,3–1,45 — folga grande antes de saturar. A projeção é de <b>~110 leads adicionais/mês</b> mantendo o CPL na casa dos R$ 10. Subir em degraus de 20% evita resetar o aprendizado do conjunto.</p>
+      </div>
+    </div>
+
+    <div class="act-group-label">Prioridade média · próximas 2 semanas</div>
+
+    <div class="action">
+      <span class="prio media">Média</span>
+      <div>
+        <h4>3. Consolidar os dois adsets de Representantes em um só</h4>
+        <p class="do">Unificar <b>"Vendas + Farmácia"</b> e <b>"Cargos - Farmácia"</b> num único conjunto, somando o orçamento (R$ 30/dia) e mantendo os dois criativos.</p>
+        <p class="why">a frequência da campanha (2,36) está acima da dos adsets (1,80) e o CPL dos dois é idêntico — eles competem pelas mesmas pessoas no leilão. Unificar elimina essa competição interna, reduz a frequência e protege o CPL de R$ 7,56. É a própria recomendação do Meta para sobreposição de público.</p>
+      </div>
+    </div>
+
+    <div class="action">
+      <span class="prio media">Média</span>
+      <div>
+        <h4>4. Depois de consolidar, escalar Representantes</h4>
+        <p class="do">Subir o orçamento de <b>R$ 30 → R$ 45/dia</b> (+50%, +R$ 15/dia ≈ <b>+R$ 450/mês</b>) no conjunto unificado.</p>
+        <p class="why">é o melhor CPL da conta (R$ 7,56) consumindo só 15% da verba. Há espaço claro para mais volume de representantes ao menor custo — mas só depois de consolidar (passo 3) e adicionar criativo (passo 5), senão a freq de 2,36 vira fadiga.</p>
+      </div>
+    </div>
+
+    <div class="action">
+      <span class="prio media">Média</span>
+      <div>
+        <h4>5. Produzir 2 novos criativos para Representantes</h4>
+        <p class="do">Criar 2 variações em <b>vídeo vertical 9:16 (Reels/Stories), 15–25s</b>, com <b>depoimento real de um representante</b> e copy focada em renda/comissão — ângulo "<b>quanto um representante Cienty ganha indicando para farmácias</b>", gancho de ganho financeiro nos 3 primeiros segundos.</p>
+        <p class="why">hoje só 2 vídeos rodam e a freq já está em 2,36. Renovar o pool de criativo segura a frequência abaixo de 2 ao escalar o orçamento — sustentando o CPL de R$ 7–8 em vez de deixá-lo subir com a fadiga.</p>
+      </div>
+    </div>
+
+    <div class="action">
+      <span class="prio media">Média</span>
+      <div>
+        <h4>6. Promover o "Luiza 04" no buscapreco</h4>
+        <p class="do">Isolar o criativo <b>"Luiza 04" (AD013)</b> num teste com <b>R$ 30–40/dia</b> próprio, contra o atual Luiza 03.</p>
+        <p class="why">já mostra CTR 4,51% e CPL R$ 7,51 — melhor que o Luiza 03 — mas com só R$ 97 gastos. Dar volume valida se sustenta o CPL e cria um <b>segundo criativo principal</b>, reduzindo a dependência do Luiza 03 (que sozinho responde por ~45% dos leads da conta).</p>
+      </div>
+    </div>
+
+    <div class="act-group-label">Prioridade baixa · diagnóstico e higiene</div>
+
+    <div class="action">
+      <span class="prio baixa">Baixa</span>
+      <div>
+        <h4>7. Auditar a landing page da "comofunciona" antes de reativar</h4>
+        <p class="do">Manter pausada. Antes de reativar, <b>revisar a página comofunciona.cienty.com.br</b> (proposta de valor acima da dobra, CTA único e claro, formulário curto) — ou redirecionar esse tráfego para a LP do buscapreco. Rodar 1 teste A/B isolando só a página.</p>
+        <p class="why">o mesmo criativo Luiza 03 converte 2x melhor no buscapreco. O gargalo está na página, não no anúncio. Corrigir a LP pode recuperar um CPL de R$ 24 para a casa dos R$ 12 — vale a investigação antes de queimar mais verba.</p>
+      </div>
+    </div>
+
+    <div class="action">
+      <span class="prio baixa">Baixa</span>
+      <div>
+        <h4>8. Arquivar o bloco de criativos "— Cópia"</h4>
+        <p class="do">Não reativar os anúncios <b>"[V] … — Cópia"</b> do adset de teste (já pausado). Arquivar.</p>
+        <p class="why">gastaram R$ 120 e geraram 1 lead (CPL R$ 120) com CTR de 1–2%. Os ângulos de copy testados não converteram — manter parado libera atenção para os testes que importam (passo 6).</p>
+      </div>
+    </div>
+
+    <!-- Tabela-resumo de orçamento -->
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Ad set / Campanha</th><th>Orçamento atual</th><th>Proposto</th><th>Variação</th><th>CPL atual</th></tr>
+        </thead>
+        <tbody>
+          <tr><td>buscapreco · Interesses e Cargos</td><td class="num">R$ 95/dia</td><td class="num">R$ 115/dia</td><td class="num delta-up">+21%</td><td class="num">R$ 10,28</td></tr>
+          <tr><td>buscapreco · Visitantes 180D</td><td class="num">R$ 95/dia</td><td class="num">R$ 115/dia</td><td class="num delta-up">+21%</td><td class="num">R$ 10,54</td></tr>
+          <tr><td>buscapreco · PLANILHA Miriam</td><td class="num">R$ 35/dia</td><td class="num">R$ 15/dia</td><td class="num delta-down">−57%</td><td class="num">R$ 17,10</td></tr>
+          <tr><td>Representantes (consolidado)</td><td class="num">R$ 30/dia</td><td class="num">R$ 45/dia</td><td class="num delta-up">+50%</td><td class="num">R$ 7,56</td></tr>
+          <tr><td>comofunciona</td><td class="num">pausada</td><td class="num">manter parada</td><td class="num">—</td><td class="num">R$ 23,98</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </section>
+
+  <footer>
+    <b>Fonte:</b> Meta Marketing API (Graph v23.0), conta act_1319493516659359, janela <code>last_30d</code>.
+    Lead = ação <code>lead</code> / <code>onsite_conversion.lead_grouped</code>. CPL = gasto ÷ leads no período.<br>
+    <b>Observações:</b> projeções de leads e CPL são hipóteses baseadas no desempenho atual, não garantias —
+    o leilão reage a mudanças de orçamento e exige reaprendizado. Escale em degraus de ~20% e reavalie a cada 3–4 dias.<br>
+    <b>Gerado em</b> 25/jun/2026 · imagem-forge / módulo de gestão de anúncios Cienty.
+  </footer>
+
+</div>
+
+<script>
+  // Leads/dia em junho/2026 (dias 1–25; dia 25 = hoje, parcial). Fonte: Meta API, time_increment=1.
+  const SERIES = {
+    buscapreco:     { color: "#DC36C0", paused: false, actual: [13,11,14,8,6,6,13,16,6,10,12,5,6,5,10,6,9,18,5,12,19,28,25,10,3] },
+    representantes: { color: "#DC36C0", paused: false, actual: [2,4,2,7,6,2,7,3,5,2,4,1,0,4,5,2,5,8,1,1,7,1,5,2,0] },
+    comofunciona:   { color: "#8A828D", paused: true,  actual: [3,3,2,2,2,1,2,1,1,2,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0] },
+  };
+  const DAYS = 30;          // junho
+  const sum = (a) => a.reduce((x, y) => x + y, 0);
+  const hexA = (hex, a) => { const n = parseInt(hex.slice(1), 16); return `rgba(${(n>>16)&255},${(n>>8)&255},${n&255},${a})`; };
+
+  // Projeta os dias restantes pelo ritmo médio dos últimos 7 dias COMPLETOS (exclui hoje).
+  function project(cfg) {
+    const complete = cfg.actual.slice(0, -1);
+    const last7 = complete.slice(-7);
+    const avg = cfg.paused ? 0 : sum(last7) / Math.max(1, last7.length);
+    const proj = [];
+    for (let d = cfg.actual.length + 1; d <= DAYS; d++) proj.push(Math.round(avg));
+    return { avg, proj };
+  }
+
+  function draw(canvas) {
+    const cfg = SERIES[canvas.dataset.camp];
+    const dpr = window.devicePixelRatio || 1;
+    const w = canvas.clientWidth, h = canvas.clientHeight;
+    canvas.width = w * dpr; canvas.height = h * dpr;
+    const ctx = canvas.getContext("2d");
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    ctx.clearRect(0, 0, w, h);
+
+    const padL = 26, padR = 10, padT = 12, padB = 20;
+    const plotW = w - padL - padR, plotH = h - padT - padB;
+    const today = cfg.actual.length;            // 25
+    const { avg, proj } = project(cfg);
+    const all = cfg.actual.concat(proj);
+    const yMax = Math.max(5, Math.ceil(Math.max(...all) / 5) * 5);
+    const X = (d) => padL + ((d - 1) / (DAYS - 1)) * plotW;   // d: 1..30
+    const Y = (v) => padT + plotH - (v / yMax) * plotH;
+    const col = cfg.color;
+
+    // grelha
+    ctx.strokeStyle = "#ECE5EC"; ctx.lineWidth = 1;
+    ctx.beginPath(); ctx.moveTo(padL, Y(0)); ctx.lineTo(w - padR, Y(0)); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(padL, Y(yMax)); ctx.lineTo(w - padR, Y(yMax)); ctx.stroke();
+    // rótulos y
+    ctx.fillStyle = "#8A828D"; ctx.font = "10px -apple-system, system-ui, sans-serif";
+    ctx.textAlign = "right"; ctx.textBaseline = "middle";
+    ctx.fillText("0", padL - 6, Y(0)); ctx.fillText(String(yMax), padL - 6, Y(yMax));
+    // rótulos x (dia do mês)
+    ctx.textAlign = "center"; ctx.textBaseline = "top";
+    [1, 5, 10, 15, 20, 25, 30].forEach((d) => ctx.fillText(String(d), X(d), h - padB + 5));
+
+    // área do realizado
+    ctx.beginPath(); ctx.moveTo(X(1), Y(cfg.actual[0]));
+    for (let i = 1; i < cfg.actual.length; i++) ctx.lineTo(X(i + 1), Y(cfg.actual[i]));
+    ctx.lineTo(X(today), Y(0)); ctx.lineTo(X(1), Y(0)); ctx.closePath();
+    ctx.fillStyle = hexA(col, 0.13); ctx.fill();
+
+    // linha do realizado
+    ctx.beginPath(); ctx.moveTo(X(1), Y(cfg.actual[0]));
+    for (let i = 1; i < cfg.actual.length; i++) ctx.lineTo(X(i + 1), Y(cfg.actual[i]));
+    ctx.strokeStyle = col; ctx.lineWidth = 2; ctx.lineJoin = "round"; ctx.stroke();
+
+    // projeção tracejada
+    if (proj.length) {
+      ctx.beginPath(); ctx.moveTo(X(today), Y(cfg.actual[today - 1]));
+      for (let i = 0; i < proj.length; i++) ctx.lineTo(X(today + 1 + i), Y(proj[i]));
+      ctx.setLineDash([4, 4]); ctx.strokeStyle = hexA(col, 0.75); ctx.lineWidth = 2; ctx.stroke();
+      ctx.setLineDash([]);
+      for (let i = 0; i < proj.length; i++) {
+        ctx.beginPath(); ctx.arc(X(today + 1 + i), Y(proj[i]), 2.2, 0, 7); ctx.fillStyle = hexA(col, 0.75); ctx.fill();
+      }
+    }
+
+    // marca "hoje"
+    ctx.beginPath(); ctx.moveTo(X(today), padT); ctx.lineTo(X(today), Y(0));
+    ctx.setLineDash([2, 3]); ctx.strokeStyle = hexA("#1B1419", 0.45); ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+
+    // legenda numérica (total projetado)
+    const totalProj = sum(cfg.actual) + sum(proj);
+    const cap = canvas.closest(".proj").querySelector("[data-total]");
+    if (cfg.paused) {
+      cap.innerHTML = `${sum(cfg.actual)} leads no mês · <b>sem projeção</b>`;
+    } else {
+      cap.innerHTML = `Projeção fim do mês: <b>~${Math.round(totalProj / 5) * 5}</b> leads · ritmo ~${Math.round(avg)}/dia`;
+    }
+  }
+
+  function drawAll() { document.querySelectorAll("canvas[data-camp]").forEach(draw); }
+  drawAll();
+  let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(drawAll, 150); });
+</script>
