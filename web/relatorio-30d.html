@@ -219,6 +219,26 @@
   .avg-tip { font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; }
   .avg-tip b { color: var(--ink); }
 
+  /* ---- Referência de criativo/conjunto (miniatura + link de preview) ---- */
+  .crefs { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 18px; }
+  .crefs-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); width: 100%; margin-bottom: 2px; }
+  .cref {
+    display: inline-flex; align-items: center; gap: 9px; vertical-align: middle;
+    background: #fff; border: 1px solid var(--line); border-radius: 9px;
+    padding: 4px 11px 4px 4px; text-decoration: none; color: var(--ink); max-width: 280px;
+  }
+  .cref:hover { border-color: var(--accent); background: var(--accent-wash); }
+  .cref-thumb {
+    width: 38px; height: 38px; border-radius: 6px; object-fit: cover; flex: none;
+    background: var(--line-soft); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; color: var(--ink-faint);
+  }
+  .cref-meta { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+  .cref-name { font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; }
+  .cref-link { font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--accent-deep); }
+  .cref-link.off { color: var(--ink-faint); }
+
   .analysis {
     background: var(--ground);
     border-left: 3px solid var(--accent);
@@ -233,6 +253,25 @@
   .analysis li { margin-bottom: 6px; }
   .analysis.creative { border-left-color: var(--gold); background: #FFFCF4; margin-top: 14px; }
   .analysis.creative .a-tag { color: var(--gold-deep); }
+
+  /* creative suggestions: collapsible (expand/minimize) */
+  details.analysis.creative { padding: 0; }
+  details.analysis.creative > summary {
+    list-style: none; cursor: pointer; user-select: none;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 16px 18px;
+  }
+  details.analysis.creative > summary::-webkit-details-marker { display: none; }
+  details.analysis.creative > summary .a-tag { margin-bottom: 0; }
+  details.analysis.creative > summary:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+  .creative-toggle {
+    flex: none; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--gold-deep); background: var(--gold-wash); border-radius: 999px; padding: 4px 11px; white-space: nowrap;
+  }
+  .creative-toggle::after { content: "Ver sugestões \25B8"; }
+  details.analysis.creative[open] > summary .creative-toggle::after { content: "Minimizar \25BE"; }
+  details.analysis.creative > summary:hover .creative-toggle { background: var(--gold); color: #fff; }
+  .creative-content { padding: 0 18px 16px; }
 
   /* ---- Creative briefings ---- */
   .cunit { margin-top: 18px; }
@@ -272,7 +311,18 @@
   .proj-title { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); }
   .proj-total { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
   .proj-total b { color: var(--accent-deep); font-size: 15px; }
-  .proj canvas { width: 100%; height: 150px; display: block; }
+  .proj { position: relative; }
+  .proj canvas { width: 100%; height: 150px; display: block; cursor: crosshair; }
+  .proj-tip {
+    position: absolute; display: none; pointer-events: none; z-index: 5;
+    transform: translate(-50%, -100%);
+    background: var(--ink); color: #fff; font-size: 11.5px; font-weight: 600;
+    padding: 5px 9px; border-radius: 7px; white-space: nowrap; font-variant-numeric: tabular-nums;
+    box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  }
+  .proj-tip .tip-tag { margin-left: 7px; font-size: 9.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 1px 5px; border-radius: 4px; }
+  .proj-tip .tip-tag.real { background: rgba(255,255,255,.18); color: #fff; }
+  .proj-tip .tip-tag.proj { background: var(--gold); color: var(--ink); }
   .proj-legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; }
   .proj-legend span { display: inline-flex; align-items: center; gap: 6px; }
   .lg { width: 16px; height: 0; border-top: 2px solid var(--chart, var(--accent)); }
@@ -430,6 +480,17 @@
           <div class="avg-tip">Linha preta = média da conta (<b>R$ 11,65</b>).</div>
         </div>
 
+        <!--CREFS:Luiza 03 (herói)=120241513139380068|Luiza 04 (challenger)=120241298134200068|Jessica=120242414482760068|Feira Abrafad 02=120242414482730068|"— Cópia"=120244384668020068-->
+        <div class="crefs">
+          <span class="crefs-label">Criativos citados</span>
+          <a class="cref" href="https://fb.me/35Kdq0Q642K3IXQ" target="_blank" rel="noopener"><img class="cref-thumb" src="data:image/jpeg;base64,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" alt="Criativo Luiza 03 (herói)"><span class="cref-meta"><span class="cref-name">Luiza 03 (herói)</span><span class="cref-link">ver no Facebook ↗</span></span></a>
+          <a class="cref" href="https://fb.me/2a95RfDtwaDuqcB" target="_blank" rel="noopener"><img class="cref-thumb" src="data:image/jpeg;base64,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" alt="Criativo Luiza 04 (challenger)"><span class="cref-meta"><span class="cref-name">Luiza 04 (challenger)</span><span class="cref-link">ver no Facebook ↗</span></span></a>
+          <a class="cref" href="https://fb.me/29JqKQ06piwbT1K" target="_blank" rel="noopener"><img class="cref-thumb" src="data:image/jpeg;base64,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" alt="Criativo Jessica"><span class="cref-meta"><span class="cref-name">Jessica</span><span class="cref-link">ver no Facebook ↗</span></span></a>
+          <a class="cref" href="https://fb.me/266j2sLDu0D2zev" target="_blank" rel="noopener"><img class="cref-thumb" src="data:image/jpeg;base64,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" alt="Criativo Feira Abrafad 02"><span class="cref-meta"><span class="cref-name">Feira Abrafad 02</span><span class="cref-link">ver no Facebook ↗</span></span></a>
+          <a class="cref" href="https://fb.me/21z5DVdPLFqU90q" target="_blank" rel="noopener"><img class="cref-thumb" src="data:image/jpeg;base64,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" alt="Criativo &quot;— Cópia&quot;"><span class="cref-meta"><span class="cref-name">&quot;— Cópia&quot;</span><span class="cref-link">ver no Facebook ↗</span></span></a>
+        </div>
+        <!--/CREFS-->
+
         <div class="analysis">
           <span class="a-tag">Análise — nível ad set</span>
           São 4 conjuntos com desempenhos bem diferentes:
@@ -442,8 +503,9 @@
           <b>Criativo:</b> o vídeo <b>"Luiza 03"</b> sozinho carrega ~226 dos 349 leads. O <b>"Luiza 04"</b> (AD013) é um challenger forte — CTR 4,51% e CPL R$ 7,51, mas com só R$ 97 investidos.
         </div>
 
-        <div class="analysis creative">
-          <span class="a-tag">Sugestões de criativo</span>
+        <details class="analysis creative">
+          <summary><span class="a-tag">Sugestões de criativo</span><span class="creative-toggle"></span></summary>
+          <div class="creative-content">
           <b>O criativo é uma alavanca clara aqui</b> — há um vencedor subaproveitado, um erro de copy e dependência de um único vídeo.
           <!-- C1 -->
           <div class="cunit">
@@ -521,7 +583,8 @@
           </div>
 
           <p class="what" style="margin-top:16px"><b>Higiene (sem briefing):</b> aposentar o "Feira Abrafad 02" (CTR 2,05%, CPL R$ 15,63) — só sair de circulação — e arquivar de vez o bloco "— Cópia". Concentrar a verba no trio Luiza 03 / Luiza 04 / Jessica.</p>
-        </div>
+          </div>
+        </details>
       </div>
     </article>
 
@@ -570,6 +633,14 @@
           <div class="avg-tip">35% abaixo da média — o melhor retorno por real da conta.</div>
         </div>
 
+        <!--CREFS:REPS DVD 01=120242772264620068|REPS DVD 02=120242772992130068-->
+        <div class="crefs">
+          <span class="crefs-label">Criativos citados</span>
+          <a class="cref" href="https://fb.me/1UuAZzowLAez2ss" target="_blank" rel="noopener"><img class="cref-thumb" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/7QCEUGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAGgcAigAYkZCTUQwYTAwMGE3ZDAxMDAwMGQ2MDEwMDAwNjIwMjAwMDA4YTAyMDAwMGI2MDIwMDAwMGYwMzAwMDBlZDAzMDAwMDA3MDQwMDAwMzkwNDAwMDA1YTA0MDAwMDdmMDUwMDAwAP/bAIQABgcHDQkNDAwMDBENDg0REREQEBERExASERIQExMUExUVExQTFBMXFxcTFBUXGRkXFRccGxwXGxkZGx4bHhsbFgEGBgYLCAsKCwsKDQkLCQ0MDAoKDAwPCwwLDAsPEA4NDg4NDhAODQ0KDQ0ODw4QEA4PEAwODBAPEBAPFxkXFxfB/8IAEQgAQABAAwEiAAIRAQMRAf/EAEgAAAIDAQEAAAAAAAAAAAAAAAMEAgUGAQAQAAEDAgQEBAYCAwAAAAAAAAEAESECMQMQQVESYXGBBBOh8CAikbHB0RThIzJi/9oADAMBAAIAAwAAAAF4ouwkxIDMe+8uf3hpu5PhNOnIXREUq2Rsu3NO/INgOApRzbrt/wBHhEC1kWdaIGhIGjDcV8h62dE9Wt0ee1A5+tHqqcOvZe1OcX//2gAIAQEAAQUCQ+EqrDFebsv5OFwUYgryZH5Fj0MaVSBiA4VBXk+QVSHXj8CkU143HlXRVw/x/wDHg0HhdUYvAsTE415aHhyvNVFcjE4hwLhKlUhCrhXjcI4VdNc+Gpg18Ap/1QpAVQAXi/nWH4WaMOasEVryuEGoA0Ys1YqrKoq4F5zIeKVWOqCKz//aAAgBAwABPwHPDAnKnosQMgVUWVFbssXEc9FxLhp2UKpqrqrDGi//2gAIAQIAAT8BzOR6qnLBp4yeSqpZ1RhR1XlheaabVMvNbVDEItUsPxO8uv/aAAgBAQAGPwL42cPm65qMzvlK4qraD9q3qgRIqjP/AKTnKlX+bUckH3GTo5+i5LqtfVXKuciE+hnLi3RpZibqvIa/ADtCeyIe4XDqmVjlyVlbIcdLkWJX/9oACAEBAAE/IczZyTn2AyigUWiRgIti5+9OT3bIudFzpCdEcwchGwk7aoitYdYdUgWDojix1A6PzTp+yDyBC53CMbjoEITWBG+82CskOe7lit3QZIgEZ3mRrbK8YjSaoLsyR75ogIJbVvEJgySXvrumYO5/BO3RATYbfVew6sq2nB9unQEqDBFwzbI8g5OiMXcJatoFPkAH1RhPzu0Ugx+qlZ30Y7DZOSCbZyLNmKfnEtWl0Bd8gmwfl2Tgw9i7qZO8d4lQqAXiP2gFaSBWO7ZAl2lxCNQHB0B+3QSv/9oADAMBAAIAAwAAABBi8+W4Rf732Fte1Xn/2gAIAQMAAT8QzIkSCLNltnDynAhn0TRCbg80wIlkTlh6pycuBbcOtFoWyFG7CBbdf//aAAgBAgABPxAnN2f9eTAMs6ZILqQSXTuToKi3ZaGeSP/aAAgBAQABPxBHCAR/FNlIwRcPsjkULFNaoLZDclX+DBtBTrnWO6KbA7Egz1UhqkR2+ksiWm4nUwv3QNey7rdbBFfs8hzPwGlzDYo6EYYSStg8XqKeozJuQQGl+6eGMLAo1EH8PeSTW+U/yA66kcMhD3TyNy9Pb/Uq6tEy0yyCzdOgKCH79H2LaIbiCMjVmo6sjLpJG2Gj6X2RHsfwnBBiQI6pgXY+Yt2KC9s5Pf8ApH5JMlolneTX1nNl2dNyo7+jH9oxcm4ibjZ02Ywyu0HUg3gwOMPRdkW6MdyyHpaggeRry2R5yZck3Y/tS0wGqIT3AtrqAc/0U1cO8GMQMbG4v90YlsuNj2V5f3WZXUlqxlI97NCaAHnfQZ3U7wAyNpYNxP/Z" alt="Criativo REPS DVD 01"><span class="cref-meta"><span class="cref-name">REPS DVD 01</span><span class="cref-link">ver no Facebook ↗</span></span></a>
+          <a class="cref" href="https://fb.me/2lCAnfJLrMGJaoV" target="_blank" rel="noopener"><img class="cref-thumb" src="data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/7QCEUGhvdG9zaG9wIDMuMAA4QklNBAQAAAAAAGgcAigAYkZCTUQwYTAwMGE3ZTAxMDAwMGRhMDEwMDAwNjAwMjAwMDA4MjAyMDAwMGE1MDIwMDAwMGEwMzAwMDBkYzAzMDAwMGY2MDMwMDAwMjQwNDAwMDA0MjA0MDAwMDUwMDUwMDAwAP/bAIQABgcHDQkNDAwMDBENDg0REREQEBERExASERIQExMUExUVExQTFBMXFxcTFBUXGRkXFRccGxwXGxkZGx4bHhsbFgEGBgYLCAsKCwsKDQkLCQ0MDAoKDAwPCwwLDAsPEA4NDg4NDhAODQ0KDQ0ODw4QEA4PEAwODBAPEBAPFxkXFxfB/8IAEQgAQABAAwEiAAIRAQMRAf/EAEkAAAIDAQEBAAAAAAAAAAAAAAIDBAUGAAcBEAABAgMGBAYCAgMAAAAAAAABABECITEDEEFRYXESgZGhBBMgscHwBSJC0RQy4f/aAAwDAQACAAMAAAAB3ZCQ92LYa3UvovmV6Q7MHAS1ko+7HwNHn482i1eY2LFasS+MjwyjqWykzW58/B1f615JsTXvxzl4aqOvhTIkq+gctfUKbcD+RLenti+//9oACAEBAAEFArnZeK/JcBsfyxChPEPR4yI2kf8AjwQi28PCV+LtIvTaQHzrOzPExX42Fj6LQtaeKtXUEa/HiXo/IwlpcERXh7Py4LozwjjUY4xb+EZWdiys/FRQIePDQR8Y4nViWNFa2YjHkowqCBcXArK0/e0/SLzl5rI2iBdRWn7cLr//2gAIAQMAAT8BVnZcSjg4b7NuEK0pd5ZUMJhGajBKZrnv/9oACAECAAE/AVFGyhie+KpUNxtAuMRHJCIBAujJcS8wJ1//2gAIAQEABj8CvazY6r94XQIx9IsRIVJX+qoyjgP8fTabBGIwsBqjJ+atOXp3HsmCbFRRZlunphjH8fZCMB0GqVDDle+Slc8Blkp1We6mJp019FIXDqpIdOqdUKoVRUROTe6df//aAAgBAQABPyG4hMSwWERUp8gpdvQwIHyg0EAI5pvRh4mK+0RBADzDuqc5mEYJlwnvL4uIvPIM/J3w7Jyh5JxTxc8TV0k48/RBQq9M9TITCks9Cwy55pqY/wBk9oh7+5vdArMWIO5BjgF3nOqFqPus+Anua3FPdUj7KfNjyRJMz7sX7hGfu40TgEnwKXO3m71XtCMkAAY4ZITzqxfUKSnCSrcYo0QNwEymC/EHokO5RNj2OeQ+0TDp1bUd0LAYlMMuwiBEIE5YkHFkgtZBkdCxy//aAAwDAQACAAMAAAAQOi854ygxIsoVYRQU/9oACAEDAAE/EEUXdhgj69b5jVsNf+IRiuBMhujBm05azqtE0ROoXNzUs0z6r//aAAgBAgABPxBDNmf0GiVdweZ2vAAaDcNGK1lhK//aAAgBAQABPxABBCCECpJYDmU6dRBkfKowE1dlIfBzFoDjsUUIuCOxJyJVvrFb3aAuYzQGX0nkmlXQPmcBsmk7oi4BQTqRcAAu1CsRIxsfnVEicDGbEQrubzuKe4wEPXD5LFDcVLNzI0dAA08mL4rRM5T6NEEbwE4OYjDF2dfTVMCKO1gXyLf885xdULmOcmO5aQgHDHYsnmmDVhGgQq3DIP8A6WgpNf8AimjTu6EP5LomeZmOhRa6ATiLIoolO76Ae6MCp2wnyKobqvraRfVmRSNBU4/KI6SZXwJndCvggNQYvQFkCJVBRqUybc0ZxvUVzVQk+FWOCZIM8lUSiphsipY9lMTuoA+/ar//2Q==" alt="Criativo REPS DVD 02"><span class="cref-meta"><span class="cref-name">REPS DVD 02</span><span class="cref-link">ver no Facebook ↗</span></span></a>
+        </div>
+        <!--/CREFS-->
+
         <div class="analysis">
           <span class="a-tag">Análise — nível ad set</span>
           Ambos os conjuntos (<em>Interesses - Vendas + Farmácia</em> e <em>Cargos - Farmácia</em>) estão
@@ -580,8 +651,9 @@
           ambos vídeo — pool raso, com risco de fadiga assim que o orçamento subir.
         </div>
 
-        <div class="analysis creative">
-          <span class="a-tag">Sugestões de criativo</span>
+        <details class="analysis creative">
+          <summary><span class="a-tag">Sugestões de criativo</span><span class="creative-toggle"></span></summary>
+          <div class="creative-content">
           <b>Performa bem, mas o estoque de criativo é raso e a frequência está subindo (2,36)</b> — melhorar aqui é prevenir fadiga, não corrigir falha.
           <p class="what" style="margin-top:4px"><b>Contexto:</b> os 2 vídeos (REPS DVD 01 e 02) usam exatamente a <em>mesma</em> copy — repetir o mesmo recado à mesma pessoa é o que sobe a frequência. Os criativos abaixo diversificam os ângulos.</p>
 
@@ -659,7 +731,8 @@
           </div>
 
           <p class="what" style="margin-top:16px"><b>Sem briefing (operacional):</b> testar o CTA "Quero Ganhar Indicando" contra o atual "Quero Me Cadastrar e Indicar"; e <b>não mexer no que ganha</b> — manter os DVD 01/02 no ar (CTR 3,3–3,7%) e apenas <em>somar</em> os novos, para segurar a frequência abaixo de 2 ao escalar.</p>
-        </div>
+          </div>
+        </details>
       </div>
     </article>
 
@@ -706,6 +779,13 @@
           </div>
           <div class="avg-tip">Mais que o dobro da média. Estourou a escala.</div>
         </div>
+
+        <!--CREFS:Luiza 03 — comofunciona=120242644004430068-->
+        <div class="crefs">
+          <span class="crefs-label">Criativos citados</span>
+          <a class="cref" href="https://fb.me/23AsPWhlgW7rr1e" target="_blank" rel="noopener"><img class="cref-thumb" src="data:image/jpeg;base64,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" alt="Criativo Luiza 03 — comofunciona"><span class="cref-meta"><span class="cref-name">Luiza 03 — comofunciona</span><span class="cref-link">ver no Facebook ↗</span></span></a>
+        </div>
+        <!--/CREFS-->
 
         <div class="analysis">
           <span class="a-tag">Análise — a landing page é o gargalo</span>
@@ -835,8 +915,8 @@
 <script>
   // Leads/dia em junho/2026 (dias 1–25; dia 25 = hoje, parcial). Fonte: Meta API, time_increment=1.
   const SERIES = {
-    buscapreco:     { color: "#DC36C0", paused: false, actual: [13,11,14,8,6,6,13,16,6,10,12,5,6,5,10,6,9,18,5,12,19,28,25,10,3] },
-    representantes: { color: "#DC36C0", paused: false, actual: [2,4,2,7,6,2,7,3,5,2,4,1,0,4,5,2,5,8,1,1,7,1,5,2,0] },
+    buscapreco:     { color: "#DC36C0", paused: false, actual: [13,11,14,8,6,6,13,16,6,10,12,5,6,5,10,6,9,18,5,12,19,28,25,10,4] },
+    representantes: { color: "#DC36C0", paused: false, actual: [2,4,2,7,6,2,7,3,5,2,4,1,0,4,5,2,5,8,1,1,7,1,5,2,1] },
     comofunciona:   { color: "#8A828D", paused: true,  actual: [3,3,2,2,2,1,2,1,1,2,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0] },
   };
   const DAYS = 30;          // junho
@@ -918,9 +998,70 @@
     } else {
       cap.innerHTML = `Projeção fim do mês: <b>~${Math.round(totalProj / 5) * 5}</b> leads · ritmo ~${Math.round(avg)}/dia`;
     }
+
+    // pontos para o hover (realizado + projeção)
+    const pts = [];
+    for (let i = 0; i < cfg.actual.length; i++) pts.push({ day: i + 1, value: cfg.actual[i], type: "real", x: X(i + 1), y: Y(cfg.actual[i]) });
+    for (let i = 0; i < proj.length; i++) pts.push({ day: today + 1 + i, value: proj[i], type: "proj", x: X(today + 1 + i), y: Y(proj[i]) });
+    canvas._pts = pts;
+
+    // marcador do ponto sob o cursor
+    const hi = canvas._hover;
+    if (hi != null && pts[hi]) {
+      const p = pts[hi];
+      ctx.beginPath(); ctx.moveTo(p.x, padT); ctx.lineTo(p.x, Y(0));
+      ctx.setLineDash([2, 3]); ctx.strokeStyle = hexA(col, 0.4); ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, 7); ctx.fillStyle = "#fff"; ctx.fill();
+      ctx.lineWidth = 2.5; ctx.strokeStyle = col; ctx.stroke();
+    }
+  }
+
+  function tipFor(canvas) {
+    if (!canvas._tip) {
+      const tip = document.createElement("div");
+      tip.className = "proj-tip";
+      canvas.closest(".proj").appendChild(tip);
+      canvas._tip = tip;
+    }
+    return canvas._tip;
+  }
+
+  function onMove(e) {
+    const canvas = e.currentTarget;
+    const pts = canvas._pts;
+    if (!pts || !pts.length) return;
+    const r = canvas.getBoundingClientRect();
+    const mx = e.clientX - r.left;
+    let best = 0, bd = Infinity;
+    for (let i = 0; i < pts.length; i++) { const d = Math.abs(pts[i].x - mx); if (d < bd) { bd = d; best = i; } }
+    if (canvas._hover !== best) { canvas._hover = best; draw(canvas); }
+    const p = pts[best];
+    const tip = tipFor(canvas);
+    const isProj = p.type === "proj";
+    const unit = isProj ? " leads/dia" : (p.value === 1 ? " lead" : " leads");
+    tip.innerHTML = `<b>${p.day}/jun</b> · ${isProj ? "~" : ""}${p.value}${unit}` +
+      `<span class="tip-tag ${isProj ? "proj" : "real"}">${isProj ? "projeção" : "realizado"}</span>`;
+    tip.style.display = "block";
+    tip.style.left = (canvas.offsetLeft + p.x) + "px";
+    tip.style.top = (canvas.offsetTop + p.y - 10) + "px";
+  }
+
+  function onLeave(e) {
+    const canvas = e.currentTarget;
+    if (canvas._hover != null) { canvas._hover = null; draw(canvas); }
+    if (canvas._tip) canvas._tip.style.display = "none";
   }
 
   function drawAll() { document.querySelectorAll("canvas[data-camp]").forEach(draw); }
+  function bindAll() {
+    document.querySelectorAll("canvas[data-camp]").forEach((c) => {
+      if (c._bound) return;
+      c._bound = true;
+      c.addEventListener("mousemove", onMove);
+      c.addEventListener("mouseleave", onLeave);
+    });
+  }
   drawAll();
+  bindAll();
   let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(drawAll, 150); });
 </script>

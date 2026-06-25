@@ -40,6 +40,12 @@ node -e 'const s=require("./data/snapshot-latest.json");for(const c of s.campaig
 Para os gráficos diários, leia `data/daily-this_month.json` e monte o array de
 leads/dia de cada campanha ativa.
 
+Cada anúncio no snapshot traz **miniatura embutida** (`creative.thumb`, um data
+URI base64 baixado do Meta) e o **link de preview** do Facebook (`previewLink`).
+Use-os para ancorar visualmente cada criativo/conjunto citado (ver Passo 3). Se
+`creative.thumb` vier `null` (ex.: coleta antiga sem token, ou criativo sem
+imagem), use o placeholder com a inicial do nome.
+
 ## Passo 2 — Analisar (aplique estas heurísticas de forma consistente)
 
 Calcule o CPL médio da conta e compare tudo contra ele.
@@ -87,16 +93,27 @@ Em ambos os casos, use o arquivo de 30 dias como **template**. Atualize **soment
      por só o `cb-label` + um `avg-tip` explicando ("sem leads no período"), e use
      "—" na linha de CPL da `mlist`. Se houver CPL de outra janela (ex.: mês), cite-o
      como referência;
+   - **referências visuais dos criativos/conjuntos** (`crefs`) — sempre que
+     citar um criativo ou conjunto específico na análise, mostre sua
+     **miniatura + nome + link de preview** (ver "Referência de criativo" abaixo),
+     para o leitor ver exatamente qual é;
    - bloco **"Análise — nível ad set"** (`analysis`);
    - bloco **"Sugestões de criativo"** (`analysis creative`) — **só quando o
-     criativo for a alavanca** (ver regra abaixo).
+     criativo for a alavanca** (ver regra abaixo). Esse bloco é **colapsável**:
+     use `<details class="analysis creative">` com um `<summary>` contendo o
+     `<span class="a-tag">Sugestões de criativo</span>` + `<span class="creative-toggle"></span>`,
+     e envolva todo o conteúdo (intro + `cunit`s + nota de higiene) num
+     `<div class="creative-content">`. Deixe **fechado por padrão** (sem o atributo
+     `open`) para manter o relatório enxuto — o leitor expande quando quiser.
 4. **Plano de ação** priorizado (Alta/Média/Baixa) — cada item com a ação
    **específica em R$** e a **hipótese** — e a tabela-resumo de orçamento.
 5. **Footer:** fonte, observações e data.
 
 **NÃO altere:** `<style>`, classes, paleta (magenta `#DC36C0` / amarelo
 `#FFB92A`), o `<script>` de desenho dos gráficos (só os dados em `SERIES`), nem a
-estrutura geral.
+estrutura geral. O gráfico é **interativo**: passar o mouse mostra um tooltip
+(`.proj-tip`) com o dia e o valor — leads realizados ou projeção/dia. Preserve
+essa lógica de hover (`onMove`/`onLeave`/`bindAll` e a coleta de `canvas._pts`).
 
 ### Gráfico de projeção (por campanha)
 No `<script>`, atualize o objeto `SERIES` com os leads/dia reais de cada
@@ -105,12 +122,43 @@ lógica: projeção = média dos **últimos 7 dias completos** (exclui hoje, que
 parcial) aplicada aos dias restantes do mês; campanha **pausada → `paused:true`**
 (sem projeção). Atualize `DAYS` para o nº de dias do mês corrente.
 
+### Referência de criativo (miniatura + link de preview)
+Sempre que citar um criativo ou conjunto específico, ancore-o visualmente com um
+chip `cref` (miniatura + nome + link de preview) numa tira `crefs`, logo após a
+`cpl-bar` de cada campanha — assim o leitor vê exatamente qual anúncio é.
+
+Como o `creative.thumb` é um data URI grande, **não cole o base64 à mão**. Use o
+injetor: coloque um **marcador** no HTML com os rótulos amigáveis e os **ids dos
+anúncios**, e rode o script — ele preenche a miniatura real + o `previewLink`
+lendo de `data/snapshot-latest.json`:
+
+```html
+<!--CREFS:Luiza 03 (herói)=120241513139380068|Luiza 04 (challenger)=120241298134200068--><!--/CREFS-->
+```
+```bash
+node server/meta/inject-crefs.mjs web/relatorio-30d.html
+```
+
+Sintaxe do marcador: pares `rótulo=ad_id` separados por `|`. O script é
+idempotente (regenera o conteúdo entre `<!--CREFS:...-->` e `<!--/CREFS-->`).
+
+Regras:
+- Use o **nome curto/amigável** já usado na prosa (ex.: "Luiza 04"), não o `name`
+  cru do criativo. Pegue o `ad_id` no snapshot (o mesmo que aparece na listagem
+  do Passo 1).
+- **Sem miniatura** (`creative.thumb` null) → o script cai no placeholder com a
+  inicial; **sem `previewLink`** → vira `<span>` com "sem preview".
+- **Conjunto (ad set)** não tem preview próprio: aponte para o **anúncio principal**
+  (maior gasto) do conjunto como representante, e nomeie o chip com o nome do conjunto.
+
 ### Bloco "Sugestões de criativo" — quando incluir
 Inclua **apenas** nas campanhas em que o criativo é a alavanca: ativas que
 precisam melhorar OU que vão bem mas têm folga (pool raso, freq subindo,
 vencedor subaproveitado, copy trocada). **Não inclua** em campanha pausada cujo
 criativo já prova bom desempenho em outra (aí o problema é landing page/público).
 
+O bloco inteiro fica dentro do `<details class="analysis creative">` colapsável
+(summary com o `a-tag` + `creative-toggle`; conteúdo dentro de `creative-content`).
 Para **cada sugestão que gera um asset novo**, coloque abaixo um **briefing
 acionável por IA** (reuse as classes `cunit` / `brief` / `bspec` / `copybox` /
 `palette` / tabela de roteiro):
