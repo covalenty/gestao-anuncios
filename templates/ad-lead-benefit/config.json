@@ -1,0 +1,17 @@
+{
+  "description": "Anúncio de lead (Meta) — dor/benefício com número em destaque e CTA",
+  "size": "meta-feed-4x5",
+  "format": "png",
+  "scale": 2,
+  "defaults": {
+    "bg": "#11101A",
+    "accent": "#DC36C0",
+    "eyebrow": "PARA SUA FARMÁCIA",
+    "numberHighlight": "3h",
+    "headline": "Cotar não pode comer 3 horas do seu dia",
+    "subtitle": "Compare todos os distribuidores numa tela só. De graça.",
+    "cta": "Quero economizar tempo",
+    "selo": "Grátis para farmácias",
+    "logo": ""
+  }
+}

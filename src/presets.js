@@ -15,6 +15,11 @@ export const SIZE_PRESETS = {
   "fb-cover": [820, 312],
   "fb-ad": [1200, 628],
 
+  // Meta Ads (formatos de anúncio)
+  "meta-feed-1x1": [1080, 1080],
+  "meta-feed-4x5": [1080, 1350],
+  "meta-story-9x16": [1080, 1920],
+
   // X (Twitter)
   "x-post": [1600, 900],
   "x-header": [1500, 500],

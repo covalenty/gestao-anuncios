@@ -10,7 +10,8 @@
     "render": "node src/cli.js render",
     "preview": "node src/cli.js preview",
     "list": "node src/cli.js list",
-    "new": "node src/cli.js new"
+    "new": "node src/cli.js new",
+    "serve": "node server/index.mjs"
   },
   "dependencies": {
     "chokidar": "^4.0.0",

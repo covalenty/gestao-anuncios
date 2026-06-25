@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="utf-8">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Open+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <main class="ad" style="--bg: {{default bg '#11101A'}}; --accent: {{default accent '#dc36c0'}}">
+    <header class="top">
+      {{#if logo}}<img class="logo" src="{{logo}}" alt="">{{else}}<span class="wordmark">cienty</span>{{/if}}
+      {{#if selo}}<span class="selo">{{selo}}</span>{{/if}}
+    </header>
+
+    <section class="body">
+      {{#if eyebrow}}<span class="eyebrow">{{upper eyebrow}}</span>{{/if}}
+      {{#if numberHighlight}}<span class="number">{{numberHighlight}}</span>{{/if}}
+      <h1 class="headline">{{headline}}</h1>
+      {{#if subtitle}}<p class="subtitle">{{subtitle}}</p>{{/if}}
+    </section>
+
+    <footer class="cta-wrap">
+      <span class="cta">{{default cta 'Saiba mais'}}</span>
+    </footer>
+  </main>
+</body>
+</html>
