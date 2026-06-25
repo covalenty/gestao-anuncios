@@ -366,35 +366,92 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
 .bquote{border-left:3px solid var(--yw);padding-left:10px;font-size:12px;line-height:1.6;color:var(--tx)}
 
 /* ═══════════ CRIATIVOS ═══════════ */
-.criativos-body{flex:1;overflow-y:auto;padding:32px}
-
-.flow-steps{display:flex;align-items:center;margin-bottom:28px}
+.flow-steps{display:flex;align-items:center}
 .flow-step{display:flex;align-items:center;gap:8px}
-.step-n{
-  width:26px;height:26px;border-radius:50%;
-  display:flex;align-items:center;justify-content:center;
-  font-size:11px;font-weight:700;flex-shrink:0;
-}
+.step-n{width:26px;height:26px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;flex-shrink:0}
 .s-done{background:var(--ok);color:#fff}
 .s-cur{background:var(--mg);color:#fff}
 .s-pend{background:var(--cd);color:var(--mx);border:1px solid var(--bd)}
 .step-lbl{font-size:12px;font-weight:600;color:var(--mx);white-space:nowrap}
 .step-lbl.cur{color:var(--tx)}
-.step-conn{flex:1;height:1px;background:var(--bd);margin:0 12px;min-width:32px}
+.step-conn{flex:1;height:1px;background:var(--bd);margin:0 12px;min-width:28px}
+.section-ttl{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:6px}
+.section-sub{font-size:12px;color:var(--mx);margin-bottom:20px}
 
-.section-ttl{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:16px}
-.tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+/* Mode toggle */
+.criat-mode-bar{flex-shrink:0;background:var(--cd);border-bottom:1px solid var(--bd);padding:0 32px;display:flex;align-items:center;gap:0}
+.criat-tab{padding:12px 18px;font-size:13px;font-weight:600;color:var(--mx);background:none;border:none;border-bottom:2px solid transparent;cursor:pointer;font-family:var(--ff);transition:color .15s,border-color .15s;display:flex;align-items:center;gap:7px}
+.criat-tab svg{width:14px;height:14px}
+.criat-tab.active{color:var(--mg);border-color:var(--mg)}
 
-.tpl-card{
-  border:2px solid var(--bd);border-radius:var(--r);
-  overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s;
-}
-.tpl-card:hover{border-color:rgba(220,54,192,.5)}
-.tpl-card.sel{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10)}
-.tpl-info{padding:10px 14px;background:var(--cd);border-top:1px solid var(--bd)}
-.tpl-name{font-size:13px;font-weight:600;color:var(--tx)}
-.tpl-dims{font-size:11px;color:var(--mx);margin-top:1px}
-.criativos-actions{display:flex;gap:12px}
+/* Manual flow shell */
+.criat-manual{flex:1;display:flex;flex-direction:column;overflow:hidden}
+.criat-manual.hidden,.criat-chat-mode.hidden{display:none!important}
+.criat-step-bar{flex-shrink:0;padding:14px 32px;background:var(--cd);border-bottom:1px solid var(--bd)}
+.criat-scroll{flex:1;overflow-y:auto;padding:28px 32px}
+.criat-footer{flex-shrink:0;padding:12px 32px;border-top:1px solid var(--bd);background:var(--cd);display:flex;justify-content:space-between;align-items:center}
+.step-panel{display:none}.step-panel.active{display:block}
+
+/* Step 1 — platforms */
+.plat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:680px}
+.plat-card{padding:16px 18px;border:2px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;align-items:center;gap:12px;background:var(--cd)}
+.plat-card:hover{border-color:rgba(220,54,192,.35)}
+.plat-card.sel{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10);background:rgba(220,54,192,.02)}
+.plat-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.plat-icon svg{width:18px;height:18px}
+.plat-name{font-size:13px;font-weight:600;color:var(--tx);line-height:1.3}
+.plat-sub{font-size:11px;color:var(--mx);margin-top:1px}
+
+/* Step 2 — formats */
+.fmt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:680px}
+.fmt-card{border:2px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:border-color .15s,box-shadow .15s;padding:14px 12px;background:var(--cd);display:flex;flex-direction:column;align-items:center;gap:8px;text-align:center}
+.fmt-card:hover{border-color:rgba(220,54,192,.35)}
+.fmt-card.sel{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10)}
+.fmt-preview{background:var(--bg);border:1.5px solid var(--bd);border-radius:2px}
+.fmt-name{font-size:12px;font-weight:700;color:var(--tx)}
+.fmt-ratio{font-size:10px;color:var(--mg);font-weight:600}
+.fmt-dims{font-size:10px;color:var(--mx)}
+
+/* Step 3 — content */
+.cont-layout{display:grid;grid-template-columns:1fr 270px;gap:24px;max-width:860px}
+.cont-fg{margin-bottom:14px}
+.cont-label{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mx);margin-bottom:5px;display:block}
+.cont-input,.cont-ta{width:100%;border:1px solid var(--bd);border-radius:var(--r);padding:9px 11px;font-size:13px;font-family:var(--ff);color:var(--tx);background:var(--cd);outline:none;transition:border-color .15s,box-shadow .15s;box-sizing:border-box}
+.cont-input:focus,.cont-ta:focus{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10)}
+.cont-ta{resize:vertical;min-height:76px;line-height:1.5}
+.cont-upload{border:2px dashed var(--bd);border-radius:var(--r);padding:20px;text-align:center;cursor:pointer;transition:border-color .15s,background .15s;color:var(--mx);font-size:12px;line-height:1.6}
+.cont-upload:hover{border-color:var(--mg);background:rgba(220,54,192,.02)}
+.cont-upload svg{width:22px;height:22px;margin-bottom:6px;display:block;margin-left:auto;margin-right:auto;color:var(--mx)}
+.ai-btn{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:600;color:var(--mg);background:rgba(220,54,192,.06);border:1px solid rgba(220,54,192,.2);border-radius:var(--r);padding:7px 12px;cursor:pointer;font-family:var(--ff);transition:background .15s;width:100%;justify-content:center;margin-top:8px}
+.ai-btn:hover{background:rgba(220,54,192,.12)}
+.ai-btn svg{width:13px;height:13px}
+.cont-tips{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:14px;align-self:start;position:sticky;top:0}
+.cont-tips-ttl{font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mx);margin-bottom:10px}
+.cont-tip{font-size:12px;color:var(--tx);line-height:1.55;padding:8px 0;border-bottom:1px solid var(--bd)}
+.cont-tip:last-child{border-bottom:none;padding-bottom:0}
+.cont-tip strong{color:var(--mg)}
+.color-swatches{display:flex;gap:8px;flex-wrap:wrap;margin-top:4px}
+.swatch{width:28px;height:28px;border-radius:50%;cursor:pointer;border:2px solid transparent;transition:transform .12s,border-color .12s}
+.swatch:hover{transform:scale(1.12)}
+.swatch.sel{border-color:var(--tx)}
+
+/* Step 4 — preview */
+.prev-layout{display:grid;grid-template-columns:1fr 240px;gap:24px;max-width:860px}
+.prev-frame{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);display:flex;align-items:center;justify-content:center;padding:28px;min-height:280px}
+.prev-canvas{border-radius:2px;box-shadow:0 4px 24px rgba(0,0,0,.14);max-width:100%;max-height:400px}
+.prev-sidebar{}
+.prev-dl-btn{width:100%;justify-content:center;margin-bottom:8px}
+.prev-meta{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:12px;margin-top:12px}
+.prev-meta-row{display:flex;justify-content:space-between;padding:5px 0;border-bottom:1px solid var(--bd);font-size:12px}
+.prev-meta-row:last-child{border-bottom:none;padding-bottom:0}
+.prev-meta-k{color:var(--mx);font-weight:600}
+.prev-meta-v{color:var(--tx);font-weight:700;font-variant-numeric:tabular-nums}
+
+/* Chat mode inside criativos */
+.criat-chat-mode{flex:1;display:flex;flex-direction:column;overflow:hidden;background:var(--bg)}
+.criat-chat-inner{flex:1;display:flex;flex-direction:column;max-width:680px;margin:0 auto;width:100%;padding:32px 20px 0}
+.criat-chat-tags{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-top:16px}
+.criat-chat-input{flex-shrink:0;padding:16px 20px;background:var(--cd);border-top:1px solid var(--bd)}
 
 /* ═══════════ BRANDING ═══════════ */
 .branding-body{
@@ -1040,24 +1097,238 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
 
     <!-- ──── CRIATIVOS ──── -->
     <div class="page" id="page-criativos">
-      <div class="criativos-body">
-        <div class="flow-steps">
-          <div class="flow-step"><div class="step-n s-cur">1</div><span class="step-lbl cur">Escolher template</span></div>
-          <div class="step-conn"></div>
-          <div class="flow-step"><div class="step-n s-pend">2</div><span class="step-lbl">Configurar conteúdo</span></div>
-          <div class="step-conn"></div>
-          <div class="flow-step"><div class="step-n s-pend">3</div><span class="step-lbl">Pré-visualizar</span></div>
-          <div class="step-conn"></div>
-          <div class="flow-step"><div class="step-n s-pend">4</div><span class="step-lbl">Exportar</span></div>
-        </div>
-        <div class="section-ttl">Escolha o formato do criativo</div>
-        <div class="tpl-grid" id="tpl-grid"></div>
-        <div class="criativos-actions">
-          <button class="btn btn-ghost">Cancelar</button>
-          <button class="btn btn-primary">Próximo: Configurar conteúdo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
-        </div>
+
+      <!-- Mode toggle bar -->
+      <div class="criat-mode-bar">
+        <button class="criat-tab active" id="tab-manual" onclick="setCriatMode('manual')">
+          <svg viewBox="0 0 16 16" fill="none"><rect x="1" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="1" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="1" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/><rect x="9" y="9" width="6" height="6" rx="1" stroke="currentColor" stroke-width="1.5"/></svg>
+          Criar manualmente
+        </button>
+        <button class="criat-tab" id="tab-chat" onclick="setCriatMode('chat')">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M14 9.333A1.333 1.333 0 0 1 12.667 10.667H4.667L2 13.333V3.333A1.333 1.333 0 0 1 3.333 2H12.667A1.333 1.333 0 0 1 14 3.333Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          Criar com IA
+        </button>
       </div>
-    </div>
+
+      <!-- ── MANUAL MODE ── -->
+      <div class="criat-manual" id="criat-manual">
+
+        <!-- Step bar -->
+        <div class="criat-step-bar">
+          <div class="flow-steps">
+            <div class="flow-step">
+              <div class="step-n s-cur" id="sn-1">1</div>
+              <span class="step-lbl cur" id="sl-1">Plataforma</span>
+            </div>
+            <div class="step-conn"></div>
+            <div class="flow-step">
+              <div class="step-n s-pend" id="sn-2">2</div>
+              <span class="step-lbl" id="sl-2">Formato</span>
+            </div>
+            <div class="step-conn"></div>
+            <div class="flow-step">
+              <div class="step-n s-pend" id="sn-3">3</div>
+              <span class="step-lbl" id="sl-3">Conteúdo</span>
+            </div>
+            <div class="step-conn"></div>
+            <div class="flow-step">
+              <div class="step-n s-pend" id="sn-4">4</div>
+              <span class="step-lbl" id="sl-4">Finalizar</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Scrollable content -->
+        <div class="criat-scroll">
+
+          <!-- Step 1: Plataforma -->
+          <div class="step-panel active" id="panel-1">
+            <div class="section-ttl">Onde o criativo será veiculado?</div>
+            <div class="section-sub">Escolha a plataforma para definir os formatos disponíveis</div>
+            <div class="plat-grid">
+              <div class="plat-card" id="plat-ig-feed" onclick="selectPlatform('ig-feed')">
+                <div class="plat-icon" style="background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)">
+                  <svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="3" stroke="#fff" stroke-width="1.5"/><circle cx="9" cy="9" r="2.5" stroke="#fff" stroke-width="1.5"/><circle cx="13" cy="5" r="1" fill="#fff"/></svg>
+                </div>
+                <div>
+                  <div class="plat-name">Instagram Feed</div>
+                  <div class="plat-sub">Post estático ou carrossel</div>
+                </div>
+              </div>
+              <div class="plat-card" id="plat-ig-stories" onclick="selectPlatform('ig-stories')">
+                <div class="plat-icon" style="background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)">
+                  <svg viewBox="0 0 18 18" fill="none"><rect x="4" y="1" width="10" height="16" rx="2" stroke="#fff" stroke-width="1.5"/><line x1="9" y1="14" x2="9" y2="14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
+                </div>
+                <div>
+                  <div class="plat-name">Instagram Stories</div>
+                  <div class="plat-sub">Stories e Reels</div>
+                </div>
+              </div>
+              <div class="plat-card" id="plat-fb-feed" onclick="selectPlatform('fb-feed')">
+                <div class="plat-icon" style="background:#1877f2">
+                  <svg viewBox="0 0 18 18" fill="none"><path d="M10 9h2.5l.5-2.5H10V5c0-.69.31-1.25 1.25-1.25H13V1.25S11.75 1 10.75 1C8.5 1 7 2.44 7 5v1.5H4.5V9H7v8h3V9Z" fill="#fff"/></svg>
+                </div>
+                <div>
+                  <div class="plat-name">Facebook Feed</div>
+                  <div class="plat-sub">Post e anúncio no feed</div>
+                </div>
+              </div>
+              <div class="plat-card" id="plat-fb-stories" onclick="selectPlatform('fb-stories')">
+                <div class="plat-icon" style="background:#1877f2">
+                  <svg viewBox="0 0 18 18" fill="none"><rect x="4" y="1" width="10" height="16" rx="2" stroke="#fff" stroke-width="1.5"/><path d="M10 9h2.5l.5-2H10V6c0-.5.25-1 1-1h1.5V3.5S11 3 10 3c-1.5 0-3 1-3 3v.5H5.5v2.5H7v5.5h3V9Z" fill="#fff"/></svg>
+                </div>
+                <div>
+                  <div class="plat-name">Facebook Stories</div>
+                  <div class="plat-sub">Stories e vídeos curtos</div>
+                </div>
+              </div>
+              <div class="plat-card" id="plat-whatsapp" onclick="selectPlatform('whatsapp')">
+                <div class="plat-icon" style="background:#25d366">
+                  <svg viewBox="0 0 18 18" fill="none"><path d="M9 1.5A7.5 7.5 0 0 0 2.22 12.47L1.5 16.5l4.14-.69A7.5 7.5 0 1 0 9 1.5Z" stroke="#fff" stroke-width="1.5"/><path d="M6.5 6.5c.2.5.8 1.5 1.5 2.2.7.7 1.7 1.3 2.2 1.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
+                </div>
+                <div>
+                  <div class="plat-name">WhatsApp</div>
+                  <div class="plat-sub">Status e grupos</div>
+                </div>
+              </div>
+              <div class="plat-card" id="plat-google" onclick="selectPlatform('google')">
+                <div class="plat-icon" style="background:#fff;border:1.5px solid #e3e4eb">
+                  <svg viewBox="0 0 18 18" fill="none"><path d="M16.5 9.18c0-.63-.06-1.24-.16-1.82H9v3.44h4.2a3.58 3.58 0 0 1-1.56 2.36v1.96h2.52c1.48-1.36 2.34-3.36 2.34-5.94Z" fill="#4285f4"/><path d="M9 17c2.1 0 3.86-.7 5.15-1.88l-2.52-1.96c-.7.47-1.6.74-2.63.74-2.02 0-3.73-1.37-4.34-3.2H2.06v2.02A7.99 7.99 0 0 0 9 17Z" fill="#34a853"/><path d="M4.66 10.7A4.8 4.8 0 0 1 4.41 9c0-.59.1-1.17.25-1.71V5.27H2.06A8 8 0 0 0 1 9c0 1.29.31 2.51.86 3.59l2.8-2.14-.25.25Z" fill="#fbbc05"/><path d="M9 4.08c1.14 0 2.16.39 2.96 1.16l2.22-2.22C12.85 1.8 11.1 1 9 1A8 8 0 0 0 1.86 5.27L4.66 7.3C5.27 5.45 6.98 4.08 9 4.08Z" fill="#ea4335"/></svg>
+                </div>
+                <div>
+                  <div class="plat-name">Google Display</div>
+                  <div class="plat-sub">Banners e display ads</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2: Formato -->
+          <div class="step-panel" id="panel-2">
+            <div class="section-ttl" id="fmt-ttl">Escolha o formato</div>
+            <div class="section-sub" id="fmt-sub">Selecione as dimensões ideais para o seu criativo</div>
+            <div class="fmt-grid" id="fmt-grid"></div>
+          </div>
+
+          <!-- Step 3: Conteúdo -->
+          <div class="step-panel" id="panel-3">
+            <div class="section-ttl">Defina o conteúdo</div>
+            <div class="section-sub">Preencha os textos ou deixe a IA sugerir com base na sua campanha</div>
+            <div class="cont-layout">
+              <div>
+                <div class="cont-fg">
+                  <label class="cont-label">Título / Headline</label>
+                  <input class="cont-input" id="cont-headline" type="text" placeholder="Ex: Capture mais leads com Cienty">
+                </div>
+                <div class="cont-fg">
+                  <label class="cont-label">Texto principal</label>
+                  <textarea class="cont-ta" id="cont-body" placeholder="Descrição curta do anúncio..."></textarea>
+                </div>
+                <div class="cont-fg">
+                  <label class="cont-label">CTA (chamada para ação)</label>
+                  <input class="cont-input" id="cont-cta" type="text" placeholder="Ex: Saiba mais, Comece agora">
+                </div>
+                <div class="cont-fg">
+                  <label class="cont-label">Cor de fundo</label>
+                  <div class="color-swatches" id="bg-swatches">
+                    <div class="swatch sel" style="background:#dc36c0" data-color="#dc36c0" onclick="selectBg(this)" title="Magenta Cienty"></div>
+                    <div class="swatch" style="background:#2f2f32" data-color="#2f2f32" onclick="selectBg(this)" title="Escuro"></div>
+                    <div class="swatch" style="background:#1877f2" data-color="#1877f2" onclick="selectBg(this)" title="Azul"></div>
+                    <div class="swatch" style="background:#ffb92a" data-color="#ffb92a" onclick="selectBg(this)" title="Amarelo Cienty"></div>
+                    <div class="swatch" style="background:#0e8345" data-color="#0e8345" onclick="selectBg(this)" title="Verde"></div>
+                    <div class="swatch" style="background:#ffffff;border:1px solid #e3e4eb" data-color="#ffffff" onclick="selectBg(this)" title="Branco"></div>
+                  </div>
+                </div>
+                <div class="cont-fg">
+                  <label class="cont-label">Imagem de fundo (opcional)</label>
+                  <div class="cont-upload" onclick="document.getElementById('img-upload').click()">
+                    <svg viewBox="0 0 24 24" fill="none"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><polyline points="17,8 12,3 7,8" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><line x1="12" y1="3" x2="12" y2="15" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Clique para enviar uma imagem<br><span style="font-size:11px;opacity:.7">JPG, PNG ou SVG — máx. 10 MB</span>
+                  </div>
+                  <input type="file" id="img-upload" accept="image/*" style="display:none" onchange="handleImgUpload(this)">
+                </div>
+                <button class="ai-btn" onclick="aiSuggestContent()">
+                  <svg viewBox="0 0 16 16" fill="none"><path d="M8 1v14M1 8h14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><circle cx="8" cy="8" r="3" stroke="currentColor" stroke-width="1.5"/></svg>
+                  Sugerir conteúdo com IA
+                </button>
+              </div>
+              <div class="cont-tips">
+                <div class="cont-tips-ttl">Dicas de copy</div>
+                <div class="cont-tip"><strong>Headline</strong><br>Seja direto: problema → solução em até 8 palavras.</div>
+                <div class="cont-tip"><strong>Texto</strong><br>Benefício concreto, não feature. Use números quando possível.</div>
+                <div class="cont-tip"><strong>CTA</strong><br>Verbos de ação: Comece, Descubra, Acesse. Evite "Clique aqui".</div>
+                <div class="cont-tip"><strong>Proporção texto</strong><br>Máx. 20% da área com texto para melhor performance.</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4: Finalizar -->
+          <div class="step-panel" id="panel-4">
+            <div class="section-ttl">Pré-visualização do criativo</div>
+            <div class="section-sub">Verifique o resultado e faça o download</div>
+            <div class="prev-layout">
+              <div class="prev-frame" id="prev-frame">
+                <canvas id="criat-canvas" class="prev-canvas"></canvas>
+              </div>
+              <div class="prev-sidebar">
+                <button class="btn btn-primary prev-dl-btn" onclick="downloadCreative()">
+                  <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M8 1v10M4 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+                  Baixar PNG
+                </button>
+                <button class="btn btn-ghost" style="width:100%;justify-content:center" onclick="criatGoStep(3)">
+                  Editar conteúdo
+                </button>
+                <div class="prev-meta" id="prev-meta"></div>
+              </div>
+            </div>
+          </div>
+
+        </div><!-- /criat-scroll -->
+
+        <!-- Footer nav -->
+        <div class="criat-footer">
+          <button class="btn btn-ghost" id="criat-back" onclick="criatStep(-1)" style="visibility:hidden">
+            <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M13 8H3M7 4L3 8l4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            Voltar
+          </button>
+          <span id="criat-step-lbl" style="font-size:12px;color:var(--mx)">Passo 1 de 4</span>
+          <button class="btn btn-primary" id="criat-next" onclick="criatStep(1)">
+            Próximo
+            <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+          </button>
+        </div>
+
+      </div><!-- /criat-manual -->
+
+      <!-- ── CHAT MODE ── -->
+      <div class="criat-chat-mode hidden" id="criat-chat">
+        <div class="criat-chat-inner">
+          <div style="text-align:center;padding-top:48px">
+            <div style="width:48px;height:48px;border-radius:12px;background:var(--mg);display:inline-flex;align-items:center;justify-content:center;margin-bottom:16px">
+              <svg viewBox="0 0 24 24" fill="none" style="width:24px;height:24px"><path d="M12 2L2 7l10 5 10-5-10-5zM2 17l10 5 10-5M2 12l10 5 10-5" stroke="#fff" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/></svg>
+            </div>
+            <div style="font-size:20px;font-weight:700;color:var(--tx);margin-bottom:6px">Criação com IA</div>
+            <div style="font-size:14px;color:var(--mx);max-width:400px;margin:0 auto;line-height:1.6">Descreva o criativo que você precisa. A IA vai sugerir formato, copy e estilo baseado na sua campanha.</div>
+          </div>
+          <div class="criat-chat-tags">
+            <button class="chat-tag" onclick="fillCriatChat('Crie um anúncio para Instagram Stories para captação de leads')">Anúncio de captação — Stories</button>
+            <button class="chat-tag" onclick="fillCriatChat('Crie um banner horizontal para Facebook com oferta de Black Friday')">Banner Black Friday — Facebook</button>
+            <button class="chat-tag" onclick="fillCriatChat('Crie uma imagem para WhatsApp com copy de reativação de clientes')">Reativação — WhatsApp</button>
+            <button class="chat-tag" onclick="fillCriatChat('Crie um criativo quadrado para Instagram Feed apresentando o produto')">Produto — Instagram Feed</button>
+          </div>
+        </div>
+        <div class="criat-chat-input">
+          <div style="max-width:680px;margin:0 auto;display:flex;gap:8px;align-items:flex-end">
+            <textarea id="criat-chat-ta" class="chat-ta" style="flex:1;min-height:44px;max-height:120px;resize:none;padding:10px 12px;font-size:13px;border-radius:var(--r);background:var(--cd);border:1px solid var(--bd);outline:none;font-family:var(--ff);color:var(--tx);box-sizing:border-box;transition:border-color .15s,box-shadow .15s" placeholder="Descreva o criativo que você precisa..." rows="1" oninput="autoResizeCriatChat(this)" onkeydown="if(event.key==='Enter'&&!event.shiftKey){event.preventDefault();sendCriatChat()}"></textarea>
+            <button class="btn btn-primary" onclick="sendCriatChat()" style="height:44px;padding:0 16px;flex-shrink:0">
+              <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M14 8H2M10 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+              Gerar
+            </button>
+          </div>
+        </div>
+      </div><!-- /criat-chat -->
+
+    </div><!-- /page-criativos -->
 
     <!-- ──── BRANDING ──── -->
     <div class="page" id="page-branding">
@@ -1464,31 +1735,272 @@ function filterChip(chip) {
   chip.classList.add('on');
 }
 
-/* ── Template canvases ── */
-const templates = [
-  { name:'Post Quadrado',      dims:'1080 × 1080 px', ar:1,          layout:'square'   },
-  { name:'Story Vertical',     dims:'1080 × 1920 px', ar:9/16,       layout:'story'    },
-  { name:'Banner Horizontal',  dims:'1200 × 628 px',  ar:1200/628,   layout:'banner'   },
-  { name:'Carrossel',          dims:'1080 × 1080 px', ar:1,          layout:'carousel' },
-  { name:'Vídeo Thumb',        dims:'1280 × 720 px',  ar:16/9,       layout:'video'    },
-  { name:'Display Ad',         dims:'300 × 250 px',   ar:300/250,    layout:'display'  },
-];
+/* ── Criativos ── */
+const CRIAT_FORMATS = {
+  'ig-feed':    [
+    {id:'sq',   name:'Quadrado',  ratio:'1:1',      w:1080, h:1080, desc:'Feed padrão'},
+    {id:'port', name:'Retrato',   ratio:'4:5',      w:1080, h:1350, desc:'Maior alcance'},
+    {id:'land', name:'Paisagem',  ratio:'1.91:1',   w:1200, h:628,  desc:'Link ads'},
+  ],
+  'ig-stories': [
+    {id:'vert', name:'Vertical',  ratio:'9:16',     w:1080, h:1920, desc:'Stories e Reels'},
+    {id:'sq',   name:'Quadrado',  ratio:'1:1',      w:1080, h:1080, desc:'Feed alternativo'},
+  ],
+  'fb-feed':    [
+    {id:'sq',   name:'Quadrado',  ratio:'1:1',      w:1080, h:1080, desc:'Feed padrão'},
+    {id:'port', name:'Retrato',   ratio:'4:5',      w:1080, h:1350, desc:'Mais destaque'},
+    {id:'land', name:'Paisagem',  ratio:'1.91:1',   w:1200, h:628,  desc:'Link ads'},
+  ],
+  'fb-stories': [
+    {id:'vert', name:'Vertical',  ratio:'9:16',     w:1080, h:1920, desc:'Stories'},
+  ],
+  'whatsapp':   [
+    {id:'sq',   name:'Quadrado',  ratio:'1:1',      w:1080, h:1080, desc:'Status e grupos'},
+    {id:'vert', name:'Vertical',  ratio:'9:16',     w:1080, h:1920, desc:'Status'},
+    {id:'wide', name:'Horizontal',ratio:'16:9',     w:1280, h:720,  desc:'Encaminhamentos'},
+  ],
+  'google':     [
+    {id:'rect', name:'Retângulo Médio',  ratio:'300×250',  w:300,  h:250, desc:'Display padrão'},
+    {id:'lead', name:'Leaderboard',      ratio:'728×90',   w:728,  h:90,  desc:'Topo de página'},
+    {id:'sky',  name:'Skyscraper',       ratio:'160×600',  w:160,  h:600, desc:'Lateral'},
+    {id:'bill', name:'Billboard',        ratio:'970×250',  w:970,  h:250, desc:'Alta visibilidade'},
+  ],
+};
 
-const grid = document.getElementById('tpl-grid');
+const CRIAT_AI_COPY = {
+  'ig-feed':    {headline:'Multiplique seus leads com IA',    body:'Automatize sua gestão de anúncios e veja seus resultados crescerem. Tecnologia que trabalha por você.',cta:'Comece grátis'},
+  'ig-stories': {headline:'Sua campanha, no ritmo certo',     body:'Controle total sobre seus anúncios em segundos.',                                                        cta:'Acesse agora'},
+  'fb-feed':    {headline:'Mais leads. Menos esforço.',       body:'A Cienty automatiza sua gestão de anúncios para você focar no que importa: crescer.',                    cta:'Saiba mais'},
+  'fb-stories': {headline:'Resultados que aparecem',          body:'Campanhas inteligentes que convertem mais com menos.',                                                    cta:'Experimente'},
+  'whatsapp':   {headline:'Sua oferta chegou!',               body:'Descubra como a Cienty transforma sua gestão de anúncios e maximiza seus resultados.',                   cta:'Falar com especialista'},
+  'google':     {headline:'Anúncios que convertem',           body:'Plataforma completa de gestão com IA para maximizar seu ROI.',                                           cta:'Saiba mais'},
+};
 
-templates.forEach((tpl, i) => {
-  const W = 260, H = Math.min(Math.round(W / Math.max(tpl.ar, 0.35)), 180);
-  const card = document.createElement('div');
-  card.className = 'tpl-card' + (i === 0 ? ' sel' : '');
-  card.innerHTML = `<canvas width="${W}" height="${H}" style="width:100%;height:${H}px;display:block"></canvas>
-    <div class="tpl-info"><div class="tpl-name">${tpl.name}</div><div class="tpl-dims">${tpl.dims}</div></div>`;
-  grid.appendChild(card);
-  draw(card.querySelector('canvas'), tpl.layout, W, H);
-  card.addEventListener('click', () => {
-    grid.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('sel'));
-    card.classList.add('sel');
+const PLAT_NAMES = {'ig-feed':'Instagram Feed','ig-stories':'Instagram Stories','fb-feed':'Facebook Feed','fb-stories':'Facebook Stories','whatsapp':'WhatsApp','google':'Google Display'};
+
+const criatState = { step:1, platform:null, format:null, bgColor:'#dc36c0', bgImg:null };
+
+function setCriatMode(mode) {
+  document.getElementById('tab-manual').classList.toggle('active', mode === 'manual');
+  document.getElementById('tab-chat').classList.toggle('active', mode === 'chat');
+  document.getElementById('criat-manual').classList.toggle('hidden', mode !== 'manual');
+  document.getElementById('criat-chat').classList.toggle('hidden', mode !== 'chat');
+}
+
+function selectPlatform(id) {
+  criatState.platform = id;
+  criatState.format = null;
+  document.querySelectorAll('.plat-card').forEach(c => c.classList.remove('sel'));
+  const card = document.getElementById('plat-' + id);
+  if (card) card.classList.add('sel');
+}
+
+function buildFmtGrid() {
+  const fmts = CRIAT_FORMATS[criatState.platform] || [];
+  const grid = document.getElementById('fmt-grid');
+  const sub = document.getElementById('fmt-sub');
+  sub.textContent = 'Formatos disponíveis para ' + (PLAT_NAMES[criatState.platform] || 'a plataforma selecionada');
+  grid.innerHTML = '';
+  fmts.forEach(f => {
+    const ar = f.w / f.h;
+    const MAX = 54;
+    const pw = ar >= 1 ? MAX : Math.round(MAX * ar);
+    const ph = ar >= 1 ? Math.round(MAX / ar) : MAX;
+    const card = document.createElement('div');
+    card.className = 'fmt-card';
+    card.onclick = () => {
+      criatState.format = f;
+      grid.querySelectorAll('.fmt-card').forEach(c => c.classList.remove('sel'));
+      card.classList.add('sel');
+    };
+    card.innerHTML = `<div class="fmt-preview" style="width:${pw}px;height:${ph}px"></div>
+      <div class="fmt-name">${f.name}</div>
+      <div class="fmt-ratio">${f.ratio}</div>
+      <div class="fmt-dims">${f.w}×${f.h} px</div>
+      <div class="fmt-dims" style="color:var(--mg);margin-top:1px">${f.desc}</div>`;
+    grid.appendChild(card);
   });
-});
+}
+
+function selectBg(el) {
+  document.querySelectorAll('#bg-swatches .swatch').forEach(s => s.classList.remove('sel'));
+  el.classList.add('sel');
+  criatState.bgColor = el.dataset.color;
+}
+
+function handleImgUpload(input) {
+  const file = input.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = e => {
+    const img = new Image();
+    img.onload = () => { criatState.bgImg = img; };
+    img.src = e.target.result;
+  };
+  reader.readAsDataURL(file);
+  input.closest('.cont-upload').querySelector('span') && (input.closest('.cont-upload').innerHTML = `<svg viewBox="0 0 24 24" fill="none"><path d="M20 7l-8-4-8 4m16 0-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg> ${file.name}`);
+}
+
+function aiSuggestContent() {
+  const s = CRIAT_AI_COPY[criatState.platform] || CRIAT_AI_COPY['ig-feed'];
+  const btn = document.querySelector('.ai-btn');
+  const origHTML = btn.innerHTML;
+  btn.innerHTML = '⏳ Gerando sugestão...';
+  btn.disabled = true;
+  setTimeout(() => {
+    document.getElementById('cont-headline').value = s.headline;
+    document.getElementById('cont-body').value = s.body;
+    document.getElementById('cont-cta').value = s.cta;
+    btn.innerHTML = '✓ Sugestão aplicada';
+    setTimeout(() => { btn.innerHTML = origHTML; btn.disabled = false; }, 2000);
+  }, 800);
+}
+
+function _wrapText(ctx, text, x, y, maxW, lineH, maxLines) {
+  const words = text.split(' ');
+  let line = '', count = 0;
+  for (let n = 0; n < words.length; n++) {
+    const test = line + words[n] + ' ';
+    if (ctx.measureText(test).width > maxW && n > 0) {
+      ctx.fillText(line.trim(), x, y); line = words[n] + ' '; y += lineH; count++;
+      if (maxLines && count >= maxLines) break;
+    } else { line = test; }
+  }
+  if (!maxLines || count < maxLines) ctx.fillText(line.trim(), x, y);
+}
+
+function _roundRect(ctx, x, y, w, h, r) {
+  ctx.beginPath();
+  ctx.moveTo(x+r,y); ctx.lineTo(x+w-r,y); ctx.quadraticCurveTo(x+w,y,x+w,y+r);
+  ctx.lineTo(x+w,y+h-r); ctx.quadraticCurveTo(x+w,y+h,x+w-r,y+h);
+  ctx.lineTo(x+r,y+h); ctx.quadraticCurveTo(x,y+h,x,y+h-r);
+  ctx.lineTo(x,y+r); ctx.quadraticCurveTo(x,y,x+r,y); ctx.closePath();
+}
+
+function _drawCreative(canvas, W, H) {
+  const dpr = window.devicePixelRatio || 1;
+  canvas.width = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+  canvas.style.width = W + 'px';
+  canvas.style.height = H + 'px';
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const bg = criatState.bgColor;
+  const isDark = bg === '#ffffff' || bg === '#f4f5f8' ? false : true;
+  const textColor = '#ffffff';
+  if (criatState.bgImg) {
+    ctx.drawImage(criatState.bgImg, 0, 0, W, H);
+    ctx.fillStyle = 'rgba(0,0,0,0.32)'; ctx.fillRect(0,0,W,H);
+  } else {
+    ctx.fillStyle = bg; ctx.fillRect(0,0,W,H);
+    ctx.fillStyle = 'rgba(255,255,255,0.05)';
+    for (let x=0;x<W;x+=20) for (let y=0;y<H;y+=20) { ctx.beginPath(); ctx.arc(x,y,1,0,Math.PI*2); ctx.fill(); }
+  }
+  const grad = ctx.createLinearGradient(0, H*0.4, 0, H);
+  grad.addColorStop(0,'rgba(0,0,0,0)'); grad.addColorStop(1,'rgba(0,0,0,0.68)');
+  ctx.fillStyle = grad; ctx.fillRect(0, H*0.4, W, H*0.6);
+  const logoSz = Math.max(10, W*0.052);
+  ctx.font = `700 ${logoSz}px system-ui,-apple-system,sans-serif`;
+  ctx.fillStyle = 'rgba(255,255,255,0.9)';
+  ctx.fillText('Cienty', W*0.05, W*0.09);
+  const hl = document.getElementById('cont-headline').value || 'Seu título aqui';
+  const hlSz = Math.max(13, W*0.08);
+  ctx.font = `700 ${hlSz}px system-ui,-apple-system,sans-serif`;
+  ctx.fillStyle = '#ffffff';
+  _wrapText(ctx, hl, W*0.06, H*0.58, W*0.88, hlSz*1.3);
+  const bd = document.getElementById('cont-body').value || '';
+  if (bd) {
+    const bdSz = Math.max(9, W*0.042);
+    ctx.font = `400 ${bdSz}px system-ui,-apple-system,sans-serif`;
+    ctx.fillStyle = 'rgba(255,255,255,0.78)';
+    _wrapText(ctx, bd, W*0.06, H*0.72, W*0.88, bdSz*1.45, 2);
+  }
+  const cta = document.getElementById('cont-cta').value || 'Saiba mais';
+  const ctaSz = Math.max(8, W*0.04);
+  ctx.font = `700 ${ctaSz}px system-ui,-apple-system,sans-serif`;
+  const ctaW = ctx.measureText(cta).width + W*0.07;
+  const ctaH = ctaSz*1.9;
+  const ctaX = W*0.06, ctaY = H*0.86;
+  ctx.fillStyle = '#ffffff'; _roundRect(ctx, ctaX, ctaY, ctaW, ctaH, 3); ctx.fill();
+  ctx.fillStyle = (bg === '#ffffff') ? '#dc36c0' : bg;
+  ctx.font = `700 ${ctaSz}px system-ui,-apple-system,sans-serif`;
+  ctx.fillText(cta, ctaX + W*0.035, ctaY + ctaH*0.65);
+}
+
+function drawPreview() {
+  const fmt = criatState.format; if (!fmt) return;
+  const frame = document.getElementById('prev-frame');
+  const canvas = document.getElementById('criat-canvas');
+  const ar = fmt.w / fmt.h;
+  const maxW = Math.min(frame.clientWidth - 56, 360);
+  const maxH = 420;
+  let dW = maxW, dH = Math.round(maxW / ar);
+  if (dH > maxH) { dH = maxH; dW = Math.round(maxH * ar); }
+  _drawCreative(canvas, dW, dH);
+  document.getElementById('prev-meta').innerHTML = `
+    <div class="prev-meta-row"><span class="prev-meta-k">Plataforma</span><span class="prev-meta-v">${PLAT_NAMES[criatState.platform]||''}</span></div>
+    <div class="prev-meta-row"><span class="prev-meta-k">Formato</span><span class="prev-meta-v">${fmt.name} (${fmt.ratio})</span></div>
+    <div class="prev-meta-row"><span class="prev-meta-k">Dimensões</span><span class="prev-meta-v">${fmt.w}×${fmt.h} px</span></div>`;
+}
+
+function downloadCreative() {
+  const fmt = criatState.format; if (!fmt) return;
+  const offscreen = document.createElement('canvas');
+  const scale = Math.min(1, 1080 / Math.max(fmt.w, fmt.h));
+  _drawCreative(offscreen, fmt.w * scale, fmt.h * scale);
+  const link = document.createElement('a');
+  link.download = `${criatState.platform||'criativo'}-${fmt.id}-cienty.png`;
+  link.href = offscreen.toDataURL('image/png'); link.click();
+}
+
+function criatGoStep(n) { criatState.step = n; _updateCriatUI(); }
+
+function criatStep(dir) {
+  const cur = criatState.step;
+  if (dir === 1) {
+    if (cur === 1 && !criatState.platform) { alert('Selecione uma plataforma para continuar.'); return; }
+    if (cur === 2 && !criatState.format)   { alert('Selecione um formato para continuar.');    return; }
+  }
+  criatState.step = Math.max(1, Math.min(4, cur + dir));
+  _updateCriatUI();
+  if (criatState.step === 2) buildFmtGrid();
+  if (criatState.step === 4) setTimeout(drawPreview, 80);
+}
+
+function _updateCriatUI() {
+  const s = criatState.step;
+  document.querySelectorAll('.step-panel').forEach((p, i) => p.classList.toggle('active', i+1 === s));
+  for (let i=1; i<=4; i++) {
+    const n = document.getElementById('sn-'+i), l = document.getElementById('sl-'+i);
+    if (!n||!l) continue;
+    n.className = 'step-n ' + (i<s?'s-done':i===s?'s-cur':'s-pend');
+    n.innerHTML = i<s ? `<svg viewBox="0 0 10 10" fill="none" style="width:10px;height:10px"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>` : i;
+    l.className = 'step-lbl'+(i===s?' cur':'');
+  }
+  const back = document.getElementById('criat-back'), nxt = document.getElementById('criat-next');
+  back.style.visibility = s===1 ? 'hidden' : 'visible';
+  if (s < 4) {
+    nxt.innerHTML = 'Próximo <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    nxt.onclick = () => criatStep(1);
+  } else {
+    nxt.innerHTML = '<svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M8 1v10M4 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Baixar PNG';
+    nxt.onclick = downloadCreative;
+  }
+  document.getElementById('criat-step-lbl').textContent = `Passo ${s} de 4`;
+}
+
+function fillCriatChat(msg) {
+  const ta = document.getElementById('criat-chat-ta');
+  if (ta) { ta.value = msg; _autoResizeCriat(ta); ta.focus(); }
+}
+function sendCriatChat() {
+  const ta = document.getElementById('criat-chat-ta');
+  if (!ta || !ta.value.trim()) return;
+  ta.value = ''; _autoResizeCriat(ta);
+  setCriatMode('manual'); criatState.step = 1; _updateCriatUI();
+}
+function autoResizeCriatChat(ta) { _autoResizeCriat(ta); }
+function _autoResizeCriat(ta) { ta.style.height='auto'; ta.style.height=Math.min(ta.scrollHeight,120)+'px'; }
 
 function draw(canvas, layout, W, H) {
   const c = canvas.getContext('2d');
