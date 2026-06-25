@@ -392,15 +392,21 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
 .criat-footer{flex-shrink:0;padding:12px 32px;border-top:1px solid var(--bd);background:var(--cd);display:flex;justify-content:space-between;align-items:center}
 .step-panel{display:none}.step-panel.active{display:block}
 
-/* Step 1 — platforms */
+/* Step 1 — platforms (multi-select) */
 .plat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:680px}
-.plat-card{padding:16px 18px;border:2px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;align-items:center;gap:12px;background:var(--cd)}
+.plat-card{position:relative;padding:16px 18px;border:2px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;align-items:center;gap:12px;background:var(--cd)}
 .plat-card:hover{border-color:rgba(220,54,192,.35)}
 .plat-card.sel{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10);background:rgba(220,54,192,.02)}
+.plat-check{position:absolute;top:7px;right:7px;width:17px;height:17px;border-radius:50%;background:var(--mg);color:#fff;display:none;align-items:center;justify-content:center}
+.plat-check svg{width:9px;height:9px}
+.plat-card.sel .plat-check{display:flex}
 .plat-icon{width:34px;height:34px;border-radius:8px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
 .plat-icon svg{width:18px;height:18px}
 .plat-name{font-size:13px;font-weight:600;color:var(--tx);line-height:1.3}
 .plat-sub{font-size:11px;color:var(--mx);margin-top:1px}
+.plat-sel-bar{display:flex;align-items:center;gap:10px;margin-top:14px;max-width:680px}
+.plat-sel-count{font-size:12px;color:var(--mx);font-weight:600}
+.plat-sel-count strong{color:var(--mg)}
 
 /* Step 2 — formats (multi-select) */
 .fmt-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;max-width:680px}
@@ -414,6 +420,8 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
 .fmt-name{font-size:12px;font-weight:700;color:var(--tx)}
 .fmt-ratio{font-size:10px;color:var(--mg);font-weight:600}
 .fmt-dims{font-size:10px;color:var(--mx)}
+.fmt-group-hdr{grid-column:1/-1;font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mx);padding:10px 0 6px;border-bottom:1px solid var(--bd);display:flex;align-items:center;gap:8px}
+.fmt-group-hdr:first-child{padding-top:0}
 .fmt-sel-bar{display:flex;align-items:center;gap:10px;margin-top:16px;max-width:680px}
 .fmt-sel-count{font-size:12px;color:var(--mx);font-weight:600}
 .fmt-sel-count strong{color:var(--mg)}
@@ -1146,12 +1154,13 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
         <!-- Scrollable content -->
         <div class="criat-scroll">
 
-          <!-- Step 1: Plataforma -->
+          <!-- Step 1: Plataforma (multi-select) -->
           <div class="step-panel active" id="panel-1">
             <div class="section-ttl">Onde o criativo será veiculado?</div>
-            <div class="section-sub">Escolha a plataforma para definir os formatos disponíveis</div>
+            <div class="section-sub">Selecione uma ou mais plataformas — o mesmo conteúdo será adaptado para cada uma</div>
             <div class="plat-grid">
               <div class="plat-card" id="plat-ig-feed" onclick="selectPlatform('ig-feed')">
+                <div class="plat-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <div class="plat-icon" style="background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)">
                   <svg viewBox="0 0 18 18" fill="none"><rect x="3" y="3" width="12" height="12" rx="3" stroke="#fff" stroke-width="1.5"/><circle cx="9" cy="9" r="2.5" stroke="#fff" stroke-width="1.5"/><circle cx="13" cy="5" r="1" fill="#fff"/></svg>
                 </div>
@@ -1161,6 +1170,7 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
                 </div>
               </div>
               <div class="plat-card" id="plat-ig-stories" onclick="selectPlatform('ig-stories')">
+                <div class="plat-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <div class="plat-icon" style="background:linear-gradient(135deg,#f9ce34,#ee2a7b,#6228d7)">
                   <svg viewBox="0 0 18 18" fill="none"><rect x="4" y="1" width="10" height="16" rx="2" stroke="#fff" stroke-width="1.5"/><line x1="9" y1="14" x2="9" y2="14" stroke="#fff" stroke-width="2" stroke-linecap="round"/></svg>
                 </div>
@@ -1170,6 +1180,7 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
                 </div>
               </div>
               <div class="plat-card" id="plat-fb-feed" onclick="selectPlatform('fb-feed')">
+                <div class="plat-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <div class="plat-icon" style="background:#1877f2">
                   <svg viewBox="0 0 18 18" fill="none"><path d="M10 9h2.5l.5-2.5H10V5c0-.69.31-1.25 1.25-1.25H13V1.25S11.75 1 10.75 1C8.5 1 7 2.44 7 5v1.5H4.5V9H7v8h3V9Z" fill="#fff"/></svg>
                 </div>
@@ -1179,6 +1190,7 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
                 </div>
               </div>
               <div class="plat-card" id="plat-fb-stories" onclick="selectPlatform('fb-stories')">
+                <div class="plat-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <div class="plat-icon" style="background:#1877f2">
                   <svg viewBox="0 0 18 18" fill="none"><rect x="4" y="1" width="10" height="16" rx="2" stroke="#fff" stroke-width="1.5"/><path d="M10 9h2.5l.5-2H10V6c0-.5.25-1 1-1h1.5V3.5S11 3 10 3c-1.5 0-3 1-3 3v.5H5.5v2.5H7v5.5h3V9Z" fill="#fff"/></svg>
                 </div>
@@ -1188,6 +1200,7 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
                 </div>
               </div>
               <div class="plat-card" id="plat-whatsapp" onclick="selectPlatform('whatsapp')">
+                <div class="plat-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <div class="plat-icon" style="background:#25d366">
                   <svg viewBox="0 0 18 18" fill="none"><path d="M9 1.5A7.5 7.5 0 0 0 2.22 12.47L1.5 16.5l4.14-.69A7.5 7.5 0 1 0 9 1.5Z" stroke="#fff" stroke-width="1.5"/><path d="M6.5 6.5c.2.5.8 1.5 1.5 2.2.7.7 1.7 1.3 2.2 1.5" stroke="#fff" stroke-width="1.4" stroke-linecap="round"/></svg>
                 </div>
@@ -1197,6 +1210,7 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
                 </div>
               </div>
               <div class="plat-card" id="plat-google" onclick="selectPlatform('google')">
+                <div class="plat-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
                 <div class="plat-icon" style="background:#fff;border:1.5px solid #e3e4eb">
                   <svg viewBox="0 0 18 18" fill="none"><path d="M16.5 9.18c0-.63-.06-1.24-.16-1.82H9v3.44h4.2a3.58 3.58 0 0 1-1.56 2.36v1.96h2.52c1.48-1.36 2.34-3.36 2.34-5.94Z" fill="#4285f4"/><path d="M9 17c2.1 0 3.86-.7 5.15-1.88l-2.52-1.96c-.7.47-1.6.74-2.63.74-2.02 0-3.73-1.37-4.34-3.2H2.06v2.02A7.99 7.99 0 0 0 9 17Z" fill="#34a853"/><path d="M4.66 10.7A4.8 4.8 0 0 1 4.41 9c0-.59.1-1.17.25-1.71V5.27H2.06A8 8 0 0 0 1 9c0 1.29.31 2.51.86 3.59l2.8-2.14-.25.25Z" fill="#fbbc05"/><path d="M9 4.08c1.14 0 2.16.39 2.96 1.16l2.22-2.22C12.85 1.8 11.1 1 9 1A8 8 0 0 0 1.86 5.27L4.66 7.3C5.27 5.45 6.98 4.08 9 4.08Z" fill="#ea4335"/></svg>
                 </div>
@@ -1205,6 +1219,10 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
                   <div class="plat-sub">Banners e display ads</div>
                 </div>
               </div>
+            </div>
+            <div class="plat-sel-bar" id="plat-sel-bar" style="display:none">
+              <span class="plat-sel-count" id="plat-sel-count"></span>
+              <button class="btn btn-ghost" style="font-size:11px;padding:5px 10px" onclick="clearPlatSel()">Limpar</button>
             </div>
           </div>
 
@@ -1781,7 +1799,7 @@ const CRIAT_AI_COPY = {
 
 const PLAT_NAMES = {'ig-feed':'Instagram Feed','ig-stories':'Instagram Stories','fb-feed':'Facebook Feed','fb-stories':'Facebook Stories','whatsapp':'WhatsApp','google':'Google Display'};
 
-const criatState = { step:1, platform:null, formats:[], bgColor:'#dc36c0', bgImg:null };
+const criatState = { step:1, platforms:[], formats:[], bgColor:'#dc36c0', bgImg:null };
 
 function setCriatMode(mode) {
   document.getElementById('tab-manual').classList.toggle('active', mode === 'manual');
@@ -1791,51 +1809,86 @@ function setCriatMode(mode) {
 }
 
 function selectPlatform(id) {
-  criatState.platform = id;
+  const idx = criatState.platforms.indexOf(id);
+  if (idx === -1) {
+    criatState.platforms.push(id);
+  } else {
+    criatState.platforms.splice(idx, 1);
+    criatState.formats = criatState.formats.filter(f => f.platform !== id);
+  }
+  const card = document.getElementById('plat-' + id);
+  if (card) card.classList.toggle('sel', criatState.platforms.includes(id));
+  _updatePlatSelBar();
+}
+
+function _updatePlatSelBar() {
+  const n = criatState.platforms.length;
+  const bar = document.getElementById('plat-sel-bar');
+  const lbl = document.getElementById('plat-sel-count');
+  if (bar) bar.style.display = n > 0 ? 'flex' : 'none';
+  if (lbl) lbl.innerHTML = `<strong>${n}</strong> plataforma${n !== 1 ? 's' : ''} selecionada${n !== 1 ? 's' : ''}`;
+}
+
+function clearPlatSel() {
+  criatState.platforms = [];
   criatState.formats = [];
   document.querySelectorAll('.plat-card').forEach(c => c.classList.remove('sel'));
-  const card = document.getElementById('plat-' + id);
-  if (card) card.classList.add('sel');
+  _updatePlatSelBar();
 }
 
 function buildFmtGrid() {
-  const fmts = CRIAT_FORMATS[criatState.platform] || [];
+  const platIds = criatState.platforms;
   const grid = document.getElementById('fmt-grid');
   const sub = document.getElementById('fmt-sub');
-  sub.textContent = 'Formatos disponíveis para ' + (PLAT_NAMES[criatState.platform] || 'a plataforma selecionada');
+  if (platIds.length === 1) {
+    sub.textContent = 'Formatos disponíveis para ' + PLAT_NAMES[platIds[0]];
+  } else {
+    sub.textContent = `Formatos das ${platIds.length} plataformas selecionadas — escolha os que quiser`;
+  }
   grid.innerHTML = '';
-  criatState.formats = [];
-  _updateFmtSelBar();
-  fmts.forEach(f => {
-    const ar = f.w / f.h;
-    const MAX = 54;
-    const pw = ar >= 1 ? MAX : Math.round(MAX * ar);
-    const ph = ar >= 1 ? Math.round(MAX / ar) : MAX;
-    const card = document.createElement('div');
-    card.className = 'fmt-card';
-    card.dataset.fmtId = f.id;
-    card.onclick = () => {
-      const idx = criatState.formats.findIndex(x => x.id === f.id);
-      if (idx === -1) { criatState.formats.push(f); card.classList.add('sel'); }
-      else            { criatState.formats.splice(idx, 1); card.classList.remove('sel'); }
-      _updateFmtSelBar();
-    };
-    card.innerHTML = `<div class="fmt-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
-      <div class="fmt-preview" style="width:${pw}px;height:${ph}px"></div>
-      <div class="fmt-name">${f.name}</div>
-      <div class="fmt-ratio">${f.ratio}</div>
-      <div class="fmt-dims">${f.w}×${f.h} px</div>
-      <div class="fmt-dims" style="color:var(--mg);margin-top:1px">${f.desc}</div>`;
-    grid.appendChild(card);
+  // remove formats from platforms no longer selected
+  criatState.formats = criatState.formats.filter(f => platIds.includes(f.platform));
+  platIds.forEach(platId => {
+    const fmts = CRIAT_FORMATS[platId] || [];
+    if (!fmts.length) return;
+    if (platIds.length > 1) {
+      const hdr = document.createElement('div');
+      hdr.className = 'fmt-group-hdr';
+      hdr.textContent = PLAT_NAMES[platId];
+      grid.appendChild(hdr);
+    }
+    fmts.forEach(f => {
+      const isSelected = criatState.formats.some(x => x.platform === platId && x.id === f.id);
+      const ar = f.w / f.h;
+      const MAX = 54;
+      const pw = ar >= 1 ? MAX : Math.round(MAX * ar);
+      const ph = ar >= 1 ? Math.round(MAX / ar) : MAX;
+      const card = document.createElement('div');
+      card.className = 'fmt-card' + (isSelected ? ' sel' : '');
+      card.onclick = () => {
+        const idx = criatState.formats.findIndex(x => x.platform === platId && x.id === f.id);
+        if (idx === -1) { criatState.formats.push({ ...f, platform: platId }); card.classList.add('sel'); }
+        else            { criatState.formats.splice(idx, 1); card.classList.remove('sel'); }
+        _updateFmtSelBar();
+      };
+      card.innerHTML = `<div class="fmt-check"><svg viewBox="0 0 10 10" fill="none"><path d="M2 5l2 2 4-4" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+        <div class="fmt-preview" style="width:${pw}px;height:${ph}px"></div>
+        <div class="fmt-name">${f.name}</div>
+        <div class="fmt-ratio">${f.ratio}</div>
+        <div class="fmt-dims">${f.w}×${f.h} px</div>
+        <div class="fmt-dims" style="color:var(--mg);margin-top:1px">${f.desc}</div>`;
+      grid.appendChild(card);
+    });
   });
+  _updateFmtSelBar();
 }
 
 function _updateFmtSelBar() {
   const n = criatState.formats.length;
   const bar = document.getElementById('fmt-sel-bar');
   const lbl = document.getElementById('fmt-sel-count');
-  bar.style.display = n > 0 ? 'flex' : 'none';
-  lbl.innerHTML = `<strong>${n}</strong> formato${n !== 1 ? 's' : ''} selecionado${n !== 1 ? 's' : ''}`;
+  if (bar) bar.style.display = n > 0 ? 'flex' : 'none';
+  if (lbl) lbl.innerHTML = `<strong>${n}</strong> formato${n !== 1 ? 's' : ''} selecionado${n !== 1 ? 's' : ''}`;
 }
 
 function clearFmtSel() {
@@ -1864,7 +1917,7 @@ function handleImgUpload(input) {
 }
 
 function aiSuggestContent() {
-  const s = CRIAT_AI_COPY[criatState.platform] || CRIAT_AI_COPY['ig-feed'];
+  const s = CRIAT_AI_COPY[criatState.platforms[0]] || CRIAT_AI_COPY['ig-feed'];
   const btn = document.querySelector('.ai-btn');
   const origHTML = btn.innerHTML;
   btn.innerHTML = '⏳ Gerando sugestão...';
@@ -1955,28 +2008,32 @@ function drawPreview() {
   const grid = document.getElementById('prev-grid');
   grid.innerHTML = '';
   const n = fmts.length;
-  document.getElementById('prev-ttl').textContent = n === 1 ? 'Pré-visualização do criativo' : `Pré-visualização — ${n} formatos`;
-  document.getElementById('prev-sub').textContent = n === 1 ? 'Verifique o resultado e faça o download' : 'Cada criativo foi adaptado para as dimensões do seu formato';
-  document.getElementById('dl-all-btn').textContent = n === 1 ? 'Baixar PNG' : `Baixar todos (${n})`;
-  document.getElementById('dl-all-lbl').textContent = n === 1 ? '' : `${n} arquivos PNG`;
+  const platCount = new Set(fmts.map(f => f.platform)).size;
+  document.getElementById('prev-ttl').textContent = n === 1 ? 'Pré-visualização do criativo' : `Pré-visualização — ${n} formato${n !== 1 ? 's' : ''}`;
+  document.getElementById('prev-sub').textContent = n === 1
+    ? 'Verifique o resultado e faça o download'
+    : `${platCount} plataforma${platCount !== 1 ? 's' : ''} · cada criativo adaptado às dimensões do formato`;
+  const dlBtn = document.getElementById('dl-all-btn');
+  dlBtn.innerHTML = `<svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M8 1v10M4 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> ${n === 1 ? 'Baixar PNG' : 'Baixar todos (' + n + ')'}`;
+  document.getElementById('dl-all-lbl').textContent = n > 1 ? `${n} arquivos PNG` : '';
   fmts.forEach(fmt => {
+    const key = fmt.platform + '_' + fmt.id;
+    const canvasId = 'prev-cv-' + key;
     const card = document.createElement('div');
     card.className = 'prev-card';
-    const canvasId = 'prev-cv-' + fmt.id;
     card.innerHTML = `
       <div class="prev-card-frame">
         <canvas id="${canvasId}" class="prev-card-canvas"></canvas>
       </div>
       <div class="prev-card-meta">
         <div class="prev-card-name">${fmt.name} — ${fmt.ratio}</div>
-        <div class="prev-card-dims">${fmt.w}×${fmt.h} px</div>
-        <button class="btn btn-ghost prev-card-dl" onclick="downloadOne('${fmt.id}')">
+        <div class="prev-card-dims">${PLAT_NAMES[fmt.platform]} · ${fmt.w}×${fmt.h} px</div>
+        <button class="btn btn-ghost prev-card-dl" onclick="downloadOne('${key}')">
           <svg viewBox="0 0 16 16" fill="none" style="width:11px;height:11px"><path d="M8 1v10M4 7l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M2 13h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
           Baixar PNG
         </button>
       </div>`;
     grid.appendChild(card);
-    // draw after element is in DOM so getBoundingClientRect works
     requestAnimationFrame(() => {
       const frame = card.querySelector('.prev-card-frame');
       const canvas = document.getElementById(canvasId);
@@ -1990,13 +2047,14 @@ function drawPreview() {
   });
 }
 
-function downloadOne(fmtId) {
-  const fmt = criatState.formats.find(f => f.id === fmtId);
+function downloadOne(key) {
+  const [platId, fmtId] = key.split('_');
+  const fmt = criatState.formats.find(f => f.platform === platId && f.id === fmtId);
   if (!fmt) return;
   const offscreen = document.createElement('canvas');
   _drawCreative(offscreen, fmt.w, fmt.h);
   const link = document.createElement('a');
-  link.download = `${criatState.platform||'criativo'}-${fmt.id}-cienty.png`;
+  link.download = `${platId}-${fmtId}-cienty.png`;
   link.href = offscreen.toDataURL('image/png'); link.click();
 }
 
@@ -2011,8 +2069,8 @@ function criatGoStep(n) { criatState.step = n; _updateCriatUI(); }
 function criatStep(dir) {
   const cur = criatState.step;
   if (dir === 1) {
-    if (cur === 1 && !criatState.platform)      { alert('Selecione uma plataforma para continuar.'); return; }
-    if (cur === 2 && !criatState.formats.length) { alert('Selecione pelo menos um formato para continuar.'); return; }
+    if (cur === 1 && !criatState.platforms.length) { alert('Selecione pelo menos uma plataforma para continuar.'); return; }
+    if (cur === 2 && !criatState.formats.length)   { alert('Selecione pelo menos um formato para continuar.'); return; }
   }
   criatState.step = Math.max(1, Math.min(4, cur + dir));
   _updateCriatUI();
