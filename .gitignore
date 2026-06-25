@@ -4,3 +4,6 @@ output/
 *.log
 .env
 server/.env
+
+# Cache regenerável de miniaturas (as imagens já vão embutidas nos snapshots/relatório)
+data/thumbs/
