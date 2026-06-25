@@ -2196,3 +2196,417 @@ function pickColor(item) {
   item.classList.add('picked');
 }
 </script>
+<!-- ═══ Conexão com dados reais (server/meta via /api/campaigns) ═══ -->
+<script>
+let REAL_CAMPS = null;
+let REAL_ACCOUNT = null;
+
+const _brl = (n) => 'R$ ' + (n == null ? '—' : Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
+const _int = (n) => Number(n).toLocaleString('pt-BR');
+const _pct = (x) => Math.round(x * 100) + '% do total';
+
+function _cplNote(cpl, avg) {
+  if (cpl == null) return { t: 'sem leads no período', c: '' };
+  if (cpl <= avg * 0.92) return { t: 'abaixo da média', c: 'cmt-ok' };
+  if (cpl >= avg * 1.3) return { t: 'bem acima da média', c: 'cmt-er' };
+  return { t: 'na média da conta', c: '' };
+}
+function _ctrNote(ctr) {
+  if (ctr >= 3) return { t: 'bom', c: 'cmt-ok' };
+  if (ctr > 0 && ctr < 2) return { t: 'baixo', c: 'cmt-er' };
+  return { t: '', c: '' };
+}
+function _freqNote(f) {
+  if (!f) return { t: '—', c: '' };
+  if (f > 3) return { t: 'alta — risco de saturação', c: 'cmt-er' };
+  if (f > 2.3) return { t: 'subindo — monitorar', c: 'wn' };
+  return { t: 'saudável', c: 'cmt-ok' };
+}
+
+function buildRealCard(c, i, scaleMax) {
+  const m = c.metrics, ch = c.chart;
+  const statusHtml = c.status === 'Ativa'
+    ? '<span class="status s-on">● Ativa</span>'
+    : '<span class="status" style="color:#6d7079">● Pausada</span>';
+  const tags = (c.tags.length ? c.tags : ['—']).map(t => `<span class="camp-tag">${t}</span>`).join('');
+  const domain = c.domain ? ` <span class="camp-domain">(${c.domain})</span>` : '';
+  const projTxt = c.status === 'Pausada'
+    ? 'Campanha pausada — sem projeção'
+    : `Projeção fim do mês: <strong>~${ch.monthTotal} leads</strong> · ritmo ~${ch.projRate}/dia`;
+
+  const cpl = _cplNote(m.cpl, REAL_ACCOUNT.cplAvg);
+  const ctr = _ctrNote(m.ctr);
+  const freq = _freqNote(m.freq);
+  const span = (n) => n.c === 'wn' ? `<span style="color:var(--wn)">${n.t}</span>` : (n.c ? `<span class="${n.c}">${n.t}</span>` : n.t);
+
+  const fillPct = m.cpl ? Math.min(100, m.cpl / scaleMax * 100) : 0;
+  const avgPct = Math.min(100, REAL_ACCOUNT.cplAvg / scaleMax * 100);
+  const fillColor = (m.cpl && m.cpl <= REAL_ACCOUNT.cplAvg) ? ';background:var(--ok)' : (m.cpl && m.cpl >= REAL_ACCOUNT.cplAvg * 1.3 ? ';background:var(--er)' : '');
+
+  return `<div class="camp-card" data-status="${c.status}" data-name="${(c.display + ' ' + c.domain).toLowerCase()}">
+    <div class="camp-hd2">
+      <div class="camp-tags">${tags}</div>
+      <div class="camp-name2">${c.display}${domain}</div>
+      <div class="camp-meta">${statusHtml}<span class="camp-audience">Objetivo: ${c.objective || '—'}</span></div>
+    </div>
+    <div class="camp-chart-sec">
+      <div class="camp-chart-hdr">
+        <span class="camp-chart-lbl">Leads por dia · mês atual</span>
+        <span class="camp-chart-proj">${projTxt}</span>
+      </div>
+      <canvas class="camp-canvas" id="creal-${i}" height="72"></canvas>
+      <div class="camp-legend">
+        <span class="cleg"><span class="cleg-line"></span> Realizado</span>
+        <span class="cleg"><span class="cleg-dash"></span> Projeção</span>
+        <span class="cleg"><span class="cleg-today"></span> Hoje (dia ${ch.today})</span>
+      </div>
+    </div>
+    <div class="cmt-sec">
+      <table class="cmt">
+        <tr><td class="cmt-lbl">Valor usado</td><td class="cmt-val">${_brl(m.spend)}</td><td class="cmt-note">${_pct(m.spendPct)}</td></tr>
+        <tr><td class="cmt-lbl">Leads</td><td class="cmt-val">${_int(m.leads)}</td><td class="cmt-note">${_pct(m.leadsPct)}</td></tr>
+        <tr><td class="cmt-lbl">Custo por lead</td><td class="cmt-val">${_brl(m.cpl)}</td><td class="cmt-note">${span(cpl)}</td></tr>
+        <tr><td class="cmt-lbl">CTR (todos)</td><td class="cmt-val">${m.ctr.toFixed(2)}%</td><td class="cmt-note">${span(ctr)}${ctr.t ? ' · ' : ''}link ${m.linkCtr.toFixed(2)}%</td></tr>
+        <tr><td class="cmt-lbl">CPC</td><td class="cmt-val">${_brl(m.cpc)}</td><td class="cmt-note">—</td></tr>
+        <tr><td class="cmt-lbl">Frequência</td><td class="cmt-val">${m.freq.toFixed(2)}</td><td class="cmt-note">${span(freq)}</td></tr>
+      </table>
+    </div>
+    <div class="cpl-sec">
+      <div class="cpl-title">CPL vs. Média da conta</div>
+      <div class="cpl-track">
+        <div class="cpl-fill" style="width:${fillPct.toFixed(1)}%${fillColor}">${_brl(m.cpl)}</div>
+        <div class="cpl-avg-line" style="left:${avgPct.toFixed(1)}%"></div>
+      </div>
+      <div class="cpl-foot">Linha preta = média da conta (<strong>${_brl(REAL_ACCOUNT.cplAvg)}</strong>).</div>
+    </div>
+    <div class="camp-footer">
+      <button class="camp-detail-btn" onclick="openRealDrawer(${i})">Ver detalhes <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+    </div>
+  </div>`;
+}
+
+function openRealDrawer(i) {
+  const c = REAL_CAMPS[i]; if (!c) return;
+  const m = c.metrics;
+  document.getElementById('drawer-camp-name').textContent = c.display + (c.domain ? ` (${c.domain})` : '');
+  document.getElementById('drawer-body').innerHTML = `
+    <div class="dsec dsec-mg">
+      <div class="dsec-title">Resumo — últimos 30 dias</div>
+      <ul>
+        <li><strong>Status:</strong> ${c.status} · <strong>Objetivo:</strong> ${c.objective || '—'}</li>
+        <li><strong>Investimento:</strong> ${_brl(m.spend)} (${Math.round(m.spendPct * 100)}% da conta)</li>
+        <li><strong>Leads:</strong> ${_int(m.leads)} · <strong>CPL:</strong> ${_brl(m.cpl)}</li>
+        <li><strong>CTR:</strong> ${m.ctr.toFixed(2)}% (link ${m.linkCtr.toFixed(2)}%) · <strong>CPC:</strong> ${_brl(m.cpc)} · <strong>Freq:</strong> ${m.freq.toFixed(2)}</li>
+        <li><strong>Projeção do mês:</strong> ${c.status === 'Pausada' ? 'sem projeção (pausada)' : `~${c.chart.monthTotal} leads (ritmo ~${c.chart.projRate}/dia)`}</li>
+      </ul>
+      <div class="dsec-note">Dados reais via Meta Marketing API. Para a análise completa por ad set + sugestões de criativo, rode o comando <strong>/relatorio-anuncios</strong>.</div>
+    </div>`;
+  document.getElementById('camp-drawer').classList.add('open');
+  document.getElementById('drawer-bd').classList.add('open');
+}
+
+async function hydrateCampaigns() {
+  const list = document.querySelector('.camp-list');
+  if (!list) return;
+  try {
+    if (!REAL_CAMPS) {
+      const r = await fetch('/api/campaigns');
+      const data = await r.json();
+      if (data.error) throw new Error(data.error);
+      REAL_CAMPS = data.campaigns;
+      REAL_ACCOUNT = data.account;
+      // atualiza contagem no topo
+      topbarInfo.campanhas.sub = `${REAL_CAMPS.length} campanhas · por investimento (dados reais)`;
+      if (document.getElementById('tb-title').textContent === 'Campanhas')
+        document.getElementById('tb-sub').textContent = topbarInfo.campanhas.sub;
+    }
+    const cpls = REAL_CAMPS.map(c => c.metrics.cpl).filter(Boolean);
+    const scaleMax = Math.max(REAL_ACCOUNT.cplAvg, ...cpls) * 1.08 || 1;
+    list.innerHTML = REAL_CAMPS.map((c, i) => buildRealCard(c, i, scaleMax)).join('');
+    REAL_CAMPS.forEach((c, i) => {
+      const a = c.chart.actual;
+      const maxY = Math.max(5, Math.ceil(Math.max(...a, c.chart.projRate) / 5) * 5);
+      drawCampChart(`creal-${i}`, a.length ? a : [0], c.chart.today, c.chart.projRate, maxY);
+    });
+    _applyCampFilter();
+  } catch (e) {
+    console.warn('Falha ao carregar dados reais, mantendo mock:', e.message);
+  }
+}
+
+// Filtro real por status + busca textual
+let _activeChip = 'Todas';
+function filterChip(chip) {
+  chip.closest('.f-chips').querySelectorAll('.f-chip').forEach(c => c.classList.remove('on'));
+  chip.classList.add('on');
+  _activeChip = chip.textContent.trim();
+  _applyCampFilter();
+}
+function _applyCampFilter() {
+  const q = (document.querySelector('.camp-filter .search-box input')?.value || '').toLowerCase().trim();
+  document.querySelectorAll('.camp-list .camp-card').forEach(card => {
+    const st = card.dataset.status || '';
+    const okChip = _activeChip === 'Todas'
+      || (_activeChip === 'Ativas' && st === 'Ativa')
+      || (_activeChip === 'Pausadas' && st === 'Pausada')
+      || (_activeChip === 'Encerradas' && st === 'Encerrada');
+    const okText = !q || (card.dataset.name || '').includes(q);
+    card.style.display = (okChip && okText) ? '' : 'none';
+  });
+}
+document.querySelector('.camp-filter .search-box input')?.addEventListener('input', _applyCampFilter);
+
+// Liga o carregamento real à navegação para Campanhas (substitui o mock).
+drawAllCampCharts = hydrateCampaigns;
+
+/* ── Chat ligado aos dados reais (/api/chat) ── */
+async function askAgent(q) {
+  appendMsg('ai', '<em>Analisando os dados reais da conta…</em>');
+  const ph = chatMsgs.lastElementChild;
+  try {
+    const r = await fetch('/api/chat?q=' + encodeURIComponent(q));
+    const d = await r.json();
+    ph.querySelector('.msg-body').innerHTML = d.html || 'Sem resposta.';
+  } catch (e) {
+    ph.querySelector('.msg-body').innerHTML = (typeof TAG_RESPONSES !== 'undefined' && TAG_RESPONSES[q]) || 'Não consegui buscar os dados agora. Tente novamente.';
+  }
+  chatMsgs.scrollTop = chatMsgs.scrollHeight;
+}
+function execTag(btn) {
+  const label = btn.textContent.trim();
+  transitionToChat();
+  appendMsg('u', label);
+  askAgent(label);
+}
+function sendMsg() {
+  const text = chatTa.value.trim();
+  if (!text) return;
+  transitionToChat();
+  appendMsg('u', text);
+  chatTa.value = ''; chatTa.style.height = 'auto';
+  askAgent(text);
+}
+
+/* ── Criativos ligados ao image-forge (/api/templates + /api/render) ── */
+let TEMPLATES_LOADED = false;
+async function hydrateTemplates() {
+  const grid = document.getElementById('tpl-grid');
+  if (!grid || TEMPLATES_LOADED) return;
+  try {
+    const r = await fetch('/api/templates');
+    const d = await r.json();
+    grid.innerHTML = d.templates.map((t, i) => `
+      <div class="tpl-card${i === 0 ? ' sel' : ''}" data-template="${t.template}">
+        <img src="/api/render?template=${encodeURIComponent(t.template)}&size=${encodeURIComponent(t.size)}" alt="${t.template}" loading="lazy" style="width:100%;display:block;background:#f0f0f4">
+        <div class="tpl-info"><div class="tpl-name">${t.template}</div><div class="tpl-dims">${t.description || t.size}</div></div>
+      </div>`).join('');
+    grid.querySelectorAll('.tpl-card').forEach((card) => card.addEventListener('click', () => {
+      grid.querySelectorAll('.tpl-card').forEach((c) => c.classList.remove('sel'));
+      card.classList.add('sel');
+    }));
+    TEMPLATES_LOADED = true;
+  } catch (e) { console.warn('Falha ao carregar templates reais:', e.message); }
+}
+
+/* ── Hook de navegação: carrega dados reais ao abrir cada aba ── */
+const _origNavigate = navigateTo;
+navigateTo = function (id) {
+  _origNavigate(id);
+  if (id === 'criativos') hydrateTemplates();
+};
+
+/* ── Nova campanha → create-campaign.mjs (dry-run → criar PAUSED) ── */
+// Segmentação validada (clonada do ad set vencedor): SP + farmácia.
+const NOVA_TARGETING = {
+  age_min: 25, age_max: 55,
+  geo_locations: { regions: [{ key: '460', name: 'São Paulo (state)', country: 'BR' }], location_types: ['home', 'recent'] },
+  flexible_spec: [{
+    interests: [{ id: '6003040299915', name: 'Drugstore' }],
+    work_positions: [
+      { id: '109485995743570', name: 'Pharmacy technician' },
+      { id: '109841965700435', name: 'Pharmacist' },
+      { id: '346601008875074', name: 'Pharmacy Manager' },
+    ],
+  }],
+  publisher_platforms: ['facebook', 'instagram'], device_platforms: ['mobile', 'desktop'],
+};
+const _S = 'font:inherit;width:100%;box-sizing:border-box;padding:9px 11px;border:1px solid #e3e4eb;border-radius:8px;margin-top:4px';
+const _LBL = 'font-size:12px;font-weight:600;color:#3a3a40';
+const _BTN = 'font:inherit;font-weight:700;padding:10px 18px;border-radius:8px;border:0;cursor:pointer';
+
+function buildNovaSpec() {
+  const g = (id) => document.getElementById(id);
+  const headline = g('nv-headline').value.trim();
+  return {
+    name: g('nv-name').value.trim() || 'Nova campanha (UI)',
+    dailyBudget: Math.round(parseFloat(g('nv-budget').value || '15') * 100),
+    landingUrl: g('nv-url').value.trim(),
+    optimizationGoal: 'OFFSITE_CONVERSIONS',
+    targeting: NOVA_TARGETING,
+    creatives: [{
+      template: g('nv-template').value, size: 'meta-feed-4x5',
+      vars: {
+        eyebrow: 'PARA SUA FARMÁCIA', numberHighlight: g('nv-num').value.trim(),
+        headline, subtitle: g('nv-msg').value.trim().slice(0, 90), cta: g('nv-cta').value.trim(),
+        selo: 'Grátis para farmácias',
+      },
+      headline, message: g('nv-msg').value.trim(), cta: 'LEARN_MORE',
+    }],
+  };
+}
+
+async function novaSubmit(confirm) {
+  const status = document.getElementById('nv-status');
+  const out = document.getElementById('nv-out');
+  status.textContent = confirm ? 'Criando campanha PAUSADA na conta…' : 'Gerando pré-visualização (dry-run)…';
+  document.getElementById('nv-go').disabled = true;
+  document.getElementById('nv-create').disabled = true;
+  try {
+    const r = await fetch('/api/campaign', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ confirm, spec: buildNovaSpec() }),
+    });
+    const d = await r.json();
+    if (d.error) throw new Error(d.error + (d.meta?.error_user_title ? ' — ' + d.meta.error_user_title : ''));
+    const p = d.payloads, prev = d.previews?.[0]?.url;
+    if (d.dryRun) {
+      out.innerHTML = `
+        ${prev ? `<img src="${prev}" style="width:180px;border-radius:10px;float:right;margin:0 0 10px 14px">` : ''}
+        <div style="font-weight:700;margin-bottom:6px">Pré-visualização (nada foi enviado)</div>
+        <div style="font-size:13px;line-height:1.7;color:#3a3a40">
+          <strong>Campanha:</strong> ${p.campaign.name} · <span style="color:#0e8345;font-weight:700">${p.campaign.status}</span><br>
+          <strong>Objetivo:</strong> ${p.campaign.objective}<br>
+          <strong>Orçamento:</strong> R$ ${d.budgetReais.toFixed(2)}/dia · otimização ${p.adset.optimization_goal}<br>
+          <strong>Criativo:</strong> ${p.creatives[0].name}<br>
+          <strong>Segmentação:</strong> SP · farmácia (interesses + cargos)
+        </div>
+        ${(d.warnings || []).length ? `<div style="clear:both;margin-top:8px;font-size:12px;color:#b9700f">⚠ ${d.warnings.join('<br>⚠ ')}</div>` : ''}`;
+      status.textContent = 'Confira a prévia. Tudo será criado PAUSADO.';
+      document.getElementById('nv-create').disabled = false;
+    } else {
+      out.innerHTML = `<div style="font-weight:700;color:#0e8345;margin-bottom:6px">✅ Campanha criada e PAUSADA</div>
+        <div style="font-size:13px;line-height:1.7;color:#3a3a40">
+          campaign_id: <code>${d.created.campaignId}</code><br>adset_id: <code>${d.created.adsetId}</code><br>
+          anúncios: ${(d.created.adIds || []).map((a) => `<code>${a}</code>`).join(', ')}<br><br>
+          Revise no Gerenciador do Meta e despause manualmente quando aprovar.</div>`;
+      status.textContent = 'Pronto!';
+      REAL_CAMPS = null; // invalida cache p/ recarregar a lista
+    }
+  } catch (e) {
+    status.textContent = '✗ ' + e.message;
+  } finally {
+    document.getElementById('nv-go').disabled = false;
+  }
+}
+
+async function openNovaModal() {
+  let modal = document.getElementById('nova-modal');
+  if (!modal) {
+    let opts = '<option value="ad-lead-benefit">ad-lead-benefit</option>';
+    try { const t = await (await fetch('/api/templates')).json(); opts = t.templates.map((x) => `<option value="${x.template}">${x.template}</option>`).join(''); } catch {}
+    modal = document.createElement('div');
+    modal.id = 'nova-modal';
+    modal.style.cssText = 'position:fixed;inset:0;background:rgba(10,8,12,.5);display:flex;align-items:center;justify-content:center;z-index:1000;padding:20px';
+    modal.innerHTML = `
+      <div style="background:#fff;border-radius:16px;max-width:560px;width:100%;max-height:90vh;overflow:auto;padding:24px;box-shadow:0 20px 60px rgba(0,0,0,.3)">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:16px">
+          <div style="font-size:20px;font-weight:800">Nova campanha</div>
+          <button onclick="document.getElementById('nova-modal').remove()" style="border:0;background:none;font-size:22px;cursor:pointer;color:#6d7079">✕</button>
+        </div>
+        <div style="display:grid;gap:12px">
+          <label style="${_LBL}">Nome da campanha<input id="nv-name" style="${_S}" value="Campanha buscapreço (UI)"></label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <label style="${_LBL}">Orçamento diário (R$)<input id="nv-budget" type="number" min="5" step="1" style="${_S}" value="15"></label>
+            <label style="${_LBL}">Template do criativo<select id="nv-template" style="${_S}">${opts}</select></label>
+          </div>
+          <label style="${_LBL}">Landing URL<input id="nv-url" style="${_S}" value="https://buscapreco.cienty.com.br/"></label>
+          <label style="${_LBL}">Headline<input id="nv-headline" style="${_S}" value="Cotar não pode comer 3 horas do seu dia"></label>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+            <label style="${_LBL}">Número/destaque<input id="nv-num" style="${_S}" value="3h"></label>
+            <label style="${_LBL}">CTA no criativo<input id="nv-cta" style="${_S}" value="Quero economizar tempo"></label>
+          </div>
+          <label style="${_LBL}">Texto principal<textarea id="nv-msg" rows="2" style="${_S}">Cada hora cotando preço é uma hora longe do balcão. O buscapreço junta os preços de todos os distribuidores numa tela só, de graça. 👉 Cadastre-se.</textarea></label>
+          <div style="font-size:12px;color:#6d7079">Segmentação fixa: SP · farmácia (interesses + cargos). Tudo é criado <strong>PAUSADO</strong>.</div>
+        </div>
+        <div id="nv-out" style="margin-top:16px;font-size:13px"></div>
+        <div style="display:flex;gap:10px;align-items:center;margin-top:18px">
+          <button id="nv-go" onclick="novaSubmit(false)" style="${_BTN};background:#f0eef2;color:#1a1a1f">Pré-visualizar</button>
+          <button id="nv-create" onclick="novaSubmit(true)" disabled style="${_BTN};background:#dc36c0;color:#fff;opacity:.5">Criar pausada</button>
+          <span id="nv-status" style="font-size:12px;color:#6d7079;margin-left:auto"></span>
+        </div>
+      </div>`;
+    document.body.appendChild(modal);
+    modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+    // reabilita o botão criar quando o form muda (exige nova prévia)
+    modal.querySelectorAll('input,select,textarea').forEach((el) => el.addEventListener('input', () => {
+      document.getElementById('nv-create').disabled = true; document.getElementById('nv-create').style.opacity = '.5';
+    }));
+  }
+}
+// observador simples p/ manter o opacity coerente no botão criar
+new MutationObserver(() => {
+  const c = document.getElementById('nv-create');
+  if (c) c.style.opacity = c.disabled ? '.5' : '1';
+}).observe(document.body, { attributes: true, subtree: true, attributeFilter: ['disabled'] });
+
+// Liga os botões "Nova".
+document.getElementById('tb-cta')?.addEventListener('click', openNovaModal);
+document.querySelector('#page-campanhas .camp-filter .btn-primary')?.addEventListener('click', openNovaModal);
+
+/* ── Criativos ligados ao image-forge (Step 4 = render real via /api/render) ── */
+function _criatVars() {
+  const bg = criatState.bgColor || '#11101A';
+  const accent = bg.toLowerCase() === '#dc36c0' ? '#ffb92a' : '#dc36c0';
+  return {
+    bg, accent,
+    headline: (document.getElementById('cont-headline')?.value || 'Sua campanha com a Cienty').trim(),
+    subtitle: (document.getElementById('cont-body')?.value || '').trim().slice(0, 110),
+    cta: (document.getElementById('cont-cta')?.value || 'Saiba mais').trim(),
+    eyebrow: '', numberHighlight: '', selo: '',
+  };
+}
+function _criatRenderUrl(fmt) {
+  return `/api/render?template=ad-lead-benefit&size=${fmt.w}x${fmt.h}&vars=${encodeURIComponent(JSON.stringify(_criatVars()))}`;
+}
+function drawPreview() {
+  const fmts = criatState.formats;
+  if (!fmts.length) return;
+  const grid = document.getElementById('prev-grid');
+  grid.innerHTML = '';
+  const n = fmts.length;
+  const platCount = new Set(fmts.map((f) => f.platform)).size;
+  document.getElementById('prev-ttl').textContent = n === 1 ? 'Pré-visualização do criativo' : `Pré-visualização — ${n} formatos`;
+  document.getElementById('prev-sub').textContent = n === 1 ? 'Gerado pelo image-forge · verifique e baixe' : `${platCount} plataforma(s) · gerado pelo image-forge`;
+  const lbl = document.getElementById('dl-all-lbl'); if (lbl) lbl.textContent = n > 1 ? `${n} arquivos PNG` : '';
+  fmts.forEach((fmt) => {
+    const key = fmt.platform + '_' + fmt.id;
+    const card = document.createElement('div');
+    card.className = 'prev-card';
+    card.innerHTML = `
+      <div class="prev-card-frame"><img src="${_criatRenderUrl(fmt)}" alt="${fmt.name}" style="max-width:100%;max-height:200px;display:block;margin:0 auto;border-radius:6px;background:#f0f0f4"></div>
+      <div class="prev-card-meta">
+        <div class="prev-card-name">${fmt.name} — ${fmt.ratio}</div>
+        <div class="prev-card-dims">${PLAT_NAMES[fmt.platform]} · ${fmt.w}×${fmt.h} px</div>
+        <button class="btn btn-ghost prev-card-dl" onclick="downloadOne('${key}')">⬇ Baixar PNG</button>
+      </div>`;
+    grid.appendChild(card);
+  });
+}
+async function downloadOne(key) {
+  const [platId, fmtId] = key.split('_');
+  const fmt = criatState.formats.find((f) => f.platform === platId && f.id === fmtId);
+  if (!fmt) return;
+  try {
+    const blob = await (await fetch(_criatRenderUrl(fmt))).blob();
+    const a = document.createElement('a');
+    a.download = `${platId}-${fmtId}-cienty.png`;
+    a.href = URL.createObjectURL(blob); a.click(); URL.revokeObjectURL(a.href);
+  } catch (e) { alert('Falha ao gerar o PNG: ' + e.message); }
+}
+function downloadAll() {
+  criatState.formats.forEach((fmt, i) => {
+    const key = fmt.platform + '_' + fmt.id;
+    setTimeout(() => downloadOne(key), i * 300);
+  });
+}
+</script>
