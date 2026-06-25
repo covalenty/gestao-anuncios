@@ -1,0 +1,1574 @@
+<title>Gestão de Anúncios — Cienty</title>
+
+<style>
+*,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+
+:root{
+  --mg:#dc36c0;--mg-h:#c42dab;--mg-10:rgba(220,54,192,.10);
+  --yw:#ffb92a;
+  --tx:#2f2f32;--mx:#6d7079;--bd:#e3e4eb;
+  --bg:#f4f5f8;--cd:#ffffff;
+  --ok:#0e8345;--er:#de1135;--wn:#d97706;
+
+  --sb:#f7f5f1;--sbt:#2f2f32;--sbm:#8a8796;
+  --sbb:#eae6df;--sbh:rgba(0,0,0,.04);
+  --sba:rgba(220,54,192,.09);--sbw:240px;
+
+  --r:2px;
+  --ff:'Segoe UI',system-ui,-apple-system,sans-serif;
+}
+
+html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overflow:hidden}
+
+/* ── Layout ── */
+.app{display:flex;height:100vh}
+
+/* ── Sidebar ── */
+.sidebar{
+  width:var(--sbw);background:var(--sb);
+  border-right:1px solid var(--sbb);
+  display:flex;flex-direction:column;flex-shrink:0;
+  user-select:none;
+}
+.sb-logo{padding:20px 20px 16px;border-bottom:1px solid var(--sbb)}
+.sb-logo-row{display:flex;align-items:center;gap:10px}
+.sb-logo-icon{
+  width:30px;height:30px;background:var(--mg);
+  border-radius:var(--r);display:flex;align-items:center;
+  justify-content:center;flex-shrink:0;
+}
+.sb-logo-name{font-size:15px;font-weight:700;color:var(--sbt);letter-spacing:-.01em}
+.sb-logo-sub{font-size:10px;color:var(--sbm);font-weight:600;letter-spacing:.05em;text-transform:uppercase;margin-top:1px}
+
+.sb-nav{flex:1;padding:10px 0;overflow-y:auto}
+.sb-sect{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--sbm);padding:14px 20px 4px}
+
+.sb-item{
+  display:flex;align-items:center;gap:12px;
+  padding:9px 20px;cursor:pointer;
+  border-left:2px solid transparent;
+  color:var(--sbm);font-size:13px;font-weight:500;
+  transition:color .12s,background .12s;
+}
+.sb-item:hover{color:var(--sbt);background:var(--sbh)}
+.sb-item.active{color:var(--sbt);background:var(--sba);border-left-color:var(--mg)}
+.sb-icon{width:16px;height:16px;flex-shrink:0;opacity:.7}
+.sb-item.active .sb-icon{opacity:1}
+.sb-lbl{flex:1}
+.sb-chev{width:14px;height:14px;flex-shrink:0;transition:transform .2s;opacity:.5}
+.sb-chev.open{transform:rotate(180deg)}
+.sb-badge{
+  background:var(--mg);color:#fff;
+  font-size:10px;font-weight:700;
+  padding:1px 6px;border-radius:10px;
+}
+
+.sb-sub{overflow:hidden;max-height:0;transition:max-height .25s ease}
+.sb-sub.open{max-height:300px}
+.sb-sub-item{
+  display:flex;align-items:center;gap:8px;
+  padding:7px 20px 7px 52px;cursor:pointer;
+  color:var(--sbm);font-size:12px;
+  border-left:2px solid transparent;
+  transition:color .12s;
+}
+.sb-sub-item::before{
+  content:'';width:4px;height:4px;border-radius:50%;
+  background:var(--sbm);flex-shrink:0;opacity:.5;
+}
+.sb-sub-item:hover{color:var(--sbt)}
+
+.sb-footer{
+  padding:14px 20px;border-top:1px solid var(--sbb);
+  display:flex;align-items:center;gap:12px;
+}
+.sb-av{
+  width:32px;height:32px;border-radius:50%;
+  background:linear-gradient(135deg,#dc36c0,#8b1aa6);
+  display:flex;align-items:center;justify-content:center;
+  color:#fff;font-size:12px;font-weight:700;flex-shrink:0;
+}
+.sb-uname{font-size:12px;font-weight:600;color:var(--sbt);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-urole{font-size:11px;color:var(--sbm)}
+.sb-gear{
+  margin-left:auto;width:28px;height:28px;
+  display:flex;align-items:center;justify-content:center;
+  border-radius:var(--r);cursor:pointer;color:var(--sbm);
+  transition:background .12s,color .12s;flex-shrink:0;
+}
+.sb-gear:hover{background:var(--sbh);color:var(--sbt)}
+
+/* ── Content ── */
+.content{flex:1;display:flex;flex-direction:column;background:var(--bg);overflow:hidden;min-width:0}
+
+.topbar{
+  background:var(--cd);border-bottom:1px solid var(--bd);
+  padding:0 32px;height:56px;
+  display:flex;align-items:center;justify-content:space-between;
+  flex-shrink:0;
+}
+.topbar-title{font-size:15px;font-weight:700;color:var(--tx)}
+.topbar-sub{font-size:11px;color:var(--mx);margin-top:1px}
+.topbar-actions{display:flex;align-items:center;gap:12px}
+
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:8px 14px;border-radius:var(--r);
+  font-size:13px;font-weight:600;cursor:pointer;
+  border:none;font-family:var(--ff);transition:background .15s;line-height:1;
+}
+.btn-primary{background:var(--mg);color:#fff}
+.btn-primary:hover{background:var(--mg-h)}
+.btn-ghost{background:transparent;color:var(--mx);border:1px solid var(--bd)}
+.btn-ghost:hover{background:var(--bg);color:var(--tx)}
+.btn svg{width:14px;height:14px}
+
+/* ── Pages ── */
+.page{display:none;flex:1;overflow:hidden;flex-direction:column}
+.page.active{display:flex}
+
+/* ═══════════ HOME ═══════════ */
+.home-body{display:flex;flex:1;overflow:hidden}
+
+/* Chat pane — flex column shell */
+.chat-pane{flex:1;display:flex;flex-direction:column;overflow:hidden;min-width:0}
+.chat-pane.has-msgs{justify-content:flex-start}
+
+/* Scrollable empty-state wrapper */
+#home-empty-state{flex:1;overflow-y:auto;display:flex;flex-direction:column}
+
+/* Hero: takes majority of height, centers welcome + input */
+.home-hero{
+  flex:1;
+  display:flex;flex-direction:column;
+  align-items:center;justify-content:center;
+  padding:32px 40px 28px;
+}
+.chat-msgs{
+  width:100%;flex:1;overflow-y:auto;
+  padding:24px 40px;display:flex;flex-direction:column;gap:20px;
+}
+.msg{display:flex;gap:12px;max-width:640px}
+.msg.u{flex-direction:row-reverse;align-self:flex-end}
+.msg-av{
+  width:28px;height:28px;border-radius:50%;flex-shrink:0;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;margin-top:2px;
+}
+.msg-av.ai{background:var(--mg);color:#fff}
+.msg-av.u{background:var(--tx);color:#fff}
+.msg-body{
+  padding:12px 16px;border-radius:var(--r);
+  font-size:13px;line-height:1.6;max-width:520px;
+}
+.msg.ai .msg-body{background:var(--cd);border:1px solid var(--bd);color:var(--tx)}
+.msg.u .msg-body{background:var(--mg);color:#fff}
+
+/* Welcome block (empty state) */
+.chat-welcome{
+  width:100%;max-width:600px;
+  text-align:center;margin-bottom:28px;
+}
+.chat-welcome-icon{
+  width:48px;height:48px;background:var(--mg);
+  border-radius:var(--r);margin:0 auto 20px;
+  display:flex;align-items:center;justify-content:center;
+}
+.chat-welcome-title{
+  font-size:24px;font-weight:700;color:var(--tx);
+  letter-spacing:-.015em;line-height:1.2;
+  text-wrap:balance;margin-bottom:8px;
+}
+.chat-welcome-sub{
+  font-size:14px;color:var(--mx);line-height:1.5;
+}
+
+/* Input area — used both in empty state and with messages */
+.chat-input-area{width:100%;max-width:600px}
+.chat-pane.has-msgs .chat-input-area{
+  padding:12px 40px 20px;max-width:100%;
+  background:var(--bg);
+}
+.chat-wrap{
+  background:var(--cd);border:1px solid var(--bd);
+  border-radius:var(--r);
+  display:flex;align-items:flex-end;gap:8px;
+  padding:10px 10px 10px 16px;
+  transition:border-color .15s,box-shadow .15s;
+  box-shadow:0 1px 4px rgba(0,0,0,.06);
+}
+.chat-wrap:focus-within{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10)}
+.chat-ta{
+  flex:1;border:none;outline:none;resize:none;
+  font-family:var(--ff);font-size:13px;color:var(--tx);
+  line-height:1.5;background:transparent;
+  min-height:22px;max-height:120px;
+}
+.chat-ta::placeholder{color:var(--mx)}
+.chat-send{
+  width:36px;height:36px;background:var(--mg);
+  border:none;border-radius:var(--r);cursor:pointer;
+  display:flex;align-items:center;justify-content:center;
+  flex-shrink:0;transition:background .15s;
+}
+.chat-send:hover{background:var(--mg-h)}
+
+/* Suggestion tags */
+.chat-tags{
+  display:flex;flex-wrap:wrap;gap:8px;
+  margin-top:14px;justify-content:center;
+}
+.chat-tag{
+  display:inline-flex;align-items:center;gap:6px;
+  padding:6px 13px;border-radius:20px;
+  font-size:12px;font-weight:500;color:var(--mx);
+  background:var(--cd);border:1px solid var(--bd);
+  cursor:pointer;transition:border-color .12s,color .12s,background .12s;
+  white-space:nowrap;
+}
+.chat-tag:hover{border-color:var(--mg);color:var(--mg);background:#fdf0fb}
+.chat-tag svg{width:12px;height:12px;flex-shrink:0;opacity:.6}
+
+/* Insights */
+.ins-pane{
+  width:308px;flex-shrink:0;
+  border-left:1px solid var(--bd);
+  background:var(--cd);
+  display:flex;flex-direction:column;overflow:hidden;
+}
+.ins-head{
+  padding:14px 20px;border-bottom:1px solid var(--bd);
+  display:flex;align-items:center;gap:8px;
+}
+.ins-head-lbl{font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mx);flex:1}
+.ins-dot{width:7px;height:7px;border-radius:50%;background:var(--ok);animation:pulse 2s infinite}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.4}}
+.ins-list{flex:1;overflow-y:auto}
+.ins-card{
+  padding:16px 20px;border-bottom:1px solid var(--bd);
+  cursor:pointer;transition:background .12s;
+}
+.ins-card:hover{background:var(--bg)}
+.ins-card:last-child{border-bottom:none}
+
+.ins-tag{
+  display:inline-flex;align-items:center;gap:5px;
+  font-size:10px;font-weight:700;letter-spacing:.04em;
+  text-transform:uppercase;margin-bottom:8px;
+}
+.ins-tag-dot{width:5px;height:5px;border-radius:50%}
+.t-wn{color:var(--wn)}.d-wn{background:var(--wn)}
+.t-ok{color:var(--ok)}.d-ok{background:var(--ok)}
+.t-er{color:var(--er)}.d-er{background:var(--er)}
+.t-mx{color:var(--mx)}.d-mx{background:var(--mx)}
+
+.ins-camp{font-size:11px;color:var(--mx);margin-bottom:3px}
+.ins-text{font-size:13px;font-weight:600;color:var(--tx);line-height:1.4;margin-bottom:12px;text-wrap:balance}
+.ins-action{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:600;color:var(--mg)}
+.ins-action svg{width:11px;height:11px}
+
+/* ═══════════ CAMPANHAS ═══════════ */
+.camp-filter{background:var(--cd);border-bottom:1px solid var(--bd);padding:12px 32px;display:flex;align-items:center;gap:12px;flex-shrink:0}
+.search-box{display:flex;align-items:center;gap:8px;background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);padding:7px 12px;flex:1;max-width:300px;transition:border-color .15s,box-shadow .15s}
+.search-box:focus-within{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10)}
+.search-box svg{width:14px;height:14px;color:var(--mx);flex-shrink:0}
+.search-box input{border:none;outline:none;background:transparent;font-size:13px;color:var(--tx);font-family:var(--ff);width:100%}
+.search-box input::placeholder{color:var(--mx)}
+.f-chips{display:flex;gap:8px}
+.f-chip{padding:5px 12px;border-radius:20px;font-size:12px;font-weight:600;border:1px solid var(--bd);background:transparent;cursor:pointer;color:var(--mx);font-family:var(--ff);transition:all .12s}
+.f-chip.on{background:var(--mg);color:#fff;border-color:var(--mg)}
+.camp-list{flex:1;overflow-y:auto;padding:20px 28px;display:grid;grid-template-columns:repeat(2,1fr);gap:14px;align-items:start;align-content:start}
+
+/* Card shell */
+.camp-card{background:var(--cd);border:1px solid var(--bd);border-radius:var(--r);transition:border-color .15s,box-shadow .15s;display:flex;flex-direction:column}
+.camp-card:hover{border-color:rgba(220,54,192,.28);box-shadow:0 2px 20px rgba(220,54,192,.06)}
+
+/* Header */
+.camp-hd2{padding:14px 16px 12px;border-radius:var(--r) var(--r) 0 0}
+.camp-footer{border-radius:0 0 var(--r) var(--r)}
+.camp-tags{display:flex;gap:5px;margin-bottom:8px}
+.camp-tag{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;padding:2px 7px;background:rgba(220,54,192,.08);color:var(--mg);border-radius:3px}
+.camp-name2{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:6px;line-height:1.3}
+.camp-domain{font-weight:400;color:var(--mx);font-size:12px}
+.camp-meta{display:flex;align-items:center;gap:8px;flex-wrap:wrap}
+.status{font-size:11px;font-weight:700;padding:3px 10px;border-radius:20px;white-space:nowrap}
+.s-on{background:rgba(14,131,69,.10);color:var(--ok)}
+.s-ps{background:rgba(109,112,121,.10);color:var(--mx)}
+.s-en{background:rgba(222,17,53,.08);color:var(--er)}
+.camp-audience{font-size:11px;font-weight:500;color:var(--mx);background:rgba(0,0,0,.04);border-radius:20px;padding:3px 10px}
+
+/* Chart section */
+.camp-chart-sec{padding:0 16px 12px;border-bottom:1px solid var(--bd)}
+.camp-chart-hdr{display:flex;align-items:baseline;justify-content:space-between;margin-bottom:8px;flex-wrap:wrap;gap:4px}
+.camp-chart-lbl{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mx)}
+.camp-chart-proj{font-size:11px;color:var(--mx)}
+.camp-chart-proj strong{color:var(--tx);font-weight:700}
+.camp-canvas{width:100%;display:block;cursor:default}
+.camp-legend{display:flex;gap:14px;margin-top:8px;flex-wrap:wrap}
+.cleg{font-size:10px;color:var(--mx);display:flex;align-items:center;gap:5px}
+.cleg-line{display:inline-block;width:18px;height:2px;background:#dc36c0;vertical-align:middle}
+.cleg-dash{display:inline-block;width:18px;height:2px;vertical-align:middle;background:repeating-linear-gradient(90deg,#dc36c0 0,#dc36c0 4px,transparent 4px,transparent 7px)}
+.cleg-today{display:inline-block;border-left:2px dashed rgba(0,0,0,.28);height:11px;vertical-align:middle}
+
+/* Metrics table */
+.cmt-sec{padding:10px 16px;border-bottom:1px solid var(--bd)}
+.cmt{width:100%;border-collapse:collapse}
+.cmt tr+tr td{border-top:1px solid var(--bd)}
+.cmt td{padding:6px 0;vertical-align:middle}
+.cmt-lbl{font-size:12px;font-weight:600;color:var(--tx);width:120px}
+.cmt-val{font-size:12px;font-weight:700;color:var(--tx);font-variant-numeric:tabular-nums;width:110px}
+.cmt-note{font-size:11px;color:var(--mx)}
+.cmt-ok{color:var(--ok)}.cmt-er{color:var(--er)}.cmt-mg{color:var(--mg)}
+
+/* CPL bar */
+.cpl-sec{padding:10px 16px 12px;border-bottom:1px solid var(--bd)}
+.cpl-title{font-size:9px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mx);margin-bottom:6px}
+.cpl-track{height:24px;background:rgba(0,0,0,.05);border-radius:2px;position:relative}
+.cpl-fill{height:100%;background:var(--ok);border-radius:2px;display:flex;align-items:center;padding:0 10px;font-size:12px;font-weight:700;color:#fff;white-space:nowrap}
+.cpl-avg-line{position:absolute;top:-4px;bottom:-4px;width:2px;background:#222;z-index:1;border-radius:1px}
+.cpl-foot{font-size:11px;color:var(--mx);margin-top:6px}
+
+/* Card footer */
+.camp-footer{padding:8px 16px;display:flex;align-items:center;justify-content:flex-end;border-top:1px solid var(--bd);margin-top:auto}
+.camp-detail-btn{font-size:12px;font-weight:600;color:var(--mg);background:none;border:none;cursor:pointer;font-family:var(--ff);padding:0;display:flex;align-items:center;gap:4px;transition:opacity .15s}
+.camp-detail-btn:hover{opacity:.7}
+.camp-detail-btn svg{width:12px;height:12px;flex-shrink:0}
+
+/* ══ DRAWER ══ */
+.camp-drawer{position:fixed;right:0;top:0;height:100vh;width:490px;background:var(--cd);border-left:1px solid var(--bd);box-shadow:-4px 0 32px rgba(0,0,0,.12);z-index:200;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s cubic-bezier(.4,0,.2,1);overflow:hidden}
+.camp-drawer.open{transform:translateX(0)}
+.drawer-bd{position:fixed;inset:0;background:rgba(0,0,0,.18);z-index:199;opacity:0;pointer-events:none;transition:opacity .25s}
+.drawer-bd.open{opacity:1;pointer-events:auto}
+.drawer-hd{display:flex;align-items:flex-start;justify-content:space-between;padding:18px 22px 14px;border-bottom:1px solid var(--bd);flex-shrink:0}
+.drawer-camp-name{font-size:13px;font-weight:700;color:var(--tx);line-height:1.4;max-width:400px}
+.drawer-x{width:28px;height:28px;border:none;background:transparent;cursor:pointer;border-radius:var(--r);display:flex;align-items:center;justify-content:center;color:var(--mx);font-size:18px;line-height:1;transition:background .12s;flex-shrink:0;margin-top:-2px}
+.drawer-x:hover{background:var(--bg)}
+.drawer-body{flex:1;overflow-y:auto;padding:20px 22px}
+.dsec{margin-bottom:26px}
+.dsec-title{font-size:9px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding-bottom:8px;margin-bottom:12px;border-bottom:2px solid}
+.dsec-mg .dsec-title{color:var(--mg);border-color:var(--mg)}
+.dsec-yw .dsec-title{color:var(--yw);border-color:var(--yw)}
+.dsec p,.dsec li{font-size:13px;line-height:1.6;color:var(--tx)}
+.dsec ul{padding-left:18px;display:flex;flex-direction:column;gap:9px;margin:10px 0 14px}
+.dsec-note{font-size:13px;line-height:1.6;color:var(--tx);padding:11px 14px;background:var(--bg);border-left:3px solid var(--mg);border-radius:0 var(--r) var(--r) 0;margin-top:4px}
+.sugg{margin-bottom:20px}
+.sugg-hd{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin-bottom:6px}
+.sugg-title{font-size:14px;font-weight:700;color:var(--tx)}
+.sugg-badge{font-size:9px;font-weight:700;letter-spacing:.04em;padding:2px 7px;border-radius:3px;background:rgba(220,54,192,.09);color:var(--mg)}
+.sugg-desc{font-size:13px;line-height:1.6;color:var(--tx);margin-bottom:12px}
+.briefing{background:var(--bg);border:1px solid var(--bd);border-radius:var(--r);overflow:hidden;margin-top:8px}
+.briefing-hd{font-size:11px;font-weight:700;color:var(--tx);padding:9px 13px;border-bottom:1px solid var(--bd)}
+.brow{display:grid;grid-template-columns:115px 1fr;gap:10px;padding:7px 13px;border-bottom:1px solid var(--bd);align-items:start}
+.brow:last-child{border-bottom:none}
+.bkey{font-size:9px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:var(--mx);padding-top:2px}
+.bval{font-size:12px;line-height:1.5;color:var(--tx)}
+.bcode{display:inline;background:rgba(220,54,192,.08);color:var(--mg);padding:1px 6px;border-radius:3px;font-family:monospace;font-size:12px}
+.bquote{border-left:3px solid var(--yw);padding-left:10px;font-size:12px;line-height:1.6;color:var(--tx)}
+
+/* ═══════════ CRIATIVOS ═══════════ */
+.criativos-body{flex:1;overflow-y:auto;padding:32px}
+
+.flow-steps{display:flex;align-items:center;margin-bottom:28px}
+.flow-step{display:flex;align-items:center;gap:8px}
+.step-n{
+  width:26px;height:26px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:11px;font-weight:700;flex-shrink:0;
+}
+.s-done{background:var(--ok);color:#fff}
+.s-cur{background:var(--mg);color:#fff}
+.s-pend{background:var(--cd);color:var(--mx);border:1px solid var(--bd)}
+.step-lbl{font-size:12px;font-weight:600;color:var(--mx);white-space:nowrap}
+.step-lbl.cur{color:var(--tx)}
+.step-conn{flex:1;height:1px;background:var(--bd);margin:0 12px;min-width:32px}
+
+.section-ttl{font-size:13px;font-weight:700;color:var(--tx);margin-bottom:16px}
+.tpl-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:16px;margin-bottom:24px}
+
+.tpl-card{
+  border:2px solid var(--bd);border-radius:var(--r);
+  overflow:hidden;cursor:pointer;transition:border-color .15s,box-shadow .15s;
+}
+.tpl-card:hover{border-color:rgba(220,54,192,.5)}
+.tpl-card.sel{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10)}
+.tpl-info{padding:10px 14px;background:var(--cd);border-top:1px solid var(--bd)}
+.tpl-name{font-size:13px;font-weight:600;color:var(--tx)}
+.tpl-dims{font-size:11px;color:var(--mx);margin-top:1px}
+.criativos-actions{display:flex;gap:12px}
+
+/* ═══════════ BRANDING ═══════════ */
+.branding-body{
+  flex:1;overflow-y:auto;padding:32px;
+  display:grid;grid-template-columns:1fr 1fr;
+  gap:20px;align-content:start;
+}
+.brand-card{background:var(--cd);border:1px solid var(--bd);border-radius:var(--r);padding:20px}
+.brand-card.full{grid-column:1 / -1}
+.brand-head{
+  font-size:11px;font-weight:700;letter-spacing:.05em;
+  text-transform:uppercase;color:var(--mx);
+  padding-bottom:12px;border-bottom:1px solid var(--bd);margin-bottom:16px;
+}
+
+.color-row{display:flex;flex-wrap:wrap;gap:16px}
+.color-item{display:flex;flex-direction:column;align-items:center;gap:4px;cursor:pointer}
+.color-circle{
+  width:44px;height:44px;border-radius:50%;
+  border:2px solid transparent;transition:transform .15s;
+  box-shadow:0 2px 8px rgba(0,0,0,.12);
+}
+.color-item:hover .color-circle{transform:scale(1.08)}
+.color-item.picked .color-circle{border-color:var(--tx)}
+.color-lbl{font-size:10px;color:var(--mx);font-weight:600;letter-spacing:.02em}
+.color-hex{font-size:10px;color:var(--tx);font-weight:600;font-variant-numeric:tabular-nums}
+
+.type-scale{display:flex;flex-direction:column;gap:12px}
+.type-row{display:flex;align-items:baseline;gap:16px;padding-bottom:12px;border-bottom:1px solid var(--bd)}
+.type-row:last-child{border-bottom:none;padding-bottom:0}
+.type-meta{width:80px;flex-shrink:0}
+.type-sz{font-size:11px;font-weight:700;color:var(--mx)}
+.type-wt{font-size:10px;color:var(--mx)}
+
+.logo-drop{
+  border:2px dashed var(--bd);border-radius:var(--r);
+  padding:40px;text-align:center;cursor:pointer;
+  transition:border-color .15s,background .15s;
+}
+.logo-drop:hover{border-color:var(--mg);background:var(--bg)}
+.logo-drop-text{font-size:13px;color:var(--mx)}
+.logo-drop-sub{font-size:11px;color:var(--mx);opacity:.7;margin-top:3px}
+
+/* ═══════════ HOME GRADIENT ═══════════ */
+#page-home {
+  background:
+    radial-gradient(ellipse 90% 65% at 12% 18%, rgba(140,175,255,.55) 0%, transparent 52%),
+    radial-gradient(ellipse 65% 55% at 82% 8%,  rgba(185,145,255,.50) 0%, transparent 48%),
+    radial-gradient(ellipse 110% 75% at 48% 42%, rgba(230,145,220,.55) 0%, transparent 62%),
+    radial-gradient(ellipse 75% 65% at 92% 68%, rgba(255,185,150,.50) 0%, transparent 52%),
+    radial-gradient(ellipse 65% 55% at 18% 88%, rgba(255,215,155,.45) 0%, transparent 48%),
+    radial-gradient(ellipse 85% 60% at 60% 92%, rgba(255,165,180,.50) 0%, transparent 52%),
+    #f5f0ff;
+  position: relative;
+}
+
+/* Chat pane fills the gradient */
+#page-home .home-body { background: transparent }
+#page-home .chat-pane { background: transparent }
+
+/* Welcome text on gradient bg */
+#page-home .chat-welcome-title {
+  color: #2d1a50;
+  text-shadow: none;
+}
+#page-home .chat-welcome-sub { color: rgba(45,26,80,.60) }
+#page-home .chat-welcome-icon {
+  box-shadow: 0 4px 24px rgba(220,54,192,.28);
+}
+
+/* Solid sidebar-color input */
+#page-home .chat-wrap {
+  background: #f7f5f1;
+  border-color: #eae6df;
+  box-shadow: 0 2px 20px rgba(45,26,80,.12);
+}
+#page-home .chat-wrap:focus-within {
+  border-color: var(--mg);
+  box-shadow: 0 0 0 3px var(--mg-10), 0 2px 24px rgba(0,0,0,.22);
+}
+#page-home .chat-ta          { color: var(--tx) }
+#page-home .chat-ta::placeholder { color: var(--mx) }
+
+/* Solid sidebar-color tags */
+#page-home .chat-tag {
+  background: #f7f5f1;
+  border-color: #eae6df;
+  color: var(--mx);
+}
+#page-home .chat-tag:hover {
+  background: #f7f5f1;
+  border-color: var(--mg);
+  color: var(--mg);
+}
+#page-home .chat-tag svg { opacity: .65 }
+
+/* Messages on gradient bg */
+#page-home .chat-msgs { background: transparent }
+#page-home .msg.ai .msg-body {
+  background: rgba(255,255,255,.72);
+  border-color: rgba(45,26,80,.10);
+  color: #2d1a50;
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+}
+
+/* Input area strip when msgs visible */
+#page-home .chat-pane.has-msgs .chat-input-area {
+  background: #f7f5f1;
+  border-top: 1px solid #eae6df;
+  max-width: 100%;
+  padding: 14px 40px 20px;
+}
+
+/* ═══════════ RESUMO — on gradient ═══════════ */
+.resumo-section {
+  flex-shrink: 0;
+  padding: 0 32px 24px;
+}
+.resumo-toggle-wrap { display: flex; justify-content: center; margin-bottom: 16px; }
+.resumo-inner { max-width: 900px; margin: 0 auto }
+
+/* Main section header */
+.resumo-sec-title {
+  font-size: 11px; font-weight: 700; letter-spacing: .06em;
+  text-transform: uppercase; color: rgba(45,26,80,.45);
+  margin-bottom: 12px;
+}
+
+/* Toggle button — visible pill */
+.resumo-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  font-size: 12px; font-weight: 600;
+  color: rgba(45,26,80,.70);
+  background: rgba(255,255,255,.68);
+  border: 1px solid rgba(45,26,80,.18);
+  border-radius: 20px; cursor: pointer;
+  padding: 7px 16px; font-family: var(--ff);
+  box-shadow: 0 1px 6px rgba(45,26,80,.08);
+  transition: background .15s, border-color .15s, color .15s;
+}
+.resumo-toggle:hover {
+  background: rgba(255,255,255,.92);
+  border-color: rgba(45,26,80,.32);
+  color: rgba(45,26,80,.95);
+}
+.resumo-toggle svg { width: 12px; height: 12px; transition: transform .2s }
+.resumo-toggle.collapsed svg { transform: rotate(180deg) }
+
+/* Toggleable content */
+#resumo-content { overflow: hidden; transition: max-height .35s ease, opacity .25s ease; max-height: 520px }
+#resumo-content.hidden { max-height: 0!important; opacity: 0; pointer-events: none }
+
+/* Compact 6-column metric strip */
+.metric-grid {
+  display: grid; grid-template-columns: repeat(6,1fr);
+  border-radius: var(--r); overflow: hidden;
+  margin-bottom: 10px; background: #f7f5f1;
+  border: 1px solid rgba(45,26,80,.10);
+}
+.metric-card {
+  padding: 16px 18px;
+  border-right: 1px solid rgba(0,0,0,.08);
+  border-bottom: none;
+}
+.metric-card:last-child { border-right: none }
+/* clear old 3-col nth rules */
+.metric-card:nth-child(3n)  { border-right: 1px solid rgba(0,0,0,.08) }
+.metric-card:nth-child(n+4) { border-bottom: none }
+
+.metric-lbl {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase;
+  color: var(--mx); margin-bottom: 3px;
+}
+.metric-val {
+  font-size: 17px; font-weight: 700; color: var(--tx);
+  letter-spacing: -.015em; line-height: 1.2;
+  font-variant-numeric: tabular-nums; margin-bottom: 2px;
+}
+.metric-val.accent { color: var(--mg) }
+.metric-sub { font-size: 10px; color: var(--mx) }
+
+/* Insight cards — horizontal carousel */
+.insight-sec-title {
+  font-size: 10px; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase;
+  color: rgba(45,26,80,.40);
+  margin: 14px 0 8px;
+}
+.insight-cards-grid {
+  display: flex; gap: 8px;
+  overflow-x: auto; scroll-snap-type: x mandatory;
+  -webkit-overflow-scrolling: touch;
+  scrollbar-width: none; padding-bottom: 2px;
+}
+.insight-cards-grid::-webkit-scrollbar { display: none }
+.ic {
+  flex: 0 0 calc(25% - 6px); min-width: 155px;
+  background: #f7f5f1;
+  border: 1px solid rgba(45,26,80,.08);
+  border-left: 3px solid; border-radius: var(--r);
+  padding: 11px 13px; cursor: pointer;
+  scroll-snap-align: start; transition: opacity .15s;
+}
+.ic:hover { opacity: .9 }
+.ic-tag {
+  font-size: 9px; font-weight: 700;
+  letter-spacing: .05em; text-transform: uppercase;
+  margin-bottom: 4px;
+}
+.ic-name { font-size: 12px; font-weight: 700; color: var(--tx); margin-bottom: 4px }
+.ic-text { font-size: 11px; line-height: 1.45; color: var(--mx); margin-bottom: 8px }
+.ic-action { font-size: 11px; font-weight: 600; color: var(--mg); display:flex;align-items:center;gap:3px }
+.ic-action svg { width:10px;height:10px }
+</style>
+
+<div class="app">
+
+  <!-- ════ SIDEBAR ════ -->
+  <aside class="sidebar">
+    <div class="sb-logo">
+      <div class="sb-logo-row">
+        <div class="sb-logo-icon">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
+            <rect x="2" y="2" width="5" height="5" fill="white"/>
+            <rect x="9" y="2" width="5" height="5" fill="white" opacity=".5"/>
+            <rect x="2" y="9" width="5" height="5" fill="white" opacity=".5"/>
+            <rect x="9" y="9" width="5" height="5" fill="white"/>
+          </svg>
+        </div>
+        <div>
+          <div class="sb-logo-name">Cienty</div>
+          <div class="sb-logo-sub">Gestão de Anúncios</div>
+        </div>
+      </div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="sb-sect">Workspace</div>
+
+      <div class="sb-item active" data-page="home">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none">
+          <path d="M8 1.5L1.5 7v7.5h4v-4h5v4h4V7L8 1.5z" stroke="currentColor" stroke-width="1.3" stroke-linejoin="round"/>
+        </svg>
+        <span class="sb-lbl">Home</span>
+        <span class="sb-badge">3</span>
+      </div>
+
+      <div class="sb-item" id="camp-toggle" data-page="campanhas">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none">
+          <rect x="1.5" y="3" width="13" height="10" rx="1" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M1.5 6h13M5 3V1.5M11 3V1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        <span class="sb-lbl">Campanhas</span>
+        <svg class="sb-chev" id="camp-chev" viewBox="0 0 16 16" fill="none">
+          <path d="M4 6l4 4 4-4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="sb-sub" id="camp-sub">
+        <div class="sb-sub-item" data-page="campanhas">Natal Especial 2025</div>
+        <div class="sb-sub-item" data-page="campanhas">Black Friday Farmácias</div>
+        <div class="sb-sub-item" data-page="campanhas">Vitaminas &amp; Suplementos</div>
+        <div class="sb-sub-item" data-page="campanhas">Ver todas →</div>
+      </div>
+
+      <div class="sb-item" data-page="criativos">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none">
+          <rect x="1.5" y="1.5" width="6" height="6" rx=".5" stroke="currentColor" stroke-width="1.3"/>
+          <rect x="8.5" y="1.5" width="6" height="6" rx=".5" stroke="currentColor" stroke-width="1.3"/>
+          <rect x="1.5" y="8.5" width="6" height="6" rx=".5" stroke="currentColor" stroke-width="1.3"/>
+          <rect x="8.5" y="8.5" width="6" height="6" rx=".5" stroke="currentColor" stroke-width="1.3"/>
+        </svg>
+        <span class="sb-lbl">Criativos</span>
+      </div>
+
+      <div class="sb-item" data-page="branding">
+        <svg class="sb-icon" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="6" stroke="currentColor" stroke-width="1.3"/>
+          <circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M8 2v1.5M8 12.5V14M2 8h1.5M12.5 8H14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+        <span class="sb-lbl">Branding</span>
+      </div>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="sb-av">DR</div>
+      <div style="flex:1;min-width:0">
+        <div class="sb-uname">Diego Rodrigues</div>
+        <div class="sb-urole">Administrador</div>
+      </div>
+      <div class="sb-gear">
+        <svg width="14" height="14" viewBox="0 0 16 16" fill="none">
+          <circle cx="8" cy="8" r="2.5" stroke="currentColor" stroke-width="1.3"/>
+          <path d="M8 1v2M8 13v2M1 8h2M13 8h2M2.93 2.93l1.41 1.41M11.66 11.66l1.41 1.41M2.93 13.07l1.41-1.41M11.66 4.34l1.41-1.41" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/>
+        </svg>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ════ CONTENT ════ -->
+  <div class="content">
+
+    <div class="topbar">
+      <div>
+        <div class="topbar-title" id="tb-title">Home</div>
+        <div class="topbar-sub" id="tb-sub">Quarta-feira, 25 de junho de 2026</div>
+      </div>
+      <div class="topbar-actions">
+        <button class="btn btn-ghost">
+          <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          Pesquisar
+        </button>
+        <button class="btn btn-primary" id="tb-cta">
+          <svg viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg>
+          Nova Campanha
+        </button>
+      </div>
+    </div>
+
+    <!-- ──── HOME ──── -->
+    <div class="page active" id="page-home">
+      <div class="home-body">
+        <div class="chat-pane" id="chat-pane">
+
+          <!-- Empty-state wrapper: hero + resumo (hidden when chatting) -->
+          <div id="home-empty-state">
+
+            <!-- Hero: gradient area with welcome + input -->
+            <div class="home-hero">
+              <div class="chat-welcome" id="chat-welcome">
+                <div class="chat-welcome-icon">
+                  <svg width="22" height="22" viewBox="0 0 16 16" fill="none">
+                    <rect x="2" y="2" width="5" height="5" fill="white"/>
+                    <rect x="9" y="2" width="5" height="5" fill="white" opacity=".5"/>
+                    <rect x="2" y="9" width="5" height="5" fill="white" opacity=".5"/>
+                    <rect x="9" y="9" width="5" height="5" fill="white"/>
+                  </svg>
+                </div>
+                <div class="chat-welcome-title">Olá, Diego. O que fazemos hoje?</div>
+                <div class="chat-welcome-sub">Analise campanhas, crie criativos e tome decisões baseadas em dados.</div>
+              </div>
+
+              <div class="chat-input-area" id="chat-input-area">
+                <div class="chat-wrap">
+                  <textarea class="chat-ta" id="chat-ta" rows="1"
+                    placeholder="Pergunte sobre campanhas, criativos ou métricas..."
+                    oninput="this.style.height='auto';this.style.height=this.scrollHeight+'px'"
+                    onkeydown="handleKey(event)"></textarea>
+                  <button class="chat-send" onclick="sendMsg()">
+                    <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><path d="M14 2L1.5 7.5 7 8.5 8.5 14 14 2z" fill="white"/></svg>
+                  </button>
+                </div>
+                <div class="chat-tags">
+                  <button class="chat-tag" onclick="execTag(this)">
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M6 1v5.5L9 9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/><circle cx="6" cy="6" r="5" stroke="currentColor" stroke-width="1.3"/></svg>
+                    Ver insights de hoje
+                  </button>
+                  <button class="chat-tag" onclick="execTag(this)">
+                    <svg viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="8" rx=".75" stroke="currentColor" stroke-width="1.3"/><path d="M1 4.5h10" stroke="currentColor" stroke-width="1.3"/></svg>
+                    Analisar campanha ativa
+                  </button>
+                  <button class="chat-tag" onclick="execTag(this)">
+                    <svg viewBox="0 0 12 12" fill="none"><rect x="1" y="1" width="4.5" height="4.5" rx=".5" stroke="currentColor" stroke-width="1.3"/><rect x="6.5" y="1" width="4.5" height="4.5" rx=".5" stroke="currentColor" stroke-width="1.3"/><rect x="1" y="6.5" width="4.5" height="4.5" rx=".5" stroke="currentColor" stroke-width="1.3"/><rect x="6.5" y="6.5" width="4.5" height="4.5" rx=".5" stroke="currentColor" stroke-width="1.3"/></svg>
+                    Criar novo criativo
+                  </button>
+                  <button class="chat-tag" onclick="execTag(this)">
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M2 9l3-3 2 2 3-4" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                    Comparar campanhas
+                  </button>
+                  <button class="chat-tag" onclick="execTag(this)">
+                    <svg viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M6 4v2.5l1.5 1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Sugerir copy para anúncio
+                  </button>
+                  <button class="chat-tag" onclick="execTag(this)">
+                    <svg viewBox="0 0 12 12" fill="none"><path d="M1.5 6h9M6 1.5v9" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+                    Revisar orçamento
+                  </button>
+                </div>
+              </div>
+            </div><!-- /home-hero -->
+
+            <!-- Big numbers + insight cards -->
+            <div class="resumo-section">
+
+              <div class="resumo-toggle-wrap">
+                <button class="resumo-toggle" id="resumo-toggle" onclick="toggleResumo()">
+                  <svg viewBox="0 0 12 12" fill="none"><path d="M2 4.5l4 4 4-4" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>
+                  Ocultar resumo
+                </button>
+              </div>
+
+              <div class="resumo-inner">
+                <div id="resumo-content">
+                <div class="resumo-sec-title">Resumo das campanhas atuais</div>
+                <div class="metric-grid">
+                  <div class="metric-card">
+                    <div class="metric-lbl">Investimento</div>
+                    <div class="metric-val">R$&nbsp;5.766</div>
+                    <div class="metric-sub">30 dias</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-lbl">Leads</div>
+                    <div class="metric-val">495</div>
+                    <div class="metric-sub">16,5 / dia</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-lbl">CPL Médio</div>
+                    <div class="metric-val accent">R$&nbsp;11,65</div>
+                    <div class="metric-sub">custo por lead</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-lbl">CTR (todos)</div>
+                    <div class="metric-val">3,61%</div>
+                    <div class="metric-sub">link: 2,63%</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-lbl">CPC · CPM</div>
+                    <div class="metric-val">R$&nbsp;0,82</div>
+                    <div class="metric-sub">CPM R$&nbsp;29,74</div>
+                  </div>
+                  <div class="metric-card">
+                    <div class="metric-lbl">Frequência</div>
+                    <div class="metric-val">1,98</div>
+                    <div class="metric-sub">alcance 97.740</div>
+                  </div>
+                </div>
+
+                <div class="insight-sec-title">Insights por campanha</div>
+                <div class="insight-cards-grid">
+
+                  <div class="ic" style="border-left-color:#d97706">
+                    <div class="ic-tag" style="color:#d97706">⚠ Atenção</div>
+                    <div class="ic-name">Black Friday Farmácias</div>
+                    <div class="ic-text">CTR caiu 44% em 5 dias. Saturação criativa — mesmo banner há 18 dias com frequência 6,8.</div>
+                    <div class="ic-action">Renovar criativos <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+
+                  <div class="ic" style="border-left-color:#0e8345">
+                    <div class="ic-tag" style="color:#0e8345">✓ Oportunidade</div>
+                    <div class="ic-name">Natal Especial 2025</div>
+                    <div class="ic-text">ROAS 4,2× — melhor histórico da conta. Há margem para escalar sem perder eficiência.</div>
+                    <div class="ic-action">Aumentar orçamento <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+
+                  <div class="ic" style="border-left-color:#de1135">
+                    <div class="ic-tag" style="color:#de1135">● Risco</div>
+                    <div class="ic-name">Genéricos em Destaque</div>
+                    <div class="ic-text">Frequência 6,8 — público saturado. Risco de rejeição e queda de relevância se continuar.</div>
+                    <div class="ic-action">Pausar e revisar <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+
+                  <div class="ic" style="border-left-color:#6d7079">
+                    <div class="ic-tag" style="color:#6d7079">ℹ Informativo</div>
+                    <div class="ic-name">Vitaminas &amp; Suplementos</div>
+                    <div class="ic-text">CPC subiu 34% desde segunda. Verificar lances e segmentação antes de ampliar verba.</div>
+                    <div class="ic-action">Revisar segmentação <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></div>
+                  </div>
+
+                </div>
+                </div><!-- /resumo-content -->
+              </div>
+            </div><!-- /resumo-section -->
+
+          </div><!-- /home-empty-state -->
+
+          <!-- Messages (shown when chatting) -->
+          <div class="chat-msgs" id="chat-msgs" style="display:none"></div>
+
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── CAMPANHAS ──── -->
+    <div class="page" id="page-campanhas">
+      <div class="camp-filter">
+        <div class="search-box">
+          <svg viewBox="0 0 16 16" fill="none"><circle cx="7" cy="7" r="4.5" stroke="currentColor" stroke-width="1.3"/><path d="M10.5 10.5L14 14" stroke="currentColor" stroke-width="1.3" stroke-linecap="round"/></svg>
+          <input type="text" placeholder="Buscar campanha...">
+        </div>
+        <div class="f-chips">
+          <button class="f-chip on" onclick="filterChip(this)">Todas</button>
+          <button class="f-chip" onclick="filterChip(this)">Ativas</button>
+          <button class="f-chip" onclick="filterChip(this)">Pausadas</button>
+          <button class="f-chip" onclick="filterChip(this)">Encerradas</button>
+        </div>
+        <div style="margin-left:auto;display:flex;gap:8px">
+          <button class="btn btn-ghost">Exportar</button>
+          <button class="btn btn-primary"><svg viewBox="0 0 16 16" fill="none"><path d="M8 2v12M2 8h12" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/></svg> Nova</button>
+        </div>
+      </div>
+
+      <div class="camp-list">
+
+        <!-- ── Campanha 1: Captação de Leads ── -->
+        <div class="camp-card">
+          <div class="camp-hd2">
+            <div class="camp-tags"><span class="camp-tag">Leads</span><span class="camp-tag">Freemium</span></div>
+            <div class="camp-name2">Captação de Leads <span class="camp-domain">(buscapreco.cienty.com.br)</span></div>
+            <div class="camp-meta">
+              <span class="status s-on">● Ativa</span>
+              <span class="camp-audience">Público: LAL 1% + Interesses/Cargos farmácia · SP</span>
+            </div>
+          </div>
+          <div class="camp-chart-sec">
+            <div class="camp-chart-hdr">
+              <span class="camp-chart-lbl">Leads por dia · Junho/2026</span>
+              <span class="camp-chart-proj">Projeção fim do mês: <strong>~360 leads</strong> · ritmo ~17/dia</span>
+            </div>
+            <canvas class="camp-canvas" id="chart-captacao" height="72"></canvas>
+            <div class="camp-legend">
+              <span class="cleg"><span class="cleg-line"></span> Realizado</span>
+              <span class="cleg"><span class="cleg-dash"></span> Projeção</span>
+              <span class="cleg"><span class="cleg-today"></span> Hoje (25/jun)</span>
+            </div>
+          </div>
+          <div class="cmt-sec">
+            <table class="cmt">
+              <tr><td class="cmt-lbl">Valor usado</td><td class="cmt-val">R$&nbsp;4.153,39</td><td class="cmt-note">72% do total</td></tr>
+              <tr><td class="cmt-lbl">Leads</td><td class="cmt-val">349</td><td class="cmt-note">70% do total</td></tr>
+              <tr><td class="cmt-lbl">Custo por lead</td><td class="cmt-val">R$&nbsp;11,90</td><td class="cmt-note">na média da conta</td></tr>
+              <tr><td class="cmt-lbl">CTR (todos)</td><td class="cmt-val">3,80%</td><td class="cmt-note"><span class="cmt-ok">bom</span> · link 2,84%</td></tr>
+              <tr><td class="cmt-lbl">CPC</td><td class="cmt-val">R$&nbsp;0,83</td><td class="cmt-note">—</td></tr>
+              <tr><td class="cmt-lbl">Frequência</td><td class="cmt-val">1,78</td><td class="cmt-note cmt-ok">saudável, há folga para escalar</td></tr>
+            </table>
+          </div>
+          <div class="cpl-sec">
+            <div class="cpl-title">CPL vs. Média da conta</div>
+            <div class="cpl-track">
+              <div class="cpl-fill" style="width:74.4%">R$&nbsp;11,90</div>
+              <div class="cpl-avg-line" style="left:72.8%"></div>
+            </div>
+            <div class="cpl-foot">Linha preta = média da conta (<strong>R$&nbsp;11,65</strong>).</div>
+          </div>
+          <div class="camp-footer">
+            <button class="camp-detail-btn" onclick="openCampDrawer('captacao')">Ver detalhes <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+
+        <!-- ── Campanha 2: Black Friday Farmácias ── -->
+        <div class="camp-card">
+          <div class="camp-hd2">
+            <div class="camp-tags"><span class="camp-tag">Leads</span><span class="camp-tag">Farmacias</span></div>
+            <div class="camp-name2">Black Friday Farmácias 2025</div>
+            <div class="camp-meta">
+              <span class="status s-on">● Ativa</span>
+              <span class="camp-audience">Público: Remarketing 30D + LAL 2% · SP/MG</span>
+            </div>
+          </div>
+          <div class="camp-chart-sec">
+            <div class="camp-chart-hdr">
+              <span class="camp-chart-lbl">Leads por dia · Junho/2026</span>
+              <span class="camp-chart-proj">Projeção fim do mês: <strong>~44 leads</strong> · ritmo ~2/dia</span>
+            </div>
+            <canvas class="camp-canvas" id="chart-blackfriday" height="72"></canvas>
+            <div class="camp-legend">
+              <span class="cleg"><span class="cleg-line"></span> Realizado</span>
+              <span class="cleg"><span class="cleg-dash"></span> Projeção</span>
+              <span class="cleg"><span class="cleg-today"></span> Hoje (25/jun)</span>
+            </div>
+          </div>
+          <div class="cmt-sec">
+            <table class="cmt">
+              <tr><td class="cmt-lbl">Valor usado</td><td class="cmt-val">R$&nbsp;1.080,00</td><td class="cmt-note">19% do total</td></tr>
+              <tr><td class="cmt-lbl">Leads</td><td class="cmt-val">104</td><td class="cmt-note">21% do total</td></tr>
+              <tr><td class="cmt-lbl">Custo por lead</td><td class="cmt-val">R$&nbsp;10,38</td><td class="cmt-note cmt-ok">abaixo da média</td></tr>
+              <tr><td class="cmt-lbl">CTR (todos)</td><td class="cmt-val">1,82%</td><td class="cmt-note"><span class="cmt-er">queda</span> · link 1,31%</td></tr>
+              <tr><td class="cmt-lbl">CPC</td><td class="cmt-val">R$&nbsp;2,14</td><td class="cmt-note">—</td></tr>
+              <tr><td class="cmt-lbl">Frequência</td><td class="cmt-val">6,8</td><td class="cmt-note cmt-er">alta — risco de saturação</td></tr>
+            </table>
+          </div>
+          <div class="cpl-sec">
+            <div class="cpl-title">CPL vs. Média da conta</div>
+            <div class="cpl-track">
+              <div class="cpl-fill" style="width:64.9%;background:var(--ok)">R$&nbsp;10,38</div>
+              <div class="cpl-avg-line" style="left:72.8%"></div>
+            </div>
+            <div class="cpl-foot">Linha preta = média da conta (<strong>R$&nbsp;11,65</strong>).</div>
+          </div>
+          <div class="camp-footer">
+            <button class="camp-detail-btn" onclick="openCampDrawer('blackfriday')">Ver detalhes <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+
+        <!-- ── Campanha 3: Natal Especial ── -->
+        <div class="camp-card">
+          <div class="camp-hd2">
+            <div class="camp-tags"><span class="camp-tag">Conversão</span><span class="camp-tag">ROAS</span></div>
+            <div class="camp-name2">Natal Especial 2025</div>
+            <div class="camp-meta">
+              <span class="status s-on">● Ativa</span>
+              <span class="camp-audience">Público: Lookalike 2% + Interesses · BR</span>
+            </div>
+          </div>
+          <div class="camp-chart-sec">
+            <div class="camp-chart-hdr">
+              <span class="camp-chart-lbl">Leads por dia · Junho/2026</span>
+              <span class="camp-chart-proj">Projeção fim do mês: <strong>~180 leads</strong> · ritmo ~7/dia</span>
+            </div>
+            <canvas class="camp-canvas" id="chart-natal" height="72"></canvas>
+            <div class="camp-legend">
+              <span class="cleg"><span class="cleg-line"></span> Realizado</span>
+              <span class="cleg"><span class="cleg-dash"></span> Projeção</span>
+              <span class="cleg"><span class="cleg-today"></span> Hoje (25/jun)</span>
+            </div>
+          </div>
+          <div class="cmt-sec">
+            <table class="cmt">
+              <tr><td class="cmt-lbl">Valor usado</td><td class="cmt-val">R$&nbsp;869,94</td><td class="cmt-note">15% do total</td></tr>
+              <tr><td class="cmt-lbl">Leads</td><td class="cmt-val">115</td><td class="cmt-note">23% do total</td></tr>
+              <tr><td class="cmt-lbl">Custo por lead</td><td class="cmt-val">R$&nbsp;7,56</td><td class="cmt-note cmt-ok">o menor da conta</td></tr>
+              <tr><td class="cmt-lbl">CTR (todos)</td><td class="cmt-val">3,52%</td><td class="cmt-note cmt-ok">muito bom</td></tr>
+              <tr><td class="cmt-lbl">Frequência</td><td class="cmt-val">2,36</td><td class="cmt-note" style="color:var(--wn)">começando a subir — monitorar saturação</td></tr>
+            </table>
+          </div>
+          <div class="cpl-sec">
+            <div class="cpl-title">CPL vs. Média da conta</div>
+            <div class="cpl-track">
+              <div class="cpl-fill" style="width:47.3%;background:var(--ok)">R$&nbsp;7,56</div>
+              <div class="cpl-avg-line" style="left:72.8%"></div>
+            </div>
+            <div class="cpl-foot">35% abaixo da média — o melhor retorno por real da conta.</div>
+          </div>
+          <div class="camp-footer">
+            <button class="camp-detail-btn" onclick="openCampDrawer('natal')">Ver detalhes <svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Detail drawer -->
+      <div class="camp-drawer" id="camp-drawer">
+        <div class="drawer-hd">
+          <div class="drawer-camp-name" id="drawer-camp-name"></div>
+          <button class="drawer-x" onclick="closeCampDrawer()">✕</button>
+        </div>
+        <div class="drawer-body" id="drawer-body"></div>
+      </div>
+      <div class="drawer-bd" id="drawer-bd" onclick="closeCampDrawer()"></div>
+
+    </div>
+
+    <!-- ──── CRIATIVOS ──── -->
+    <div class="page" id="page-criativos">
+      <div class="criativos-body">
+        <div class="flow-steps">
+          <div class="flow-step"><div class="step-n s-cur">1</div><span class="step-lbl cur">Escolher template</span></div>
+          <div class="step-conn"></div>
+          <div class="flow-step"><div class="step-n s-pend">2</div><span class="step-lbl">Configurar conteúdo</span></div>
+          <div class="step-conn"></div>
+          <div class="flow-step"><div class="step-n s-pend">3</div><span class="step-lbl">Pré-visualizar</span></div>
+          <div class="step-conn"></div>
+          <div class="flow-step"><div class="step-n s-pend">4</div><span class="step-lbl">Exportar</span></div>
+        </div>
+        <div class="section-ttl">Escolha o formato do criativo</div>
+        <div class="tpl-grid" id="tpl-grid"></div>
+        <div class="criativos-actions">
+          <button class="btn btn-ghost">Cancelar</button>
+          <button class="btn btn-primary">Próximo: Configurar conteúdo <svg viewBox="0 0 16 16" fill="none"><path d="M3 8h10M9 4l4 4-4 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg></button>
+        </div>
+      </div>
+    </div>
+
+    <!-- ──── BRANDING ──── -->
+    <div class="page" id="page-branding">
+      <div class="branding-body">
+
+        <div class="brand-card">
+          <div class="brand-head">Paleta de Cores</div>
+          <div class="color-row">
+            <div class="color-item picked" onclick="pickColor(this)">
+              <div class="color-circle" style="background:#dc36c0"></div>
+              <div class="color-lbl">Primária</div><div class="color-hex">#dc36c0</div>
+            </div>
+            <div class="color-item" onclick="pickColor(this)">
+              <div class="color-circle" style="background:#ffb92a"></div>
+              <div class="color-lbl">Destaque</div><div class="color-hex">#ffb92a</div>
+            </div>
+            <div class="color-item" onclick="pickColor(this)">
+              <div class="color-circle" style="background:#2f2f32"></div>
+              <div class="color-lbl">Texto</div><div class="color-hex">#2f2f32</div>
+            </div>
+            <div class="color-item" onclick="pickColor(this)">
+              <div class="color-circle" style="background:#0e8345"></div>
+              <div class="color-lbl">Sucesso</div><div class="color-hex">#0e8345</div>
+            </div>
+            <div class="color-item" onclick="pickColor(this)">
+              <div class="color-circle" style="background:#de1135"></div>
+              <div class="color-lbl">Erro</div><div class="color-hex">#de1135</div>
+            </div>
+            <div class="color-item" onclick="pickColor(this)">
+              <div class="color-circle" style="background:#ffffff;outline:1px solid #e3e4eb"></div>
+              <div class="color-lbl">Fundo</div><div class="color-hex">#ffffff</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="brand-card">
+          <div class="brand-head">Tipografia</div>
+          <div class="type-scale">
+            <div class="type-row">
+              <div class="type-meta"><div class="type-sz">Display</div><div class="type-wt">700 · 44px</div></div>
+              <div style="font-size:26px;font-weight:700;line-height:1.1;letter-spacing:-.01em">Sua farmácia</div>
+            </div>
+            <div class="type-row">
+              <div class="type-meta"><div class="type-sz">H1</div><div class="type-wt">700 · 32px</div></div>
+              <div style="font-size:20px;font-weight:700;line-height:1.2;letter-spacing:-.01em">Compre com economia</div>
+            </div>
+            <div class="type-row">
+              <div class="type-meta"><div class="type-sz">Body</div><div class="type-wt">400 · 14px</div></div>
+              <div style="font-size:14px;line-height:1.5;color:#6d7079">Encontre os melhores preços em medicamentos</div>
+            </div>
+            <div class="type-row">
+              <div class="type-meta"><div class="type-sz">Label</div><div class="type-wt">700 · 11px</div></div>
+              <div style="font-size:11px;font-weight:700;letter-spacing:.05em;text-transform:uppercase;color:#6d7079">Campanha ativa</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="brand-card full">
+          <div class="brand-head">Logotipo</div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:20px">
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#6d7079;margin-bottom:8px">Versão escura (fundos claros)</div>
+              <div class="logo-drop">
+                <div style="color:#6d7079;margin-bottom:8px">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 16V8M12 8l-3 3M12 8l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>
+                </div>
+                <div class="logo-drop-text">Arraste o arquivo aqui</div>
+                <div class="logo-drop-sub">SVG, PNG · Máx. 2 MB</div>
+              </div>
+            </div>
+            <div>
+              <div style="font-size:12px;font-weight:600;color:#6d7079;margin-bottom:8px">Versão clara (fundos escuros)</div>
+              <div class="logo-drop" style="background:#141417;border-color:#333">
+                <div style="color:#7a7a88;margin-bottom:8px">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none"><path d="M12 16V8M12 8l-3 3M12 8l3 3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><rect x="3" y="3" width="18" height="18" rx="2" stroke="currentColor" stroke-width="1.5"/></svg>
+                </div>
+                <div class="logo-drop-text" style="color:#7a7a88">Arraste o arquivo aqui</div>
+                <div class="logo-drop-sub" style="color:#7a7a88">SVG, PNG · Máx. 2 MB</div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+  </div><!-- /content -->
+</div><!-- /app -->
+
+<script>
+/* ── Tag responses ── */
+const TAG_RESPONSES = {
+  'Ver insights de hoje': `Aqui estão os <strong>3 insights ativos</strong> para hoje:<br><br>
+    🟠 <strong>Atenção — Black Friday Farmácias</strong><br>CTR caiu de 3,2% para 1,8% nos últimos 5 dias. Saturação criativa detectada. Recomendo renovar os criativos com copy atualizado.<br><br>
+    🟢 <strong>Oportunidade — Natal Especial 2025</strong><br>ROAS em 4,2× — melhor histórico da campanha. Momento ideal para aumentar o orçamento diário em 20–30%.<br><br>
+    🔴 <strong>Risco — Genéricos em Destaque</strong><br>Frequência de 6,8 por usuário. Risco alto de rejeição. Sugiro pausar e renovar os criativos antes de reativar.`,
+
+  'Analisar campanha ativa': `Analisando suas <strong>3 campanhas ativas</strong>:<br><br>
+    <strong>Natal Especial 2025</strong> — ROAS 4,2×, CTR 3,97% ✅ Melhor desempenho<br>
+    <strong>Vitaminas &amp; Suplementos</strong> — Estável, mas CPC subiu 34% esta semana ⚠️<br>
+    <strong>Black Friday Farmácias</strong> — CTR em queda, frequência alta 🔴 Precisa de atenção<br><br>
+    <strong>Recomendação prioritária:</strong> pausar os criativos da Black Friday e renovar antes de continuar a veiculação.`,
+
+  'Criar novo criativo': `Vou te redirecionar para o fluxo de criação. Antes de ir, aqui está o que recomendo para as campanhas atuais:<br><br>
+    ✦ <strong>Formato:</strong> Post Quadrado (1080×1080) para feed e Story Vertical para stories<br>
+    ✦ <strong>Copy principal:</strong> foco em benefício direto, evitar "Black Friday" fora de época<br>
+    ✦ <strong>Visual:</strong> fundo escuro com magenta Cienty como acento principal<br><br>
+    Acesse <strong>Criativos</strong> no menu para iniciar.`,
+
+  'Comparar campanhas': `Comparativo das campanhas ativas — semana atual vs. anterior:<br><br>
+    <table style="width:100%;font-size:12px;border-collapse:collapse">
+      <tr style="color:#6d7079;font-weight:700;text-transform:uppercase;font-size:10px;letter-spacing:.04em">
+        <td style="padding:4px 8px 4px 0">Campanha</td><td style="padding:4px 8px;text-align:right">CTR</td><td style="padding:4px 8px;text-align:right">ROAS</td><td style="padding:4px 8px;text-align:right">Gasto</td>
+      </tr>
+      <tr style="border-top:1px solid rgba(0,0,0,.08)"><td style="padding:6px 8px 6px 0">Natal Especial</td><td style="padding:6px 8px;text-align:right;color:#0e8345;font-weight:600">3,97% ↑</td><td style="padding:6px 8px;text-align:right;color:#0e8345;font-weight:600">4,2× ↑</td><td style="padding:6px 8px;text-align:right">R$ 4.200</td></tr>
+      <tr style="border-top:1px solid rgba(0,0,0,.08)"><td style="padding:6px 8px 6px 0">Vitaminas</td><td style="padding:6px 8px;text-align:right">2,40%</td><td style="padding:6px 8px;text-align:right">2,8×</td><td style="padding:6px 8px;text-align:right">R$ 3.100</td></tr>
+      <tr style="border-top:1px solid rgba(0,0,0,.08)"><td style="padding:6px 8px 6px 0">Black Friday</td><td style="padding:6px 8px;text-align:right;color:#de1135;font-weight:600">1,80% ↓</td><td style="padding:6px 8px;text-align:right;color:#de1135;font-weight:600">1,4× ↓</td><td style="padding:6px 8px;text-align:right">R$ 6.800</td></tr>
+    </table><br>
+    A campanha de Natal está com melhor custo-benefício. Considere realocar parte do orçamento da Black Friday para ela.`,
+
+  'Sugerir copy para anúncio': `Aqui estão <strong>3 opções de copy</strong> para os criativos desta semana:<br><br>
+    <strong>Opção A — Benefício direto</strong><br><em>"Sua farmácia compra mais inteligente. Compare preços de fornecedores em segundos com a Cienty."</em><br><br>
+    <strong>Opção B — Urgência + dado</strong><br><em>"Farmácias que usam Cienty economizam até 23% nas compras mensais. Comece hoje."</em><br><br>
+    <strong>Opção C — Identificação</strong><br><em>"Cansado de perder tempo com pedidos manuais? A Cienty automatiza tudo para você focar no que importa."</em><br><br>
+    Qual você quer usar? Posso adaptar para o formato do criativo.`,
+
+  'Revisar orçamento': `Resumo do orçamento das campanhas ativas — junho 2026:<br><br>
+    Total investido: <strong>R$ 14.100</strong><br>
+    Retorno estimado: <strong>R$ 38.200</strong> (ROAS médio 2,7×)<br><br>
+    📌 <strong>Redistribuição sugerida:</strong><br>
+    • Reduzir Black Friday em R$ 2.000/dia (baixo retorno)<br>
+    • Aumentar Natal Especial em R$ 1.200/dia (ROAS recorde)<br>
+    • Manter Vitaminas estável até nova análise de CPC<br><br>
+    Essa realocação pode aumentar o ROAS médio para ~3,4× sem alterar o orçamento total.`
+};
+
+/* ── Chat logic ── */
+const chatPane = document.getElementById('chat-pane');
+const chatMsgs = document.getElementById('chat-msgs');
+const chatWelc = document.getElementById('chat-welcome');
+const chatArea = document.getElementById('chat-input-area');
+const chatTa   = document.getElementById('chat-ta');
+let hasMsgs = false;
+
+function toggleResumo() {
+  const content = document.getElementById('resumo-content');
+  const btn = document.getElementById('resumo-toggle');
+  const isHidden = content.classList.toggle('hidden');
+  btn.classList.toggle('collapsed', isHidden);
+  const textNode = btn.childNodes[btn.childNodes.length - 1];
+  textNode.textContent = isHidden ? ' Ver resumo' : ' Ocultar resumo';
+}
+
+function execTag(btn) {
+  const label = btn.textContent.trim();
+  const reply = TAG_RESPONSES[label];
+  transitionToChat();
+  appendMsg('u', label);
+  if (reply) setTimeout(() => appendMsg('ai', reply), 500);
+}
+
+function handleKey(e) {
+  if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); sendMsg(); }
+}
+
+function sendMsg() {
+  const text = chatTa.value.trim();
+  if (!text) return;
+  transitionToChat();
+  appendMsg('u', text);
+  chatTa.value = '';
+  chatTa.style.height = 'auto';
+  setTimeout(() => appendMsg('ai', 'Entendido! Analisando os dados e preparando as recomendações…'), 500);
+}
+
+function transitionToChat() {
+  if (!hasMsgs) {
+    hasMsgs = true;
+    chatPane.appendChild(chatArea); // move input out before hiding wrapper
+    document.getElementById('home-empty-state').style.display = 'none';
+    chatMsgs.style.display = 'flex';
+    chatPane.classList.add('has-msgs');
+  }
+}
+
+function appendMsg(role, html) {
+  const div = document.createElement('div');
+  div.className = `msg ${role}`;
+  div.innerHTML = `<div class="msg-av ${role}">${role==='ai'?'C':'D'}</div><div class="msg-body">${html}</div>`;
+  chatMsgs.appendChild(div);
+  chatMsgs.scrollTop = chatMsgs.scrollHeight;
+}
+
+/* ── Navigation ── */
+const topbar = document.querySelector('.topbar');
+const topbarInfo = {
+  campanhas: { title:'Campanhas',  sub:'5 campanhas · mais recentes primeiro' },
+  criativos: { title:'Criativos',  sub:'Fluxo de criação de imagens para anúncios' },
+  branding:  { title:'Branding',   sub:'Identidade visual dos criativos' },
+};
+
+// Hide topbar on home (default page)
+topbar.style.display = 'none';
+
+function navigateTo(id) {
+  document.querySelectorAll('.sb-item[data-page]').forEach(el => el.classList.remove('active'));
+  const navEl = document.querySelector(`.sb-item[data-page="${id}"]`);
+  if (navEl) navEl.classList.add('active');
+
+  document.querySelectorAll('.page').forEach(el => el.classList.remove('active'));
+  const pg = document.getElementById(`page-${id}`);
+  if (pg) pg.classList.add('active');
+
+  topbar.style.display = id === 'home' ? 'none' : '';
+  const info = topbarInfo[id] || {};
+  document.getElementById('tb-title').textContent = info.title || id;
+  document.getElementById('tb-sub').textContent   = info.sub   || '';
+
+  if (id === 'campanhas') setTimeout(drawAllCampCharts, 60);
+}
+
+document.querySelectorAll('.sb-item[data-page]').forEach(item => {
+  item.addEventListener('click', () => {
+    const id = item.dataset.page;
+    if (id === 'campanhas') {
+      const sub   = document.getElementById('camp-sub');
+      const chev  = document.getElementById('camp-chev');
+      const open  = sub.classList.contains('open');
+      sub.classList.toggle('open', !open);
+      chev.classList.toggle('open', !open);
+    }
+    navigateTo(id);
+  });
+});
+
+document.querySelectorAll('.sb-sub-item[data-page]').forEach(item => {
+  item.addEventListener('click', e => { e.stopPropagation(); navigateTo(item.dataset.page); });
+});
+
+/* ── Campaign charts ── */
+function drawCampChart(canvasId, actual, todayDay, projVal, maxY) {
+  const canvas = document.getElementById(canvasId);
+  if (!canvas) return;
+  const rect = canvas.getBoundingClientRect();
+  if (!rect.width) return;
+  const dpr = window.devicePixelRatio || 1;
+  const W = rect.width, H = 72; // CSS pixel dimensions — fixed before touching canvas
+  canvas.style.width  = W + 'px';
+  canvas.style.height = H + 'px';
+  canvas.width  = Math.round(W * dpr);
+  canvas.height = Math.round(H * dpr);
+  const ctx = canvas.getContext('2d');
+  ctx.scale(dpr, dpr);
+  const pad = { top:16, right:20, bottom:24, left:30 };
+  const cW = W - pad.left - pad.right, cH = H - pad.top - pad.bottom;
+  const toX = d => pad.left + ((d-1)/(30-1))*cW;
+  const toY = v => pad.top  + cH - (v/maxY)*cH;
+  // Grid
+  ctx.strokeStyle='rgba(0,0,0,.06)';ctx.lineWidth=1;
+  [0,Math.round(maxY/3),Math.round(maxY*2/3),maxY].forEach(v=>{
+    ctx.beginPath();ctx.moveTo(pad.left,toY(v));ctx.lineTo(W-pad.right,toY(v));ctx.stroke();
+    ctx.fillStyle='rgba(0,0,0,.28)';ctx.font='9px sans-serif';ctx.textAlign='right';
+    ctx.fillText(v,pad.left-4,toY(v)+3);
+  });
+  // X labels
+  ctx.fillStyle='rgba(0,0,0,.28)';ctx.textAlign='center';
+  [1,5,10,15,20,25,30].forEach(d=>ctx.fillText(d,toX(d),H-pad.bottom+12));
+  ctx.textAlign='left';
+  // Today line
+  ctx.save();ctx.strokeStyle='rgba(0,0,0,.22)';ctx.lineWidth=1;ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(toX(todayDay),pad.top);ctx.lineTo(toX(todayDay),H-pad.bottom);ctx.stroke();
+  ctx.restore();
+  // Area fill
+  ctx.beginPath();
+  ctx.moveTo(toX(1),toY(actual[0]));
+  actual.forEach((v,i)=>ctx.lineTo(toX(i+1),toY(v)));
+  ctx.lineTo(toX(actual.length),H-pad.bottom);ctx.lineTo(toX(1),H-pad.bottom);ctx.closePath();
+  ctx.fillStyle='rgba(220,54,192,.10)';ctx.fill();
+  // Actual line
+  ctx.beginPath();ctx.strokeStyle='#dc36c0';ctx.lineWidth=1.8;ctx.lineJoin='round';
+  ctx.moveTo(toX(1),toY(actual[0]));
+  actual.forEach((v,i)=>ctx.lineTo(toX(i+1),toY(v)));
+  ctx.stroke();
+  // Projection area
+  ctx.beginPath();
+  ctx.moveTo(toX(todayDay),toY(projVal));
+  for(let d=todayDay;d<=30;d++)ctx.lineTo(toX(d),toY(projVal));
+  ctx.lineTo(toX(30),H-pad.bottom);ctx.lineTo(toX(todayDay),H-pad.bottom);ctx.closePath();
+  ctx.fillStyle='rgba(220,54,192,.05)';ctx.fill();
+  // Projection line
+  ctx.save();ctx.strokeStyle='rgba(220,54,192,.55)';ctx.lineWidth=1.6;ctx.setLineDash([5,4]);
+  ctx.beginPath();ctx.moveTo(toX(todayDay),toY(projVal));ctx.lineTo(toX(30),toY(projVal));ctx.stroke();
+  ctx.restore();
+}
+
+function drawAllCampCharts() {
+  drawCampChart('chart-captacao',
+    [12,14,6,8,10,6,8,14,12,9,7,12,17,9,12,14,11,17,20,19,29,26,22,18,1],25,25,30);
+  drawCampChart('chart-blackfriday',
+    [8,10,7,9,8,6,7,9,6,5,4,7,4,3,5,3,4,3,3,2,2,3,2,2,1],25,2,15);
+  drawCampChart('chart-natal',
+    [2,3,1,2,4,3,2,5,4,3,2,4,6,5,4,3,5,4,6,5,4,7,6,5,2],25,6,15);
+}
+
+/* ── Campaign drawer ── */
+const DRAWER_CONTENT = {
+  captacao: {
+    name: '[LEADS][FREEMIUM] Captação de Leads (buscapreco.cienty.com.br)',
+    html: `
+      <div class="dsec dsec-mg">
+        <div class="dsec-title">Análise — Nível Ad Set</div>
+        <p>São 4 conjuntos com desempenhos bem diferentes:</p>
+        <ul>
+          <li><strong>Interesses e Cargos</strong> (R$&nbsp;95/dia) → <strong>CPL R$&nbsp;10,28</strong>, CTR 4,18%, freq 1,45 — o melhor.</li>
+          <li><strong>Visitantes site 180D</strong> (R$&nbsp;95/dia) → <strong>CPL R$&nbsp;10,54</strong>, CTR 4,16%, freq 1,32 — folga grande.</li>
+          <li><strong>PLANILHA ZMC (Miriam)</strong> (R$&nbsp;35/dia) → <strong>CPL R$&nbsp;17,10</strong> rodando o <em>mesmo</em> criativo Luiza 03 que entrega R$&nbsp;10,32 nos outros. A diferença é a qualidade do público (LAL da planilha).</li>
+          <li><strong>Teste de criativos</strong> — já pausado, corretamente: o bloco de anúncios "— Cópia" gastou R$&nbsp;120 e gerou <strong>1 lead</strong> (CPL R$&nbsp;120).</li>
+        </ul>
+        <div class="dsec-note"><strong>Criativo:</strong> o vídeo <strong>"Luiza 03"</strong> sozinho carrega ~226 dos 349 leads. O <strong>"Luiza 04"</strong> (AD013) é um challenger forte — CTR 4,51% e CPL R$&nbsp;7,51, mas com só R$&nbsp;97 investidos.</div>
+      </div>
+      <div class="dsec dsec-yw">
+        <div class="dsec-title">Sugestões de Criativo</div>
+        <p><strong>Performa bem, mas o estoque de criativo é raso e a frequência está subindo (2,36)</strong> — melhorar aqui é prevenir fadiga, não corrigir falha.</p>
+        <p style="margin-top:8px"><strong>Contexto:</strong> os 2 vídeos (REPS DVD 01 e 02) usam exatamente a <em>mesma</em> copy — repetir o mesmo recado à mesma pessoa é o que sobe a frequência. Os criativos abaixo diversificam os ângulos.</p>
+        <div class="sugg" style="margin-top:16px">
+          <div class="sugg-hd">
+            <span class="sugg-title">1 · Número concreto — a comissão com cifra</span>
+            <span class="sugg-badge">Vídeo</span><span class="sugg-badge">Urgente</span>
+          </div>
+          <div class="sugg-desc"><strong>O quê:</strong> vídeo 9:16, ângulo <em>comissão recorrente</em> com número concreto, para dar variedade ao público pequeno e segurar o CPL de ~R$&nbsp;7,50 ao escalar. (A copy atual promete "dinheiro no bolso" sem cifra.)</div>
+          <div class="briefing">
+            <div class="briefing-hd">📋 Briefing — Vídeo / Representantes / "A conta da comissão"</div>
+            <div class="brow"><div class="bkey">Formato/Specs</div><div class="bval">9:16 vertical · 1080×1920 · 15–18s · MP4 1080p · legendas embutidas · música royalty-free ritmada</div></div>
+            <div class="brow"><div class="bkey">Público</div><div class="bval">representantes e consultores de farmácia (SP)</div></div>
+            <div class="brow"><div class="bkey">Headline</div><div class="bval"><span class="bcode">Indique a Cienty e ganhe comissão recorrente</span></div></div>
+            <div class="brow"><div class="bkey">CTA (Botão)</div><div class="bval"><span class="bcode">Cadastre-se</span> (SIGN_UP) — testar contra o LEARN_MORE atual</div></div>
+            <div class="brow"><div class="bkey">Texto principal</div><div class="bval"><div class="bquote">Você visita farmácias toda semana. E se cada visita virasse renda recorrente? Indique a Cienty: suas farmácias economizam nas compras e você ganha comissão a cada uma que entra. Sem custo pra elas, ganho recorrente pra você.<br>👉 Cadastre-se e comece a indicar.</div></div></div>
+            <div class="brow"><div class="bkey">Roteiro cena a cena</div><div class="bval">0–3s: rep saindo de farmácia, áudio ambiente / 3–8s: split-screen "você indica → farmácia economiza → você ganha" / 8–14s: cifra em tela grande (ex.: "R$&nbsp;180/mês em comissões") / 14–18s: CTA + logo Cienty.</div></div>
+          </div>
+        </div>
+      </div>`
+  },
+  blackfriday: {
+    name: 'Black Friday Farmácias 2025',
+    html: `
+      <div class="dsec dsec-mg">
+        <div class="dsec-title">Análise — Nível Ad Set</div>
+        <p>Campanha em declínio acelerado: frequência de 6,8 indica público saturado. CTR caiu 44% nos últimos 5 dias com o mesmo banner há 18 dias.</p>
+        <ul>
+          <li><strong>Remarketing 30D</strong> (R$&nbsp;80/dia) → CPL R$&nbsp;9,90, CTR 2,1% — ainda conversível, mas saturando.</li>
+          <li><strong>LAL 2% SP</strong> (R$&nbsp;60/dia) → CPL R$&nbsp;11,20, CTR 1,4% — public novo já com sinal de fadiga.</li>
+        </ul>
+        <div class="dsec-note">Ação recomendada: renovar criativos imediatamente ou pausar e redirecionar verba para a campanha de Captação de Leads.</div>
+      </div>
+      <div class="dsec dsec-yw">
+        <div class="dsec-title">Sugestões de Criativo</div>
+        <p>Com frequência 6,8, qualquer novo criativo precisa ser <strong>visualmente diferente</strong> — não apenas copy nova no mesmo formato.</p>
+        <div class="sugg" style="margin-top:12px">
+          <div class="sugg-hd"><span class="sugg-title">1 · Formato carrossel com benefícios específicos</span><span class="sugg-badge">Carrossel</span><span class="sugg-badge">Urgente</span></div>
+          <div class="sugg-desc">Troque o banner estático por carrossel 4–6 cards: cada card com uma funcionalidade Cienty + economia exemplificada em R$. Padrão visual completamente diferente do atual.</div>
+        </div>
+      </div>`
+  },
+  natal: {
+    name: 'Natal Especial 2025',
+    html: `
+      <div class="dsec dsec-mg">
+        <div class="dsec-title">Análise — Nível Ad Set</div>
+        <p>Campanha saudável com ROAS 4,2× — melhor histórico da conta. Frequência 2,1 ainda deixa margem para escalar.</p>
+        <ul>
+          <li><strong>Lookalike 2% BR</strong> (R$&nbsp;40/dia) → CPL R$&nbsp;12,20, CTR 4,0% — estável e escalável.</li>
+          <li><strong>Interesses Saúde</strong> (R$&nbsp;30/dia) → CPL R$&nbsp;13,40, CTR 3,9% — ligeiramente pior, mas dentro da meta.</li>
+        </ul>
+        <div class="dsec-note">Oportunidade: aumentar orçamento diário em 20–30% sem perder eficiência, aproveitando o ROAS recorde.</div>
+      </div>
+      <div class="dsec dsec-yw">
+        <div class="dsec-title">Sugestões de Criativo</div>
+        <p>Performance forte — o risco aqui é não escalar. Recomenda-se testar variações de copy enquanto o público ainda tem folga de frequência.</p>
+        <div class="sugg" style="margin-top:12px">
+          <div class="sugg-hd"><span class="sugg-title">1 · Prova social — depoimento real de farmácia</span><span class="sugg-badge">Vídeo</span></div>
+          <div class="sugg-desc">Vídeo UGC de dono/gestor de farmácia falando sobre economia com Cienty. Ângulo de prova social para reforçar credibilidade ao escalar para públicos mais frios.</div>
+        </div>
+      </div>`
+  }
+};
+
+function openCampDrawer(id) {
+  const data = DRAWER_CONTENT[id];
+  if (!data) return;
+  document.getElementById('drawer-camp-name').textContent = data.name;
+  document.getElementById('drawer-body').innerHTML = data.html;
+  document.getElementById('camp-drawer').classList.add('open');
+  document.getElementById('drawer-bd').classList.add('open');
+}
+function closeCampDrawer() {
+  document.getElementById('camp-drawer').classList.remove('open');
+  document.getElementById('drawer-bd').classList.remove('open');
+}
+
+
+/* ── Filter chips ── */
+function filterChip(chip) {
+  chip.closest('.f-chips').querySelectorAll('.f-chip').forEach(c => c.classList.remove('on'));
+  chip.classList.add('on');
+}
+
+/* ── Template canvases ── */
+const templates = [
+  { name:'Post Quadrado',      dims:'1080 × 1080 px', ar:1,          layout:'square'   },
+  { name:'Story Vertical',     dims:'1080 × 1920 px', ar:9/16,       layout:'story'    },
+  { name:'Banner Horizontal',  dims:'1200 × 628 px',  ar:1200/628,   layout:'banner'   },
+  { name:'Carrossel',          dims:'1080 × 1080 px', ar:1,          layout:'carousel' },
+  { name:'Vídeo Thumb',        dims:'1280 × 720 px',  ar:16/9,       layout:'video'    },
+  { name:'Display Ad',         dims:'300 × 250 px',   ar:300/250,    layout:'display'  },
+];
+
+const grid = document.getElementById('tpl-grid');
+
+templates.forEach((tpl, i) => {
+  const W = 260, H = Math.min(Math.round(W / Math.max(tpl.ar, 0.35)), 180);
+  const card = document.createElement('div');
+  card.className = 'tpl-card' + (i === 0 ? ' sel' : '');
+  card.innerHTML = `<canvas width="${W}" height="${H}" style="width:100%;height:${H}px;display:block"></canvas>
+    <div class="tpl-info"><div class="tpl-name">${tpl.name}</div><div class="tpl-dims">${tpl.dims}</div></div>`;
+  grid.appendChild(card);
+  draw(card.querySelector('canvas'), tpl.layout, W, H);
+  card.addEventListener('click', () => {
+    grid.querySelectorAll('.tpl-card').forEach(c => c.classList.remove('sel'));
+    card.classList.add('sel');
+  });
+});
+
+function draw(canvas, layout, W, H) {
+  const c = canvas.getContext('2d');
+  const mg = '#dc36c0', yw = '#ffb92a', dk = '#141417';
+
+  const fills = (col, x, y, w, h, a) => {
+    c.globalAlpha = a !== undefined ? a : 1;
+    c.fillStyle = col; c.fillRect(x, y, w, h);
+    c.globalAlpha = 1;
+  };
+
+  switch (layout) {
+    case 'square':
+      fills(dk, 0, 0, W, H);
+      fills('#1e1e23', 12, 12, W-24, H-24);
+      fills(mg, 12, H-20, W-24, 5);
+      fills('#ededee', 20, 20, 72, 6); fills('#555', 20, 33, 110, 4); fills('#555', 20, 42, 90, 4);
+      fills('#2a2a2e', 20, 54, W-40, H-86);
+      fills(mg, W/2-14, H/2-20, 28, 14, .35); fills(mg, W/2-7, H/2-28, 14, 28, .35);
+      break;
+
+    case 'story':
+      const g = c.createLinearGradient(0,0,0,H);
+      g.addColorStop(0, mg); g.addColorStop(1, '#6b0d6b');
+      c.fillStyle = g; c.fillRect(0,0,W,H);
+      fills('rgba(255,255,255,.15)', W/2-28, 10, 56, 18);
+      fills('rgba(255,255,255,.88)', 18, H/2-24, W-36, 10);
+      fills('rgba(255,255,255,.55)', 26, H/2-8, W-52, 7); fills('rgba(255,255,255,.55)', 26, H/2+4, W-70, 7);
+      fills(yw, 38, H-36, W-76, 20);
+      break;
+
+    case 'banner':
+      fills('#fff', 0, 0, W, H); fills('#f0f0f4', W/2, 0, W/2, H);
+      fills(mg, 14, 14, 36, 3);
+      fills('#2f2f32', 14, 24, 88, 8); fills('#2f2f32', 14, 38, 72, 8);
+      fills('#6d7079', 14, 54, 95, 4); fills('#6d7079', 14, 63, 80, 4);
+      fills(mg, 14, H-32, 68, 20);
+      fills('#fff', 24, H-25, 48, 5);
+      fills('#d0d0d8', W/2+8, 8, W/2-16, H-16);
+      fills('#bbbdc7', W*3/4-10, H/2-10, 20, 20);
+      break;
+
+    case 'carousel':
+      fills(yw, 0, 0, W, H);
+      fills(dk, 18, 14, W-36, H-32);
+      fills('rgba(255,255,255,.75)', 26, 22, 60, 7);
+      fills(mg, 26, 36, 90, 12);
+      fills('rgba(255,255,255,.35)', 26, 56, 110, 4); fills('rgba(255,255,255,.35)', 26, 65, 90, 4);
+      for (let d=0; d<4; d++) {
+        c.fillStyle = d===0 ? mg : 'rgba(255,255,255,.3)';
+        c.beginPath(); c.arc(W/2-18+d*12, H-12, 3, 0, Math.PI*2); c.fill();
+      }
+      break;
+
+    case 'video':
+      fills('#000', 0, 0, W, H);
+      fills('#080808', 0, 0, W, 12); fills('#080808', 0, H-12, W, 12);
+      fills(mg, W/2-4, H/2-1, 4, 2, .15);
+      c.fillStyle = 'rgba(220,54,192,.18)';
+      c.beginPath(); c.arc(W/2, H/2, 18, 0, Math.PI*2); c.fill();
+      c.fillStyle = mg;
+      c.beginPath(); c.moveTo(W/2-6,H/2-9); c.lineTo(W/2+11,H/2); c.lineTo(W/2-6,H/2+9); c.closePath(); c.fill();
+      fills('rgba(255,255,255,.08)', 0, H-26, W, 14);
+      fills(mg, 0, H-26, W*0.38, 2);
+      break;
+
+    case 'display':
+      fills('#fff', 0, 0, W, H);
+      c.strokeStyle='#e3e4eb'; c.lineWidth=1; c.strokeRect(.5,.5,W-1,H-1);
+      fills(mg, 10, 10, 26, 9);
+      fills('#2f2f32', 10, 26, 90, 9); fills('#6d7079', 10, 42, 120, 6); fills('#6d7079', 10, 53, 100, 6);
+      fills(mg, 10, H-34, 76, 22);
+      fills('#fff', 18, H-26, 56, 5);
+      break;
+  }
+}
+
+/* ── Branding color pick ── */
+function pickColor(item) {
+  item.closest('.color-row').querySelectorAll('.color-item').forEach(c => c.classList.remove('picked'));
+  item.classList.add('picked');
+}
+</script>
