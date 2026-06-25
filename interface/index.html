@@ -392,6 +392,41 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
 .criat-footer{flex-shrink:0;padding:12px 32px;border-top:1px solid var(--bd);background:var(--cd);display:flex;justify-content:space-between;align-items:center}
 .step-panel{display:none}.step-panel.active{display:block}
 
+/* Source picker */
+.src-section-lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mx);margin-bottom:10px}
+.src-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;max-width:480px}
+.src-card{border:2px solid var(--bd);border-radius:var(--r);padding:14px 16px;cursor:pointer;transition:border-color .15s,box-shadow .15s,background .15s;background:var(--cd)}
+.src-card:hover{border-color:rgba(220,54,192,.35)}
+.src-card.sel{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10);background:rgba(220,54,192,.02)}
+.src-card-ico{width:30px;height:30px;border-radius:7px;display:flex;align-items:center;justify-content:center;margin-bottom:8px}
+.src-card-ico svg{width:15px;height:15px}
+.src-card-ttl{font-size:12px;font-weight:700;color:var(--tx);margin-bottom:2px}
+.src-card-sub{font-size:11px;color:var(--mx);line-height:1.45}
+.camp-picker-wrap{max-width:480px;margin-top:10px;border:1px solid var(--bd);border-radius:var(--r);background:var(--bg);padding:14px}
+.camp-picker-lbl{font-size:10px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--mx);margin-bottom:10px}
+.cpick-list{display:flex;flex-direction:column;gap:7px}
+.cpick-card{background:var(--cd);border:2px solid var(--bd);border-radius:var(--r);padding:10px 13px;cursor:pointer;transition:border-color .15s,box-shadow .15s}
+.cpick-card:hover{border-color:rgba(220,54,192,.35)}
+.cpick-card.sel{border-color:var(--mg);box-shadow:0 0 0 3px var(--mg-10)}
+.cpick-name{font-size:12px;font-weight:700;color:var(--tx);margin-bottom:3px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cpick-insight{font-size:11px;color:var(--mx);line-height:1.4}
+.cpick-badge{font-size:10px;font-weight:600;padding:2px 7px;border-radius:20px;margin-right:4px;margin-top:5px;display:inline-block}
+.src-sep{margin:18px 0 16px;max-width:680px;display:flex;align-items:center;gap:10px;color:var(--mx);font-size:10px;font-weight:700;letter-spacing:.05em;text-transform:uppercase}
+.src-sep::before,.src-sep::after{content:'';flex:1;height:1px;background:var(--bd)}
+
+/* Insight banner in Step 3 */
+.insight-banner{display:flex;align-items:flex-start;gap:10px;padding:11px 14px;background:rgba(220,54,192,.06);border:1px solid rgba(220,54,192,.22);border-radius:var(--r);margin-bottom:16px}
+.insight-banner-ico{width:28px;height:28px;border-radius:7px;background:var(--mg);display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.insight-banner-ico svg{width:13px;height:13px}
+.insight-banner-ttl{font-size:12px;font-weight:700;color:var(--tx)}
+.insight-banner-sub{font-size:11px;color:var(--mx);margin-top:1px}
+.insight-banner-close{margin-left:auto;background:none;border:none;cursor:pointer;color:var(--mx);font-size:18px;line-height:1;padding:0 2px;flex-shrink:0;opacity:.6}
+.insight-banner-close:hover{opacity:1}
+
+/* Drawer shortcut */
+.drawer-criat-cta{border-top:1px solid var(--bd);margin-top:20px;padding-top:16px}
+.drawer-criat-cta .btn{width:100%;justify-content:center}
+
 /* Step 1 — platforms (multi-select) */
 .plat-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;max-width:680px}
 .plat-card{position:relative;padding:16px 18px;border:2px solid var(--bd);border-radius:var(--r);cursor:pointer;transition:border-color .15s,box-shadow .15s;display:flex;align-items:center;gap:12px;background:var(--cd)}
@@ -1154,8 +1189,38 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
         <!-- Scrollable content -->
         <div class="criat-scroll">
 
-          <!-- Step 1: Plataforma (multi-select) -->
+          <!-- Step 1: Origem + Plataforma -->
           <div class="step-panel active" id="panel-1">
+
+            <!-- Source picker -->
+            <div class="src-section-lbl">Como você quer começar?</div>
+            <div class="src-grid">
+              <div class="src-card sel" id="src-zero" onclick="setSource('zero')">
+                <div class="src-card-ico" style="background:var(--bg)">
+                  <svg viewBox="0 0 16 16" fill="none"><rect x="2" y="2" width="12" height="12" rx="2" stroke="currentColor" stroke-width="1.5"/><path d="M5 8h6M8 5v6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
+                </div>
+                <div class="src-card-ttl">Do zero</div>
+                <div class="src-card-sub">Você define todo o conteúdo livremente</div>
+              </div>
+              <div class="src-card" id="src-insight" onclick="setSource('insight')">
+                <div class="src-card-ico" style="background:rgba(220,54,192,.1)">
+                  <svg viewBox="0 0 16 16" fill="none"><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="#dc36c0" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="8" r="2.5" stroke="#dc36c0" stroke-width="1.5"/></svg>
+                </div>
+                <div class="src-card-ttl">Com insights de campanha</div>
+                <div class="src-card-sub">Conteúdo pré-preenchido com dados reais</div>
+              </div>
+            </div>
+
+            <!-- Campaign picker (revealed when insight mode) -->
+            <div id="camp-picker-wrap" style="display:none">
+              <div class="camp-picker-wrap">
+                <div class="camp-picker-lbl">Escolha a campanha</div>
+                <div class="cpick-list" id="cpick-list"></div>
+              </div>
+            </div>
+
+            <div class="src-sep">Plataforma</div>
+
             <div class="section-ttl">Onde o criativo será veiculado?</div>
             <div class="section-sub">Selecione uma ou mais plataformas — o mesmo conteúdo será adaptado para cada uma</div>
             <div class="plat-grid">
@@ -1241,6 +1306,19 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
           <div class="step-panel" id="panel-3">
             <div class="section-ttl">Defina o conteúdo</div>
             <div class="section-sub">Preencha os textos ou deixe a IA sugerir com base na sua campanha</div>
+
+            <!-- Insight banner — shown when content was pre-filled -->
+            <div class="insight-banner" id="insight-banner" style="display:none">
+              <div class="insight-banner-ico">
+                <svg viewBox="0 0 16 16" fill="none"><path d="M8 1v2M8 13v2M1 8h2M13 8h2M3.05 3.05l1.41 1.41M11.54 11.54l1.41 1.41M3.05 12.95l1.41-1.41M11.54 4.46l1.41-1.41" stroke="#fff" stroke-width="1.3" stroke-linecap="round"/><circle cx="8" cy="8" r="2.5" stroke="#fff" stroke-width="1.5"/></svg>
+              </div>
+              <div style="flex:1">
+                <div class="insight-banner-ttl" id="insight-banner-ttl">Conteúdo pré-preenchido com insights da campanha</div>
+                <div class="insight-banner-sub">Os campos abaixo foram gerados com base na análise. Edite à vontade.</div>
+              </div>
+              <button class="insight-banner-close" onclick="clearInsight()" title="Remover insights">×</button>
+            </div>
+
             <div class="cont-layout">
               <div>
                 <div class="cont-fg">
@@ -1740,7 +1818,14 @@ function openCampDrawer(id) {
   const data = DRAWER_CONTENT[id];
   if (!data) return;
   document.getElementById('drawer-camp-name').textContent = data.name;
-  document.getElementById('drawer-body').innerHTML = data.html;
+  document.getElementById('drawer-body').innerHTML = data.html + `
+    <div class="drawer-criat-cta">
+      <button class="btn btn-primary" onclick="createFromInsight('${id}');closeCampDrawer()">
+        <svg viewBox="0 0 16 16" fill="none" style="width:14px;height:14px"><path d="M9 3H5a2 2 0 0 0-2 2v8a2 2 0 0 0 2 2h6a2 2 0 0 0 2-2V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round"/><path d="M13 2l1 1-6 6-2 1 1-2 6-6Z" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        Criar criativo com esses insights
+      </button>
+      <div style="font-size:11px;color:var(--mx);text-align:center;margin-top:7px">O conteúdo será pré-preenchido com a análise acima</div>
+    </div>`;
   document.getElementById('camp-drawer').classList.add('open');
   document.getElementById('drawer-bd').classList.add('open');
 }
@@ -1799,13 +1884,124 @@ const CRIAT_AI_COPY = {
 
 const PLAT_NAMES = {'ig-feed':'Instagram Feed','ig-stories':'Instagram Stories','fb-feed':'Facebook Feed','fb-stories':'Facebook Stories','whatsapp':'WhatsApp','google':'Google Display'};
 
-const criatState = { step:1, platforms:[], formats:[], bgColor:'#dc36c0', bgImg:null };
+/* ── Campaign insights for Criativos ── */
+const CAMP_INSIGHTS = {
+  captacao: {
+    name: 'Captação de Leads',
+    badge: 'Captação',
+    badgeColor: 'rgba(14,131,69,.12)',
+    badgeText: '#0e8345',
+    insight: 'CPL R$7,51 com "Luiza 04" — ângulo de comissão recorrente com cifra converte melhor.',
+    headline: 'Indique a Cienty e ganhe comissão recorrente',
+    body: 'Você visita farmácias toda semana. E se cada visita virasse renda recorrente? Indique a Cienty: suas farmácias economizam nas compras e você ganha comissão a cada uma que entra.',
+    cta: 'Cadastre-se',
+  },
+  blackfriday: {
+    name: 'Black Friday Farmácias 2025',
+    badge: 'Black Friday',
+    badgeColor: 'rgba(45,26,80,.1)',
+    badgeText: '#2f2f32',
+    insight: 'Frequência 6,8 — renovar com formato visualmente diferente. Carrossel com benefícios em R$ por card.',
+    headline: 'Conheça os benefícios Cienty — Black Friday',
+    body: 'Cada funcionalidade da Cienty gera economia real para a sua farmácia. Veja quanto você pode poupar com cada módulo ativado — com condições especiais nesta Black Friday.',
+    cta: 'Ver oferta',
+  },
+  natal: {
+    name: 'Natal Especial 2025',
+    badge: 'Natal',
+    badgeColor: 'rgba(220,54,192,.1)',
+    badgeText: '#dc36c0',
+    insight: 'ROAS 4,2× e frequência 2,1 — margem para escalar com prova social e depoimentos reais.',
+    headline: 'O que donos de farmácia dizem sobre a Cienty',
+    body: 'Farmácias em todo o Brasil economizam com Cienty toda semana. Veja como gestores transformaram suas compras e resultados — e como você pode fazer o mesmo.',
+    cta: 'Descobrir mais',
+  },
+};
+
+const criatState = { step:1, platforms:[], formats:[], bgColor:'#dc36c0', bgImg:null, source:'zero', sourceCampaign:null, prefilledContent:null };
 
 function setCriatMode(mode) {
   document.getElementById('tab-manual').classList.toggle('active', mode === 'manual');
   document.getElementById('tab-chat').classList.toggle('active', mode === 'chat');
   document.getElementById('criat-manual').classList.toggle('hidden', mode !== 'manual');
   document.getElementById('criat-chat').classList.toggle('hidden', mode !== 'chat');
+}
+
+function setSource(type) {
+  criatState.source = type;
+  document.getElementById('src-zero').classList.toggle('sel', type === 'zero');
+  document.getElementById('src-insight').classList.toggle('sel', type === 'insight');
+  const wrap = document.getElementById('camp-picker-wrap');
+  wrap.style.display = type === 'insight' ? 'block' : 'none';
+  if (type === 'insight') _buildCampPicker();
+  if (type === 'zero') {
+    criatState.sourceCampaign = null;
+    criatState.prefilledContent = null;
+    document.querySelectorAll('.cpick-card').forEach(c => c.classList.remove('sel'));
+  }
+}
+
+function _buildCampPicker() {
+  const list = document.getElementById('cpick-list');
+  if (!list || list.childElementCount > 0) return; // build once
+  Object.entries(CAMP_INSIGHTS).forEach(([id, ins]) => {
+    const card = document.createElement('div');
+    card.className = 'cpick-card' + (criatState.sourceCampaign === id ? ' sel' : '');
+    card.id = 'cpick-' + id;
+    card.onclick = () => selectInsightCamp(id);
+    card.innerHTML = `
+      <div class="cpick-name">${ins.name}</div>
+      <div class="cpick-insight">${ins.insight}</div>
+      <span class="cpick-badge" style="background:${ins.badgeColor};color:${ins.badgeText}">${ins.badge}</span>`;
+    list.appendChild(card);
+  });
+}
+
+function selectInsightCamp(id) {
+  criatState.sourceCampaign = id;
+  criatState.prefilledContent = { ...CAMP_INSIGHTS[id], campName: CAMP_INSIGHTS[id].name };
+  document.querySelectorAll('.cpick-card').forEach(c => c.classList.remove('sel'));
+  const card = document.getElementById('cpick-' + id);
+  if (card) card.classList.add('sel');
+}
+
+function createFromInsight(campId) {
+  navigateTo('criativos');
+  setCriatMode('manual');
+  criatState.step = 1;
+  criatState.source = 'insight';
+  criatState.sourceCampaign = campId;
+  criatState.prefilledContent = { ...CAMP_INSIGHTS[campId], campName: CAMP_INSIGHTS[campId].name };
+  _updateCriatUI();
+  setTimeout(() => {
+    document.getElementById('src-zero').classList.remove('sel');
+    document.getElementById('src-insight').classList.add('sel');
+    document.getElementById('camp-picker-wrap').style.display = 'block';
+    _buildCampPicker();
+    document.querySelectorAll('.cpick-card').forEach(c => c.classList.remove('sel'));
+    const card = document.getElementById('cpick-' + campId);
+    if (card) card.classList.add('sel');
+  }, 60);
+}
+
+function _applyPrefilledContent() {
+  const p = criatState.prefilledContent;
+  if (!p) return;
+  document.getElementById('cont-headline').value = p.headline || '';
+  document.getElementById('cont-body').value = p.body || '';
+  document.getElementById('cont-cta').value = p.cta || '';
+  const banner = document.getElementById('insight-banner');
+  const ttl = document.getElementById('insight-banner-ttl');
+  if (banner) banner.style.display = 'flex';
+  if (ttl) ttl.textContent = `Conteúdo gerado com insights de "${p.campName || 'campanha'}"`;
+}
+
+function clearInsight() {
+  criatState.sourceCampaign = null;
+  criatState.prefilledContent = null;
+  const banner = document.getElementById('insight-banner');
+  if (banner) banner.style.display = 'none';
+  setSource('zero');
 }
 
 function selectPlatform(id) {
@@ -2075,6 +2271,7 @@ function criatStep(dir) {
   criatState.step = Math.max(1, Math.min(4, cur + dir));
   _updateCriatUI();
   if (criatState.step === 2) buildFmtGrid();
+  if (criatState.step === 3) _applyPrefilledContent();
   if (criatState.step === 4) setTimeout(drawPreview, 80);
 }
 
