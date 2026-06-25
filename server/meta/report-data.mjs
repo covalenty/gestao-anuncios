@@ -9,6 +9,7 @@ import { getConfig, graph, graphAll } from './client.mjs';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const DATA_DIR = path.join(__dirname, '..', '..', 'data');
+const THUMBS_DIR = path.join(DATA_DIR, 'thumbs');
 
 const INSIGHT_FIELDS = [
   'spend', 'impressions', 'reach', 'frequency', 'clicks',
@@ -50,6 +51,42 @@ function normInsight(row) {
   };
 }
 
+// Baixa uma imagem (thumbnail/image do criativo) e devolve como data URI base64,
+// para o relatório ficar autossuficiente (as URLs do CDN do Meta expiram).
+async function fetchDataUri(url) {
+  try {
+    const res = await fetch(url);
+    if (!res.ok) return null;
+    const type = (res.headers.get('content-type') || 'image/jpeg').split(';')[0];
+    const buf = Buffer.from(await res.arrayBuffer());
+    if (!buf.length) return null;
+    return { dataUri: `data:${type};base64,${buf.toString('base64')}`, buf, ext: (type.split('/')[1] || 'jpg') };
+  } catch {
+    return null;
+  }
+}
+
+// Embute as miniaturas de cada anúncio (data URI) e salva cópia em data/thumbs/.
+// Concorrência limitada para não estourar o rate limit do CDN.
+async function embedThumbnails(ads) {
+  const queue = ads.filter((a) => a.creative && (a.creative.thumbnailUrl || a.creative.imageUrl));
+  if (!queue.length) return;
+  fs.mkdirSync(THUMBS_DIR, { recursive: true });
+  let i = 0, ok = 0;
+  async function worker() {
+    while (i < queue.length) {
+      const a = queue[i++];
+      const r = await fetchDataUri(a.creative.thumbnailUrl || a.creative.imageUrl);
+      if (!r) continue;
+      a.creative.thumb = r.dataUri;
+      try { fs.writeFileSync(path.join(THUMBS_DIR, `${a.id}.${r.ext}`), r.buf); } catch { /* ignora falha de disco */ }
+      ok++;
+    }
+  }
+  await Promise.all(Array.from({ length: Math.min(6, queue.length) }, worker));
+  console.error(`Miniaturas embutidas: ${ok}/${queue.length}`);
+}
+
 // Resume o objeto de targeting num texto legível.
 function summarizeTargeting(t) {
   if (!t) return null;
@@ -85,7 +122,7 @@ async function main() {
     { fields: 'id,name,campaign_id,status,effective_status,daily_budget,lifetime_budget,optimization_goal,billing_event,bid_strategy,targeting' }, cfg);
 
   const ads = await graphAll(cfg.accountId + '/ads',
-    { fields: 'id,name,adset_id,campaign_id,status,effective_status,creative{id,name,object_type,title,body}' }, cfg);
+    { fields: 'id,name,adset_id,campaign_id,status,effective_status,preview_shareable_link,creative{id,name,object_type,title,body,thumbnail_url,image_url,effective_object_story_id}' }, cfg);
 
   // --- Insights por nível, indexados por id ---
   const byId = (rows, key) => Object.fromEntries(rows.map((r) => [r[key], normInsight(r)]));
@@ -129,16 +166,26 @@ async function main() {
         name: a.name,
         status: a.status,
         effective_status: a.effective_status,
+        previewLink: a.preview_shareable_link || null,   // link de preview no Facebook
         creative: a.creative ? {
           name: a.creative.name,
           type: a.creative.object_type,
           title: a.creative.title || null,
           body: a.creative.body || null,
+          thumbnailUrl: a.creative.thumbnail_url || null,
+          imageUrl: a.creative.image_url || null,
+          storyId: a.creative.effective_object_story_id || null,
+          thumb: null,   // data URI embutido (preenchido por embedThumbnails)
         } : null,
         insights: adIns[a.id] || null,
       })),
     })),
   }));
+
+  // Baixa e embute as miniaturas de todos os anúncios coletados.
+  const adNodes = [];
+  for (const c of tree) for (const s of c.adsets) for (const a of s.ads) adNodes.push(a);
+  await embedThumbnails(adNodes);
 
   const snapshot = {
     generatedAt: stamp,

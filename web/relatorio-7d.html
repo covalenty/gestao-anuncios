@@ -219,6 +219,26 @@
   .avg-tip { font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; }
   .avg-tip b { color: var(--ink); }
 
+  /* ---- Referência de criativo/conjunto (miniatura + link de preview) ---- */
+  .crefs { display: flex; flex-wrap: wrap; gap: 8px; margin: 4px 0 18px; }
+  .crefs-label { font-size: 11px; font-weight: 700; letter-spacing: 0.08em; text-transform: uppercase; color: var(--ink-faint); width: 100%; margin-bottom: 2px; }
+  .cref {
+    display: inline-flex; align-items: center; gap: 9px; vertical-align: middle;
+    background: #fff; border: 1px solid var(--line); border-radius: 9px;
+    padding: 4px 11px 4px 4px; text-decoration: none; color: var(--ink); max-width: 280px;
+  }
+  .cref:hover { border-color: var(--accent); background: var(--accent-wash); }
+  .cref-thumb {
+    width: 38px; height: 38px; border-radius: 6px; object-fit: cover; flex: none;
+    background: var(--line-soft); border: 1px solid var(--line);
+    display: flex; align-items: center; justify-content: center;
+    font-size: 14px; font-weight: 800; color: var(--ink-faint);
+  }
+  .cref-meta { display: flex; flex-direction: column; line-height: 1.25; min-width: 0; }
+  .cref-name { font-size: 12.5px; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 210px; }
+  .cref-link { font-size: 10.5px; font-weight: 700; letter-spacing: 0.03em; text-transform: uppercase; color: var(--accent-deep); }
+  .cref-link.off { color: var(--ink-faint); }
+
   .analysis {
     background: var(--ground);
     border-left: 3px solid var(--accent);
@@ -233,6 +253,25 @@
   .analysis li { margin-bottom: 6px; }
   .analysis.creative { border-left-color: var(--gold); background: #FFFCF4; margin-top: 14px; }
   .analysis.creative .a-tag { color: var(--gold-deep); }
+
+  /* creative suggestions: collapsible (expand/minimize) */
+  details.analysis.creative { padding: 0; }
+  details.analysis.creative > summary {
+    list-style: none; cursor: pointer; user-select: none;
+    display: flex; align-items: center; justify-content: space-between; gap: 12px;
+    padding: 16px 18px;
+  }
+  details.analysis.creative > summary::-webkit-details-marker { display: none; }
+  details.analysis.creative > summary .a-tag { margin-bottom: 0; }
+  details.analysis.creative > summary:focus-visible { outline: 2px solid var(--gold-deep); outline-offset: 2px; }
+  .creative-toggle {
+    flex: none; font-size: 11px; font-weight: 700; letter-spacing: 0.06em; text-transform: uppercase;
+    color: var(--gold-deep); background: var(--gold-wash); border-radius: 999px; padding: 4px 11px; white-space: nowrap;
+  }
+  .creative-toggle::after { content: "Ver sugestões \25B8"; }
+  details.analysis.creative[open] > summary .creative-toggle::after { content: "Minimizar \25BE"; }
+  details.analysis.creative > summary:hover .creative-toggle { background: var(--gold); color: #fff; }
+  .creative-content { padding: 0 18px 16px; }
 
   /* ---- Creative briefings ---- */
   .cunit { margin-top: 18px; }
@@ -272,7 +311,18 @@
   .proj-title { font-size: 11px; font-weight: 700; letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink-faint); }
   .proj-total { font-size: 13px; color: var(--ink-soft); font-variant-numeric: tabular-nums; }
   .proj-total b { color: var(--accent-deep); font-size: 15px; }
-  .proj canvas { width: 100%; height: 150px; display: block; }
+  .proj { position: relative; }
+  .proj canvas { width: 100%; height: 150px; display: block; cursor: crosshair; }
+  .proj-tip {
+    position: absolute; display: none; pointer-events: none; z-index: 5;
+    transform: translate(-50%, -100%);
+    background: var(--ink); color: #fff; font-size: 11.5px; font-weight: 600;
+    padding: 5px 9px; border-radius: 7px; white-space: nowrap; font-variant-numeric: tabular-nums;
+    box-shadow: 0 2px 8px rgba(0,0,0,.18);
+  }
+  .proj-tip .tip-tag { margin-left: 7px; font-size: 9.5px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; padding: 1px 5px; border-radius: 4px; }
+  .proj-tip .tip-tag.real { background: rgba(255,255,255,.18); color: #fff; }
+  .proj-tip .tip-tag.proj { background: var(--gold); color: var(--ink); }
   .proj-legend { display: flex; gap: 18px; flex-wrap: wrap; font-size: 11.5px; color: var(--ink-soft); margin-top: 6px; }
   .proj-legend span { display: inline-flex; align-items: center; gap: 6px; }
   .lg { width: 16px; height: 0; border-top: 2px solid var(--chart, var(--accent)); }
@@ -443,8 +493,9 @@
           <b>Criativo:</b> o vídeo <b>"Luiza 03"</b> sozinho carrega ~100 dos 117 leads (48 + 52). O <b>"Depoimento Jessica"</b> chama atenção — CTR de <b>6,8%</b> (acima do herói) com gasto mínimo. O "Luiza 04" teve amostra pequena na semana (R$ 34, CPL R$ 16,89).
         </div>
 
-        <div class="analysis creative">
-          <span class="a-tag">Sugestões de criativo</span>
+        <details class="analysis creative">
+          <summary><span class="a-tag">Sugestões de criativo</span><span class="creative-toggle"></span></summary>
+          <div class="creative-content">
           <b>O criativo é uma alavanca clara aqui</b> — há um vencedor subaproveitado, um erro de copy e dependência de um único vídeo.
           <!-- C1 -->
           <div class="cunit">
@@ -522,7 +573,8 @@
           </div>
 
           <p class="what" style="margin-top:16px"><b>Higiene (sem briefing):</b> arquivar de vez o bloco "— Cópia" (R$ 120 → 1 lead nesta janela) e os "Feira Abrafad" de baixo CTR. Concentrar a verba no trio Luiza 03 / Jessica / Luiza 04.</p>
-        </div>
+          </div>
+        </details>
       </div>
     </article>
 
@@ -581,8 +633,9 @@
           <em>Cargos</em>. Ainda só <b>2 criativos</b> (REPS DVD 01 e 02), ambos vídeo — pool raso.
         </div>
 
-        <div class="analysis creative">
-          <span class="a-tag">Sugestões de criativo</span>
+        <details class="analysis creative">
+          <summary><span class="a-tag">Sugestões de criativo</span><span class="creative-toggle"></span></summary>
+          <div class="creative-content">
           <b>Performa bem (CPL R$ 8,56), mas só há 2 criativos com a MESMA copy</b> — pool raso. No mês a frequência já bate 2,36; diversificar previne fadiga ao escalar.
           <p class="what" style="margin-top:4px"><b>Contexto:</b> os 2 vídeos (REPS DVD 01 e 02) usam exatamente a <em>mesma</em> copy — repetir o mesmo recado à mesma pessoa é o que sobe a frequência. Os criativos abaixo diversificam os ângulos.</p>
 
@@ -660,7 +713,8 @@
           </div>
 
           <p class="what" style="margin-top:16px"><b>Sem briefing (operacional):</b> testar o CTA "Quero Ganhar Indicando" contra o atual "Quero Me Cadastrar e Indicar"; e <b>não mexer no que ganha</b> — manter os DVD 01/02 no ar (CTR 3,3–3,7%) e apenas <em>somar</em> os novos, para segurar a frequência abaixo de 2 ao escalar.</p>
-        </div>
+          </div>
+        </details>
       </div>
     </article>
 
@@ -917,9 +971,70 @@
     } else {
       cap.innerHTML = `Projeção fim do mês: <b>~${Math.round(totalProj / 5) * 5}</b> leads · ritmo ~${Math.round(avg)}/dia`;
     }
+
+    // pontos para o hover (realizado + projeção)
+    const pts = [];
+    for (let i = 0; i < cfg.actual.length; i++) pts.push({ day: i + 1, value: cfg.actual[i], type: "real", x: X(i + 1), y: Y(cfg.actual[i]) });
+    for (let i = 0; i < proj.length; i++) pts.push({ day: today + 1 + i, value: proj[i], type: "proj", x: X(today + 1 + i), y: Y(proj[i]) });
+    canvas._pts = pts;
+
+    // marcador do ponto sob o cursor
+    const hi = canvas._hover;
+    if (hi != null && pts[hi]) {
+      const p = pts[hi];
+      ctx.beginPath(); ctx.moveTo(p.x, padT); ctx.lineTo(p.x, Y(0));
+      ctx.setLineDash([2, 3]); ctx.strokeStyle = hexA(col, 0.4); ctx.lineWidth = 1; ctx.stroke(); ctx.setLineDash([]);
+      ctx.beginPath(); ctx.arc(p.x, p.y, 4.5, 0, 7); ctx.fillStyle = "#fff"; ctx.fill();
+      ctx.lineWidth = 2.5; ctx.strokeStyle = col; ctx.stroke();
+    }
+  }
+
+  function tipFor(canvas) {
+    if (!canvas._tip) {
+      const tip = document.createElement("div");
+      tip.className = "proj-tip";
+      canvas.closest(".proj").appendChild(tip);
+      canvas._tip = tip;
+    }
+    return canvas._tip;
+  }
+
+  function onMove(e) {
+    const canvas = e.currentTarget;
+    const pts = canvas._pts;
+    if (!pts || !pts.length) return;
+    const r = canvas.getBoundingClientRect();
+    const mx = e.clientX - r.left;
+    let best = 0, bd = Infinity;
+    for (let i = 0; i < pts.length; i++) { const d = Math.abs(pts[i].x - mx); if (d < bd) { bd = d; best = i; } }
+    if (canvas._hover !== best) { canvas._hover = best; draw(canvas); }
+    const p = pts[best];
+    const tip = tipFor(canvas);
+    const isProj = p.type === "proj";
+    const unit = isProj ? " leads/dia" : (p.value === 1 ? " lead" : " leads");
+    tip.innerHTML = `<b>${p.day}/jun</b> · ${isProj ? "~" : ""}${p.value}${unit}` +
+      `<span class="tip-tag ${isProj ? "proj" : "real"}">${isProj ? "projeção" : "realizado"}</span>`;
+    tip.style.display = "block";
+    tip.style.left = (canvas.offsetLeft + p.x) + "px";
+    tip.style.top = (canvas.offsetTop + p.y - 10) + "px";
+  }
+
+  function onLeave(e) {
+    const canvas = e.currentTarget;
+    if (canvas._hover != null) { canvas._hover = null; draw(canvas); }
+    if (canvas._tip) canvas._tip.style.display = "none";
   }
 
   function drawAll() { document.querySelectorAll("canvas[data-camp]").forEach(draw); }
+  function bindAll() {
+    document.querySelectorAll("canvas[data-camp]").forEach((c) => {
+      if (c._bound) return;
+      c._bound = true;
+      c.addEventListener("mousemove", onMove);
+      c.addEventListener("mouseleave", onLeave);
+    });
+  }
   drawAll();
+  bindAll();
   let t; window.addEventListener("resize", () => { clearTimeout(t); t = setTimeout(drawAll, 150); });
 </script>
