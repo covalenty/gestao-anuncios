@@ -807,6 +807,7 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
                 </div>
                 <div class="chat-welcome-title">Olá, Diego. O que fazemos hoje?</div>
                 <div class="chat-welcome-sub">Analise campanhas, crie criativos e tome decisões baseadas em dados.</div>
+                <span id="chat-engine-badge" style="display:none;margin-top:10px;font-size:11px;font-weight:600;color:#fff;background:rgba(255,255,255,.18);border:1px solid rgba(255,255,255,.3);border-radius:8px;padding:3px 10px"></span>
               </div>
 
               <div class="chat-input-area" id="chat-input-area">
@@ -2329,6 +2330,7 @@ async function hydrateCampaigns() {
       drawCampChart(`creal-${i}`, a.length ? a : [0], c.chart.today, c.chart.projRate, maxY);
     });
     _applyCampFilter();
+    hydrateCampSubmenu();
   } catch (e) {
     console.warn('Falha ao carregar dados reais, mantendo mock:', e.message);
   }
@@ -2360,18 +2362,40 @@ document.querySelector('.camp-filter .search-box input')?.addEventListener('inpu
 drawAllCampCharts = hydrateCampaigns;
 
 /* ── Chat ligado aos dados reais (/api/chat) ── */
+// Selo do motor que respondeu: IA via API, IA local (assinatura) ou regras.
+function engineBadge(engine) {
+  const map = {
+    api:   { txt: 'IA · API',   c: '#0a7d34', bg: '#e6f6ec' },
+    cli:   { txt: 'IA · local', c: '#0b5fad', bg: '#e6f0fb' },
+    rules: { txt: 'Regras',     c: '#8a6d0b', bg: '#fbf3dc' },
+  };
+  const m = map[engine] || map.rules;
+  return `<div class="msg-engine" style="margin-top:8px;font-size:11px;font-weight:600;color:${m.c}">`
+    + `<span style="background:${m.bg};border-radius:6px;padding:2px 7px">${m.txt}</span></div>`;
+}
 async function askAgent(q) {
   appendMsg('ai', '<em>Analisando os dados reais da conta…</em>');
   const ph = chatMsgs.lastElementChild;
   try {
     const r = await fetch('/api/chat?q=' + encodeURIComponent(q));
     const d = await r.json();
-    ph.querySelector('.msg-body').innerHTML = d.html || 'Sem resposta.';
+    ph.querySelector('.msg-body').innerHTML = (d.html || 'Sem resposta.') + engineBadge(d.engine);
   } catch (e) {
     ph.querySelector('.msg-body').innerHTML = (typeof TAG_RESPONSES !== 'undefined' && TAG_RESPONSES[q]) || 'Não consegui buscar os dados agora. Tente novamente.';
   }
   chatMsgs.scrollTop = chatMsgs.scrollHeight;
 }
+// Badge fixo no cabeçalho do chat indicando o motor ativo.
+(async function showChatEngine() {
+  try {
+    const d = await (await fetch('/api/chat/status')).json();
+    const el = document.getElementById('chat-engine-badge');
+    if (!el) return;
+    const label = { api: 'IA via API', cli: 'IA local (assinatura)', rules: 'Modo regras (sem IA)' }[d.engine] || '';
+    el.textContent = d.model ? `${label} · ${d.model}` : label;
+    el.style.display = 'inline-block';
+  } catch (e) { /* silencioso */ }
+})();
 function execTag(btn) {
   const label = btn.textContent.trim();
   transitionToChat();
@@ -2414,6 +2438,32 @@ navigateTo = function (id) {
   _origNavigate(id);
   if (id === 'criativos') hydrateTemplates();
 };
+
+/* ── Submenu lateral (#camp-sub) com as campanhas REAIS ── */
+async function hydrateCampSubmenu() {
+  try {
+    if (!REAL_CAMPS) {
+      const data = await (await fetch('/api/campaigns')).json();
+      if (data.error) throw new Error(data.error);
+      REAL_CAMPS = data.campaigns; REAL_ACCOUNT = data.account;
+      topbarInfo.campanhas.sub = `${REAL_CAMPS.length} campanhas · por investimento (dados reais)`;
+    }
+    const sub = document.getElementById('camp-sub');
+    if (!sub) return;
+    const top = REAL_CAMPS.slice(0, 5);
+    sub.innerHTML = top.map((c) => {
+      const tag = (c.domain && c.domain.includes('.')) ? ' · ' + c.domain.split('.')[0] : '';
+      let label = c.display + tag;
+      if (label.length > 28) label = label.slice(0, 28) + '…';
+      const full = c.display + (c.domain ? ` (${c.domain})` : '');
+      return `<div class="sb-sub-item" data-page="campanhas" title="${full}">${label}</div>`;
+    }).join('') + `<div class="sb-sub-item" data-page="campanhas">Ver todas →</div>`;
+    // os itens novos perderam os listeners originais — religa
+    sub.querySelectorAll('.sb-sub-item[data-page]').forEach((item) =>
+      item.addEventListener('click', (e) => { e.stopPropagation(); navigateTo('campanhas'); }));
+  } catch (e) { console.warn('Falha ao carregar submenu real:', e.message); }
+}
+hydrateCampSubmenu();
 
 /* ── Nova campanha → create-campaign.mjs (dry-run → criar PAUSED) ── */
 // Segmentação validada (clonada do ad set vencedor): SP + farmácia.
