@@ -2305,9 +2305,146 @@ function buildRealCard(c, i, scaleMax) {
   </div>`;
 }
 
+/* ── Análise curada por campanha (espelha o /relatorio-anuncios) ──
+   Análise por ad set + sugestões de criativo das campanhas reais da conta.
+   Indexado por uma chave derivada do domínio/nome (ver analysisKeyFor). */
+const CAMP_ANALYSIS = {
+  buscapreco: `
+    <div class="dsec dsec-mg">
+      <div class="dsec-title">Análise — Nível Ad Set</div>
+      <p>São 4 conjuntos com desempenhos bem diferentes:</p>
+      <ul>
+        <li><strong>Interesses e Cargos</strong> (R$&nbsp;95/dia) → <strong>CPL R$&nbsp;10,28</strong>, CTR 4,18%, freq 1,45 — o melhor.</li>
+        <li><strong>Visitantes site 180D</strong> (R$&nbsp;95/dia) → <strong>CPL R$&nbsp;10,54</strong>, CTR 4,16%, freq 1,32 — folga grande.</li>
+        <li><strong>PLANILHA ZMC (Miriam)</strong> (R$&nbsp;35/dia) → <strong>CPL R$&nbsp;17,10</strong> rodando o <em>mesmo</em> criativo Luiza 03 que entrega R$&nbsp;10,32 nos outros. A diferença é a qualidade do público (LAL da planilha).</li>
+        <li><strong>Teste de criativos</strong> — já pausado, corretamente: o bloco de anúncios "— Cópia" gastou R$&nbsp;120 e gerou <strong>1 lead</strong> (CPL R$&nbsp;120).</li>
+      </ul>
+      <div class="dsec-note"><strong>Criativo:</strong> o vídeo <strong>"Luiza 03"</strong> sozinho carrega ~226 dos 349 leads. O <strong>"Luiza 04"</strong> (AD013) é um challenger forte — CTR 4,51% e CPL R$&nbsp;7,51, mas com só R$&nbsp;97 investidos.</div>
+    </div>
+    <div class="dsec dsec-yw">
+      <div class="dsec-title">Sugestões de Criativo</div>
+      <p><strong>O criativo é uma alavanca clara aqui</strong> — há um vencedor subaproveitado, um erro de copy e dependência de um único vídeo.</p>
+      <div class="sugg" style="margin-top:16px">
+        <div class="sugg-hd"><span class="sugg-title">1 · Escalar o "Luiza 04" + 1 variação</span><span class="sugg-badge">Vídeo</span></div>
+        <div class="sugg-desc"><strong>O quê:</strong> o criativo mais eficiente da conta (CTR 4,51%, CPL R$&nbsp;7,51) teve só R$&nbsp;98 de verba. Produzir 1 variação no mesmo ângulo vencedor (economia de tempo na compra) para escalar sem depender de um único vídeo.</div>
+        <div class="briefing">
+          <div class="briefing-hd">📋 Briefing — Vídeo / buscapreço / "O tempo que volta pro caixa"</div>
+          <div class="brow"><div class="bkey">Formato/Specs</div><div class="bval">9:16 vertical · 1080×1920 · 15–18s · MP4 1080p · legendas embutidas · música royalty-free ritmada</div></div>
+          <div class="brow"><div class="bkey">Público</div><div class="bval">donos e compradores de farmácia (SP)</div></div>
+          <div class="brow"><div class="bkey">Headline</div><div class="bval"><span class="bcode">Farmácia, simplifique sua rotina de compras</span></div></div>
+          <div class="brow"><div class="bkey">CTA (Botão)</div><div class="bval"><span class="bcode">Cadastre-se</span> (SIGN_UP)</div></div>
+          <div class="brow"><div class="bkey">Texto principal</div><div class="bval"><div class="bquote">Cotar preço com vários distribuidores toma horas — e o tempo que some não volta no caixa. No buscapreço você compara tudo numa tela só e fecha o melhor preço em minutos. Grátis para sua farmácia.<br>👉 Cadastre-se e compre melhor hoje.</div></div></div>
+          <div class="brow"><div class="bkey">Roteiro cena a cena</div><div class="bval">0–3s: dono no balcão cercado de telefone e papéis — "Cotar toma 3 horas do seu dia?" / 3–7s: relógio girando, abas de WhatsApp e planilhas / 7–12s: mockup do buscapreço com vários preços numa tela só / 12–15s: dedo toca o menor preço, selo "melhor preço" / 15–18s: tela magenta + logo Cienty + CTA "Cadastre-se — é grátis".</div></div>
+          <div class="brow"><div class="bkey">Tom/Cor</div><div class="bval">magenta #DC36C0 (principal) + amarelo #FFB92A (números/CTA) · fundo claro · gancho com texto GRANDE nos 3 primeiros segundos.</div></div>
+        </div>
+      </div>
+      <div class="sugg">
+        <div class="sugg-hd"><span class="sugg-title">2 · Substituir os anúncios "— Cópia" (corrigir o ângulo)</span><span class="sugg-badge">Imagem</span></div>
+        <div class="sugg-desc"><strong>O quê:</strong> os anúncios "— Cópia" rodam a copy de <em>representante</em> dentro de uma campanha de <em>farmácia</em> (daí o CTR de 1–2% e ~0 leads). Substituir por uma estática com a dor certa do dono de farmácia.</div>
+        <div class="briefing">
+          <div class="briefing-hd">📋 Briefing — Imagem estática / buscapreço / "Cotar não pode comer 3h do seu dia"</div>
+          <div class="brow"><div class="bkey">Formato/Specs</div><div class="bval">feed 4:5 · 1080×1350 px (+ story 9:16 · 1080×1920) · PNG · margem segura de 10% · texto &lt; 20% da área</div></div>
+          <div class="brow"><div class="bkey">Público</div><div class="bval">donos e compradores de farmácia (SP)</div></div>
+          <div class="brow"><div class="bkey">Headline</div><div class="bval"><span class="bcode">Cotar não pode comer 3 horas do seu dia</span></div></div>
+          <div class="brow"><div class="bkey">CTA (Botão)</div><div class="bval"><span class="bcode">Cadastre-se</span></div></div>
+          <div class="brow"><div class="bkey">Copy na imagem</div><div class="bval"><strong>Título:</strong> "3 horas cotando preço. Toda semana." (o "3h" em amarelo, maior) · <strong>Subtítulo:</strong> "Compare todos os distribuidores numa tela só. De graça." · <strong>Selo:</strong> "Grátis para farmácias"</div></div>
+          <div class="brow"><div class="bkey">Texto principal</div><div class="bval"><div class="bquote">Cada hora cotando preço é uma hora longe do balcão. O buscapreço junta os preços de todos os distribuidores numa tela só, de graça.<br>👉 Cadastre-se e compre melhor.</div></div></div>
+          <div class="brow"><div class="bkey">Tom/Cor</div><div class="bval">fundo grafite #11101A (alto contraste) · faixa inferior magenta #DC36C0 com o CTA · número "3h" em amarelo #FFB92A. Hierarquia: número &gt; headline &gt; subtítulo &gt; CTA.</div></div>
+        </div>
+      </div>
+      <div class="sugg">
+        <div class="sugg-hd"><span class="sugg-title">3 · Renovar o herói "Luiza 03" antes da fadiga</span><span class="sugg-badge">Vídeo</span></div>
+        <div class="sugg-desc"><strong>O quê:</strong> o Luiza 03 sozinho carrega ~45% dos leads da conta. Manter o ângulo que ganha e abrir com um <em>número concreto</em> de economia para diversificar antes que ele sature.</div>
+        <div class="briefing">
+          <div class="briefing-hd">📋 Briefing — Vídeo / buscapreço / "A economia em número"</div>
+          <div class="brow"><div class="bkey">Formato/Specs</div><div class="bval">9:16 vertical · 1080×1920 · 12–16s · MP4 1080p · legendas embutidas · música</div></div>
+          <div class="brow"><div class="bkey">Público</div><div class="bval">donos e compradores de farmácia (SP)</div></div>
+          <div class="brow"><div class="bkey">Headline</div><div class="bval"><span class="bcode">Sua farmácia pode economizar comparando preço</span></div></div>
+          <div class="brow"><div class="bkey">CTA (Botão)</div><div class="bval"><span class="bcode">Cadastre-se</span></div></div>
+          <div class="brow"><div class="bkey">Texto principal</div><div class="bval"><div class="bquote">Pequenas diferenças de preço viram margem no fim do mês. Veja quanto sua farmácia economiza comparando todos os distribuidores no buscapreço — de graça.<br>👉 Cadastre-se.</div></div></div>
+          <div class="brow"><div class="bkey">Roteiro cena a cena</div><div class="bval">0–3s: número grande com contador — "Sua farmácia economiza até X%" / 3–7s: o mesmo item com 3 preços de distribuidores / 7–11s: mockup do buscapreço destacando o menor preço / 11–16s: tela magenta + logo Cienty + CTA "Cadastre-se — grátis".</div></div>
+          <div class="brow"><div class="bkey">Tom/Cor</div><div class="bval">magenta #DC36C0 + amarelo #FFB92A (no número/%) · o número da economia é o herói visual.</div></div>
+        </div>
+      </div>
+      <div class="dsec-note"><strong>Higiene (sem briefing):</strong> aposentar o "Feira Abrafad 02" (CTR 2,05%, CPL R$&nbsp;15,63) e arquivar de vez o bloco "— Cópia". Concentrar a verba no trio Luiza 03 / Luiza 04 / Jessica.</div>
+    </div>`,
+
+  representantes: `
+    <div class="dsec dsec-mg">
+      <div class="dsec-title">Análise — Nível Ad Set</div>
+      <p>Ambos os conjuntos (<em>Interesses - Vendas + Farmácia</em> e <em>Cargos - Farmácia</em>) performam de forma quase idêntica (<strong>CPL R$&nbsp;7,30 e R$&nbsp;7,86</strong>, R$&nbsp;15/dia cada). A frequência da <strong>campanha (2,36) está bem acima da frequência de cada ad set (~1,80)</strong> — sinal clássico de <strong>sobreposição de público</strong>: os dois conjuntos disputam as mesmas pessoas no leilão. Há recomendação do Meta para unificá-los.</p>
+      <div class="dsec-note">Só <strong>2 criativos</strong> rodam (REPS DVD 01 e 02), ambos vídeo — pool raso, com risco de fadiga assim que o orçamento subir.</div>
+    </div>
+    <div class="dsec dsec-yw">
+      <div class="dsec-title">Sugestões de Criativo</div>
+      <p><strong>Performa bem, mas o estoque de criativo é raso e a frequência está subindo (2,36)</strong> — melhorar aqui é prevenir fadiga, não corrigir falha.</p>
+      <p style="margin-top:8px"><strong>Contexto:</strong> os 2 vídeos (REPS DVD 01 e 02) usam exatamente a <em>mesma</em> copy — repetir o mesmo recado à mesma pessoa é o que sobe a frequência. Os criativos abaixo diversificam os ângulos.</p>
+      <div class="sugg" style="margin-top:16px">
+        <div class="sugg-hd"><span class="sugg-title">1 · Número concreto — a comissão com cifra</span><span class="sugg-badge">Vídeo</span><span class="sugg-badge">Urgente</span></div>
+        <div class="sugg-desc"><strong>O quê:</strong> vídeo 9:16, ângulo <em>comissão recorrente</em> com número concreto, para dar variedade ao público pequeno e segurar o CPL de ~R$&nbsp;7,50 ao escalar. (A copy atual promete "dinheiro no bolso" sem cifra.)</div>
+        <div class="briefing">
+          <div class="briefing-hd">📋 Briefing — Vídeo / Representantes / "A conta da comissão"</div>
+          <div class="brow"><div class="bkey">Formato/Specs</div><div class="bval">9:16 vertical · 1080×1920 · 15–18s · MP4 1080p · legendas embutidas · música royalty-free ritmada</div></div>
+          <div class="brow"><div class="bkey">Público</div><div class="bval">representantes e consultores de farmácia (SP)</div></div>
+          <div class="brow"><div class="bkey">Headline</div><div class="bval"><span class="bcode">Indique a Cienty e ganhe comissão recorrente</span></div></div>
+          <div class="brow"><div class="bkey">CTA (Botão)</div><div class="bval"><span class="bcode">Cadastre-se</span> (SIGN_UP) — testar contra o LEARN_MORE atual</div></div>
+          <div class="brow"><div class="bkey">Texto principal</div><div class="bval"><div class="bquote">Você visita farmácias toda semana. E se cada visita virasse renda recorrente? Indique a Cienty: suas farmácias economizam nas compras e você ganha comissão a cada uma que entra. Sem custo pra elas, ganho recorrente pra você.<br>👉 Cadastre-se e comece a indicar.</div></div></div>
+          <div class="brow"><div class="bkey">Roteiro cena a cena</div><div class="bval">0–3s: rep entrando numa farmácia — "Quantas farmácias você visita por semana?" / 3–7s: ícone de $ a cada porta — "E se cada uma virasse comissão?" / 7–12s: mockup do app Cienty comparando preços / 12–15s: gráfico de comissão recorrente subindo / 15–18s: tela magenta + logo + CTA.</div></div>
+          <div class="brow"><div class="bkey">Tom/Cor</div><div class="bval">magenta #DC36C0 (principal) + amarelo #FFB92A (números e no $) · gancho com texto bem grande nos 3 primeiros segundos.</div></div>
+        </div>
+      </div>
+      <div class="sugg">
+        <div class="sugg-hd"><span class="sugg-title">2 · Prova social — depoimento real</span><span class="sugg-badge">Vídeo</span></div>
+        <div class="sugg-desc"><strong>O quê:</strong> depoimento real (UGC, gravado em celular) de um representante que <em>já</em> ganha com a Cienty — quebra a desconfiança natural da promessa de renda.</div>
+        <div class="briefing">
+          <div class="briefing-hd">📋 Briefing — Vídeo / Representantes / "Quem já indica conta"</div>
+          <div class="brow"><div class="bkey">Formato/Specs</div><div class="bval">9:16 vertical · 1080×1920 · 20–30s · MP4 1080p · estética autêntica (celular na mão) · legendas embutidas · sem música ou música baixa</div></div>
+          <div class="brow"><div class="bkey">Público</div><div class="bval">representantes e consultores de farmácia (SP)</div></div>
+          <div class="brow"><div class="bkey">Headline</div><div class="bval"><span class="bcode">Veja quanto um representante ganha indicando a Cienty</span></div></div>
+          <div class="brow"><div class="bkey">CTA (Botão)</div><div class="bval"><span class="bcode">Cadastre-se</span></div></div>
+          <div class="brow"><div class="bkey">Texto principal</div><div class="bval"><div class="bquote">"Eu já indicava produtos pras farmácias. Agora indico a Cienty e ganho comissão recorrente em cima disso." Veja o depoimento de quem já está faturando.<br>👉 Cadastre-se e comece a indicar.</div></div></div>
+          <div class="brow"><div class="bkey">Roteiro cena a cena</div><div class="bval">0–3s: rep real falando direto pra câmera (selfie) — "Eu ganho comissão indicando a Cienty" / 3–12s: mostra o celular/app, farmácia ao fundo / 12–22s: close no rosto, tom de confiança — "Renda recorrente, sem custo pra elas" / 22–30s: tela magenta + logo + CTA.</div></div>
+          <div class="brow"><div class="bkey">Tom/Cor</div><div class="bval">autêntico/UGC, pouca pós — só as legendas e a tela final na paleta Cienty (#DC36C0 / #FFB92A).</div></div>
+        </div>
+      </div>
+      <div class="sugg">
+        <div class="sugg-hd"><span class="sugg-title">3 · Quebra de objeção — "leva 1 minuto"</span><span class="sugg-badge">Vídeo</span><span class="sugg-badge">Screen-rec</span></div>
+        <div class="sugg-desc"><strong>O quê:</strong> vídeo curto de gravação de tela mostrando como é simples se cadastrar e indicar — remove a objeção de "dá trabalho".</div>
+        <div class="briefing">
+          <div class="briefing-hd">📋 Briefing — Vídeo / Representantes / "Cadastrar leva 1 minuto"</div>
+          <div class="brow"><div class="bkey">Formato/Specs</div><div class="bval">9:16 vertical · 1080×1920 · 10–15s · screen-recording do fluxo real + legendas · música leve</div></div>
+          <div class="brow"><div class="bkey">Público</div><div class="bval">representantes e consultores de farmácia (SP)</div></div>
+          <div class="brow"><div class="bkey">Headline</div><div class="bval"><span class="bcode">Cadastrar e indicar leva 1 minuto</span></div></div>
+          <div class="brow"><div class="bkey">CTA (Botão)</div><div class="bval"><span class="bcode">Cadastre-se</span></div></div>
+          <div class="brow"><div class="bkey">Texto principal</div><div class="bval"><div class="bquote">Sem burocracia: você se cadastra em 1 minuto e já começa a indicar.<br>👉 Cadastre-se.</div></div></div>
+          <div class="brow"><div class="bkey">Fluxo (3 telas)</div><div class="bval">(1) tela de cadastro → "Preencha em 1 minuto" / (2) indicar farmácia → "Indique sua primeira farmácia" / (3) painel de comissão → "Acompanhe sua comissão". Fecha na tela magenta + logo + CTA.</div></div>
+          <div class="brow"><div class="bkey">Tom/Cor</div><div class="bval">magenta #DC36C0 + amarelo #FFB92A · ritmo rápido, cada tela ~3–4s.</div></div>
+        </div>
+      </div>
+      <div class="dsec-note"><strong>Sem briefing (operacional):</strong> testar o CTA "Quero Ganhar Indicando" contra o atual "Quero Me Cadastrar e Indicar"; e <strong>não mexer no que ganha</strong> — manter os DVD 01/02 no ar (CTR 3,3–3,7%) e apenas <em>somar</em> os novos, para segurar a frequência abaixo de 2 ao escalar.</div>
+    </div>`,
+
+  comofunciona: `
+    <div class="dsec dsec-mg">
+      <div class="dsec-title">Análise — a landing page é o gargalo</div>
+      <p>95% do gasto e dos leads vieram de um único anúncio: <strong>"Luiza 03 — comofunciona"</strong> (R$&nbsp;677,54 → 30 leads, CPL R$&nbsp;22,58). O detalhe decisivo: <strong>esse é o mesmo vídeo Luiza 03 que entrega CPL ~R$&nbsp;10 no buscapreco</strong>. Mesmo criativo, mesmo público (SP/farmácia), resultado 2x pior.</p>
+      <div class="dsec-note">A única variável que muda é a <strong>página de destino</strong> (comofunciona.cienty.com.br), que converte cerca de metade. <strong>O problema não é o anúncio; é a página.</strong> Renovar criativo aqui não resolve — o gargalo está na conversão da landing.</div>
+    </div>`,
+};
+
+// Deriva a chave de análise curada a partir do domínio/nome da campanha real.
+function analysisKeyFor(c) {
+  const hay = `${c.domain || ''} ${c.display || ''} ${c.name || ''}`.toLowerCase();
+  if (hay.includes('buscapreco') || hay.includes('buscapreço')) return 'buscapreco';
+  if (hay.includes('comofunciona')) return 'comofunciona';
+  if (hay.includes('representante')) return 'representantes';
+  return null;
+}
+
 function openRealDrawer(i) {
   const c = REAL_CAMPS[i]; if (!c) return;
   const m = c.metrics;
+  const analysis = CAMP_ANALYSIS[analysisKeyFor(c)];
   document.getElementById('drawer-camp-name').textContent = c.display + (c.domain ? ` (${c.domain})` : '');
   document.getElementById('drawer-body').innerHTML = `
     <div class="dsec dsec-mg">
@@ -2319,8 +2456,10 @@ function openRealDrawer(i) {
         <li><strong>CTR:</strong> ${m.ctr.toFixed(2)}% (link ${m.linkCtr.toFixed(2)}%) · <strong>CPC:</strong> ${_brl(m.cpc)} · <strong>Freq:</strong> ${m.freq.toFixed(2)}</li>
         <li><strong>Projeção do mês:</strong> ${c.status === 'Pausada' ? 'sem projeção (pausada)' : `~${c.chart.monthTotal} leads (ritmo ~${c.chart.projRate}/dia)`}</li>
       </ul>
-      <div class="dsec-note">Dados reais via Meta Marketing API. Para a análise completa por ad set + sugestões de criativo, rode o comando <strong>/relatorio-anuncios</strong>.</div>
-    </div>`;
+    </div>${analysis || `
+    <div class="dsec dsec-mg">
+      <div class="dsec-note">Dados reais via Meta Marketing API. Para a análise completa por ad set + sugestões de criativo desta campanha, rode o comando <strong>/relatorio-anuncios</strong>.</div>
+    </div>`}`;
   document.getElementById('camp-drawer').classList.add('open');
   document.getElementById('drawer-bd').classList.add('open');
 }
