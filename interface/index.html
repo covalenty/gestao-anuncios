@@ -862,7 +862,7 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
               <div class="resumo-inner">
                 <div id="resumo-content">
                 <div class="resumo-sec-title">Resumo das campanhas atuais</div>
-                <div class="metric-grid">
+                <div class="metric-grid" id="home-metrics">
                   <div class="metric-card">
                     <div class="metric-lbl">Investimento</div>
                     <div class="metric-val">R$&nbsp;5.766</div>
@@ -896,7 +896,7 @@ html,body{height:100%;font-family:var(--ff);font-size:14px;color:var(--tx);overf
                 </div>
 
                 <div class="insight-sec-title">Insights por campanha</div>
-                <div class="insight-cards-grid">
+                <div class="insight-cards-grid" id="home-insights">
 
                   <div class="ic" style="border-left-color:#d97706">
                     <div class="ic-tag" style="color:#d97706">⚠ Atenção</div>
@@ -2201,6 +2201,25 @@ function pickColor(item) {
 <script>
 let REAL_CAMPS = null;
 let REAL_ACCOUNT = null;
+let _realDataPromise = null;
+
+// Carrega /api/campaigns uma única vez e compartilha entre todos os consumidores
+// (resumo da home, lista de campanhas, submenu). Evita fetches duplicados.
+function ensureRealData() {
+  if (REAL_CAMPS) return Promise.resolve();
+  if (!_realDataPromise) {
+    _realDataPromise = (async () => {
+      const data = await (await fetch('/api/campaigns')).json();
+      if (data.error) throw new Error(data.error);
+      REAL_CAMPS = data.campaigns;
+      REAL_ACCOUNT = data.account;
+      topbarInfo.campanhas.sub = `${REAL_CAMPS.length} campanhas · por investimento (dados reais)`;
+      if (document.getElementById('tb-title')?.textContent === 'Campanhas')
+        document.getElementById('tb-sub').textContent = topbarInfo.campanhas.sub;
+    })().catch((e) => { _realDataPromise = null; throw e; });
+  }
+  return _realDataPromise;
+}
 
 const _brl = (n) => 'R$ ' + (n == null ? '—' : Number(n).toLocaleString('pt-BR', { minimumFractionDigits: 2, maximumFractionDigits: 2 }));
 const _int = (n) => Number(n).toLocaleString('pt-BR');
@@ -2310,17 +2329,7 @@ async function hydrateCampaigns() {
   const list = document.querySelector('.camp-list');
   if (!list) return;
   try {
-    if (!REAL_CAMPS) {
-      const r = await fetch('/api/campaigns');
-      const data = await r.json();
-      if (data.error) throw new Error(data.error);
-      REAL_CAMPS = data.campaigns;
-      REAL_ACCOUNT = data.account;
-      // atualiza contagem no topo
-      topbarInfo.campanhas.sub = `${REAL_CAMPS.length} campanhas · por investimento (dados reais)`;
-      if (document.getElementById('tb-title').textContent === 'Campanhas')
-        document.getElementById('tb-sub').textContent = topbarInfo.campanhas.sub;
-    }
+    await ensureRealData();
     const cpls = REAL_CAMPS.map(c => c.metrics.cpl).filter(Boolean);
     const scaleMax = Math.max(REAL_ACCOUNT.cplAvg, ...cpls) * 1.08 || 1;
     list.innerHTML = REAL_CAMPS.map((c, i) => buildRealCard(c, i, scaleMax)).join('');
@@ -2335,6 +2344,85 @@ async function hydrateCampaigns() {
     console.warn('Falha ao carregar dados reais, mantendo mock:', e.message);
   }
 }
+
+/* ── Home: resumo + insights por campanha com dados REAIS ── */
+const _pctNum = (x, d = 2) => (x).toFixed(d).replace('.', ',');
+
+// Escolhe o insight MAIS relevante de uma campanha (1 card por campanha),
+// aplicando as mesmas heurísticas do agente. Menor `p` = maior prioridade.
+function insightFor(c, avg) {
+  const m = c.metrics;
+  if (!(m.leads > 0 && m.cpl != null)) return null; // sem histórico p/ analisar
+  const ativa = c.status === 'Ativa';
+  if (ativa && m.freq > 3)
+    return { p: 1, color: '#de1135', tag: { c: '#de1135', t: '● Risco' },
+      text: `Frequência ${_pctNum(m.freq)} — público saturado. Renovar criativo já para conter a queda de relevância.`,
+      action: 'Renovar criativos' };
+  if (ativa && avg && m.cpl >= avg * 1.3) {
+    const over = Math.round((m.cpl / avg - 1) * 100);
+    return { p: 2, color: '#d97706', tag: { c: '#d97706', t: '⚠ Atenção' },
+      text: `CPL de ${_brl(m.cpl)} — ${over}% acima da média (${_brl(avg)}). Revisar segmentação e criativo antes de manter a verba.`,
+      action: 'Revisar campanha' };
+  }
+  if (ativa && avg && m.cpl <= avg * 0.92) {
+    const under = Math.round((1 - m.cpl / avg) * 100);
+    const fNote = m.freq > 2.3 ? ` Frequência ${_pctNum(m.freq)} subindo — monitorar ao escalar.` : ` Frequência ${_pctNum(m.freq)} com folga.`;
+    return { p: 3, color: '#0e8345', tag: { c: '#0e8345', t: '✓ Oportunidade' },
+      text: `Melhor CPL da conta: ${_brl(m.cpl)} (${under}% abaixo da média).${fNote} Há espaço para escalar.`,
+      action: 'Aumentar orçamento' };
+  }
+  if (ativa && m.freq > 2.3)
+    return { p: 4, color: '#d97706', tag: { c: '#d97706', t: '⚠ Atenção' },
+      text: `Frequência ${_pctNum(m.freq)} — começando a saturar. Preparar renovação de criativo.`,
+      action: 'Renovar criativos' };
+  const proj = (ativa && c.chart.monthTotal) ? ` · projeção ~${c.chart.monthTotal} no mês (${c.chart.projRate}/dia)` : '';
+  const head = ativa ? '' : 'Pausada. No período: ';
+  return { p: ativa ? 5 : 6, color: '#6d7079', tag: { c: '#6d7079', t: 'ℹ Informativo' },
+    text: `${head}${_int(m.leads)} leads a ${_brl(m.cpl)} de CPL${proj}.`,
+    action: 'Ver detalhes' };
+}
+
+// Monta o HTML dos cards "Insights por campanha" a partir das métricas reais.
+function buildHomeInsights(camps, acc) {
+  const avg = acc.cplAvg || 0;
+  const arrow = '<svg viewBox="0 0 12 12" fill="none"><path d="M2.5 6h7M6.5 3l3 3-3 3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+  const cards = camps.map(c => ({ c, ins: insightFor(c, avg) })).filter(x => x.ins)
+    .sort((a, b) => a.ins.p - b.ins.p).slice(0, 4);
+  if (!cards.length) return '';
+  return cards.map(({ c, ins }) => `
+    <div class="ic" style="border-left-color:${ins.color}">
+      <div class="ic-tag" style="color:${ins.tag.c}">${ins.tag.t}</div>
+      <div class="ic-name">${c.display}${c.domain ? ` <span class="camp-domain">(${c.domain})</span>` : ''}</div>
+      <div class="ic-text">${ins.text}</div>
+      <div class="ic-action">${ins.action} ${arrow}</div>
+    </div>`).join('');
+}
+
+async function hydrateHome() {
+  try {
+    await ensureRealData();
+    const a = REAL_ACCOUNT;
+    // Resumo das campanhas atuais (métricas reais da conta, últimos 30 dias).
+    const perDay = a.today ? a.leadsTotal / a.today : 0;
+    const metrics = document.getElementById('home-metrics');
+    if (metrics) metrics.innerHTML = `
+      <div class="metric-card"><div class="metric-lbl">Investimento</div><div class="metric-val">R$&nbsp;${_int(Math.round(a.spendTotal))}</div><div class="metric-sub">${a.today} dias</div></div>
+      <div class="metric-card"><div class="metric-lbl">Leads</div><div class="metric-val">${_int(a.leadsTotal)}</div><div class="metric-sub">${_pctNum(perDay, 1)} / dia</div></div>
+      <div class="metric-card"><div class="metric-lbl">CPL Médio</div><div class="metric-val accent">${_brl(a.cplAvg)}</div><div class="metric-sub">custo por lead</div></div>
+      <div class="metric-card"><div class="metric-lbl">CTR (todos)</div><div class="metric-val">${_pctNum(a.ctr)}%</div><div class="metric-sub">link: ${_pctNum(a.linkCtr)}%</div></div>
+      <div class="metric-card"><div class="metric-lbl">CPC · CPM</div><div class="metric-val">${_brl(a.cpc)}</div><div class="metric-sub">CPM ${_brl(a.cpm)}</div></div>
+      <div class="metric-card"><div class="metric-lbl">Frequência</div><div class="metric-val">${_pctNum(a.freq)}</div><div class="metric-sub">alcance ${_int(a.reach)}</div></div>`;
+    // Insights por campanha (derivados das análises reais).
+    const ins = document.getElementById('home-insights');
+    if (ins) {
+      const html = buildHomeInsights(REAL_CAMPS, a);
+      if (html) ins.innerHTML = html;
+    }
+  } catch (e) {
+    console.warn('Falha ao carregar resumo da home, mantendo mock:', e.message);
+  }
+}
+hydrateHome();
 
 // Filtro real por status + busca textual
 let _activeChip = 'Todas';
@@ -2442,12 +2530,7 @@ navigateTo = function (id) {
 /* ── Submenu lateral (#camp-sub) com as campanhas REAIS ── */
 async function hydrateCampSubmenu() {
   try {
-    if (!REAL_CAMPS) {
-      const data = await (await fetch('/api/campaigns')).json();
-      if (data.error) throw new Error(data.error);
-      REAL_CAMPS = data.campaigns; REAL_ACCOUNT = data.account;
-      topbarInfo.campanhas.sub = `${REAL_CAMPS.length} campanhas · por investimento (dados reais)`;
-    }
+    await ensureRealData();
     const sub = document.getElementById('camp-sub');
     if (!sub) return;
     const top = REAL_CAMPS.slice(0, 5);
