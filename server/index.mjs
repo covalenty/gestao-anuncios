@@ -8,6 +8,7 @@ import { fileURLToPath } from 'node:url';
 import crypto from 'node:crypto';
 import { getConfig, graph, graphAll } from './meta/client.mjs';
 import { createCampaignFromSpec } from './meta/create-campaign.mjs';
+import { agentChat, chatAvailable, chatModel } from './agent.mjs';
 import { renderImage } from '../src/render.js';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -106,9 +107,10 @@ async function buildCampaigns() {
   return { account: { cplAvg, spendTotal: accSpend, leadsTotal: accLeads, today, daysInMonth }, campaigns };
 }
 
-// Gera uma resposta de chat a partir dos dados REAIS da conta (roteada por palavra-chave).
-async function chatResponse(q) {
-  const { account, campaigns } = await buildCampaigns();
+// Resposta de chat por REGRAS (fallback quando não há ANTHROPIC_API_KEY).
+// Recebe os dados já montados para não bater na API do Meta duas vezes.
+function chatResponseRules(q, data) {
+  const { account, campaigns } = data;
   const avg = account.cplAvg;
   const active = campaigns.filter((c) => c.status === 'Ativa' && c.metrics.leads > 0);
   const t = (q || '').toLowerCase();
@@ -220,9 +222,30 @@ const server = http.createServer(async (req, res) => {
       const data = await buildCampaigns();
       return send(res, 200, JSON.stringify(data));
     }
+    if (url.pathname === '/api/chat/status') {
+      const engine = chatAvailable() || 'rules';
+      return send(res, 200, JSON.stringify({ engine, model: chatModel(engine) }));
+    }
     if (url.pathname === '/api/chat') {
-      const html = await chatResponse(url.searchParams.get('q') || '');
-      return send(res, 200, JSON.stringify({ html }));
+      const q = url.searchParams.get('q') || '';
+      const data = await buildCampaigns();
+      const provider = chatAvailable();
+      let html;
+      let engine = 'rules';
+      if (provider) {
+        try {
+          ({ html, engine } = await agentChat(q, data, provider));
+        } catch (e) {
+          console.error(`IA falhou (motor=${provider}):`, e.message);
+          html = chatResponseRules(q, data) +
+            `<br><br><small style="color:#b9700f">⚠ IA indisponível agora (${e.message}); resposta gerada por regras.</small>`;
+          engine = 'rules';
+        }
+      } else {
+        html = chatResponseRules(q, data);
+      }
+      console.log(`/api/chat motor=${engine}`);
+      return send(res, 200, JSON.stringify({ html, engine }));
     }
     if (url.pathname === '/api/templates') {
       return send(res, 200, JSON.stringify({ templates: listTemplates() }));

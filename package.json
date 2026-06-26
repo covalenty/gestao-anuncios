@@ -14,6 +14,7 @@
     "serve": "node server/index.mjs"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.106.0",
     "chokidar": "^4.0.0",
     "handlebars": "^4.7.8",
     "puppeteer": "^23.0.0",
