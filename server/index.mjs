@@ -44,7 +44,8 @@ async function buildCampaigns() {
       fields: 'campaign_id,spend,reach,frequency,clicks,ctr,cpc,inline_link_click_ctr,actions' }, cfg, 200),
     graphAll(`${cfg.accountId}/insights`, { level: 'campaign', date_preset: 'this_month', time_increment: 1,
       fields: 'campaign_id,actions,date_start' }, cfg, 3000),
-    graphAll(`${cfg.accountId}/insights`, { date_preset: 'last_30d', fields: 'spend,actions' }, cfg, 1),
+    graphAll(`${cfg.accountId}/insights`, { date_preset: 'last_30d',
+      fields: 'spend,actions,reach,frequency,clicks,ctr,cpc,cpm,impressions,inline_link_click_ctr' }, cfg, 1),
   ]);
 
   const insById = Object.fromEntries(ins30.map((r) => [r.campaign_id, r]));
@@ -65,8 +66,9 @@ async function buildCampaigns() {
     return new Date(y, m, 0).getDate();
   })();
 
-  const accSpend = num(accRows[0]?.spend);
-  const accLeads = leads(accRows[0]?.actions);
+  const acc = accRows[0] || {};
+  const accSpend = num(acc.spend);
+  const accLeads = leads(acc.actions);
   const cplAvg = accLeads ? accSpend / accLeads : 0;
 
   const campaigns = list.map((c) => {
@@ -104,7 +106,12 @@ async function buildCampaigns() {
 
   // ordena por gasto desc
   campaigns.sort((a, b) => b.metrics.spend - a.metrics.spend);
-  return { account: { cplAvg, spendTotal: accSpend, leadsTotal: accLeads, today, daysInMonth }, campaigns };
+  const account = {
+    cplAvg, spendTotal: accSpend, leadsTotal: accLeads, today, daysInMonth,
+    ctr: num(acc.ctr), linkCtr: num(acc.inline_link_click_ctr), cpc: num(acc.cpc),
+    cpm: num(acc.cpm), freq: num(acc.frequency), reach: num(acc.reach),
+  };
+  return { account, campaigns };
 }
 
 // Resposta de chat por REGRAS (fallback quando não há ANTHROPIC_API_KEY).
